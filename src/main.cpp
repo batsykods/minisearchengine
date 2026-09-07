@@ -1,16 +1,18 @@
 #include <iostream>
-#include "Document.h"
+#include "DocumentLoader.h"
 
 int main() {
-    Document document(
-        1,
-        "data/documents/cpp.txt",
-        "C++ is a powerful programming language."
-    );
+    try {
+        DocumentLoader loader;
+        Document document = loader.load(1, "data/documents/cpp.txt");
 
-    std::cout << "ID: " << document.getId() << '\n';
-    std::cout << "Path: " << document.getPath() << '\n';
-    std::cout << "Content: " << document.getContent() << '\n';
+        std::cout << "ID: " << document.getId() << '\n';
+        std::cout << "Path: " << document.getPath() << '\n';
+        std::cout << "Content: " << document.getContent() << '\n';
+    } catch (const std::exception& error) {
+        std::cerr << "Error: " << error.what() << '\n';
+        return 1;
+    }
 
     return 0;
 }
