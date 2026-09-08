@@ -1,0 +1,1 @@
+Search engines retrieve relevant documents from a collection. An inverted index maps terms to documents and makes keyword search efficient.
