@@ -1,0 +1,1 @@
+Algorithms organize computation into precise steps. Searching, sorting, hashing, trees, graphs, and dynamic programming are fundamental techniques in computer science.
