@@ -13,6 +13,7 @@ public:
     void addDocument(int documentId, const std::vector<std::string>& tokens);
     const std::vector<int>& search(const std::string& term) const;
     bool contains(const std::string& term) const;
+    std::size_t termCount() const;
 };
 
 #endif
