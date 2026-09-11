@@ -1,3 +1,4 @@
+#include <cctype>
 #include <iostream>
 #include <string>
 #include "DocumentLoader.h"
@@ -18,7 +19,11 @@ int main(int argc, char* argv[]) {
         index.addDocument(algorithms.getId(), tokenizer.tokenize(algorithms.getContent()));
         index.addDocument(search.getId(), tokenizer.tokenize(search.getContent()));
 
-        const std::string query = argc > 1 ? argv[1] : "search";
+        std::string query = argc > 1 ? argv[1] : "search";
+        for (char& character : query) {
+            character = static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+        }
+
         const auto& results = index.search(query);
 
         std::cout << "Query: " << query << '\n';
