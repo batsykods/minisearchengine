@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
 
         const auto& results = index.search(query);
 
+        std::cout << "Indexed terms: " << index.termCount() << '\n';
         std::cout << "Query: " << query << '\n';
         std::cout << "Matching document IDs:\n";
         for (int documentId : results) {
