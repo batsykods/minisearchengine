@@ -1,9 +1,10 @@
 #include <iostream>
+#include <string>
 #include "DocumentLoader.h"
 #include "InvertedIndex.h"
 #include "Tokenizer.h"
 
-int main() {
+int main(int argc, char* argv[]) {
     try {
         DocumentLoader loader;
         Tokenizer tokenizer;
@@ -17,7 +18,7 @@ int main() {
         index.addDocument(algorithms.getId(), tokenizer.tokenize(algorithms.getContent()));
         index.addDocument(search.getId(), tokenizer.tokenize(search.getContent()));
 
-        const std::string query = "search";
+        const std::string query = argc > 1 ? argv[1] : "search";
         const auto& results = index.search(query);
 
         std::cout << "Query: " << query << '\n';
