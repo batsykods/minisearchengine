@@ -2,6 +2,10 @@
 
 void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& tokens) {
     for (const std::string& token : tokens) {
+        if (token.empty()) {
+            continue;
+        }
+
         auto& postings = index[token];
 
         if (postings.empty() || postings.back() != documentId) {
