@@ -15,3 +15,8 @@ add_executable(search_engine
 )
 
 target_include_directories(search_engine PRIVATE include)
+
+target_compile_options(search_engine PRIVATE
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+)
