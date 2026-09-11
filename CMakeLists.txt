@@ -30,4 +30,12 @@ add_executable(tokenizer_smoke
 
 target_include_directories(tokenizer_smoke PRIVATE include)
 
+add_executable(tokenizer_edge_cases
+    tests/tokenizer_edge_cases.cpp
+    src/Tokenizer.cpp
+)
+
+target_include_directories(tokenizer_edge_cases PRIVATE include)
+
 add_test(NAME tokenizer_smoke COMMAND tokenizer_smoke)
+add_test(NAME tokenizer_edge_cases COMMAND tokenizer_edge_cases)
