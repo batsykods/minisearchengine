@@ -28,3 +28,7 @@ const std::vector<int>& InvertedIndex::search(const std::string& term) const {
 bool InvertedIndex::contains(const std::string& term) const {
     return index.find(term) != index.end();
 }
+
+std::size_t InvertedIndex::termCount() const {
+    return index.size();
+}
