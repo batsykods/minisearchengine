@@ -4,6 +4,7 @@
 std::vector<std::string> Tokenizer::tokenize(const std::string& text) const {
     std::vector<std::string> tokens;
     std::string current;
+    tokens.reserve(text.size() / 5 + 1);
 
     for (char character : text) {
         if (std::isalnum(static_cast<unsigned char>(character))) {
