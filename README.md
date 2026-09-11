@@ -11,6 +11,7 @@ The project uses CMake and requires C++17 or newer.
 ```bash
 cmake -S . -B build
 cmake --build build
+ctest --test-dir build --output-on-failure
 ./build/search_engine
 ```
 
@@ -82,6 +83,8 @@ The first version operates on local `.txt` documents.
 - Tokenizer normalizes text to lowercase terms
 - Inverted index stores document postings
 - Command-line queries are normalized before lookup
+- CMake build and CTest test flow configured
+- Tokenizer and inverted-index edge cases covered by executable tests
 
 ## Planned Features
 
@@ -278,6 +281,7 @@ Currently under development.
 - Text normalization
 - Basic inverted index
 - Basic keyword search
+- Automated CTest smoke and edge-case coverage
 
 ### In Progress
 
