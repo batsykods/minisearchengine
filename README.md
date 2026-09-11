@@ -4,6 +4,25 @@ A search engine built from scratch in C++ to understand and implement the core c
 
 The project will begin as a basic local search engine and progressively evolve into an AI-powered intelligent search and knowledge platform.
 
+## Build and Run
+
+The project uses CMake and requires C++17 or newer.
+
+```bash
+cmake -S . -B build
+cmake --build build
+./build/search_engine
+```
+
+Pass a term to search for it directly:
+
+```bash
+./build/search_engine search
+./build/search_engine algorithms
+```
+
+On Windows with a multi-config generator, run the executable from the generated configuration directory, for example `build/Debug/search_engine.exe`.
+
 ## Project Vision
 
 ```text
@@ -58,8 +77,11 @@ The first version operates on local `.txt` documents.
 - `Document` component implemented
 - `DocumentLoader` interface implemented
 - File-based document loading implemented
-- Sample document added
-- CLI updated to load a real document
+- Sample documents added
+- CLI loads real documents
+- Tokenizer normalizes text to lowercase terms
+- Inverted index stores document postings
+- Command-line queries are normalized before lookup
 
 ## Planned Features
 
@@ -252,6 +274,10 @@ Currently under development.
 - Project specification defined
 - Document representation
 - File loading
+- Tokenization
+- Text normalization
+- Basic inverted index
+- Basic keyword search
 
 ### In Progress
 
@@ -259,11 +285,10 @@ Currently under development.
 
 ### Next
 
-- Tokenizer
-- Text normalization
-- Inverted index
 - Query processing
-- Basic search
+- Better indexing coverage
+- Search result scoring
+- Unit tests
 
 ## License
 
