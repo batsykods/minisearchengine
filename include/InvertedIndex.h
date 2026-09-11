@@ -1,6 +1,7 @@
 #ifndef INVERTED_INDEX_H
 #define INVERTED_INDEX_H
 
+#include <cstddef>
 #include <string>
 #include <unordered_map>
 #include <vector>
