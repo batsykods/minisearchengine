@@ -27,15 +27,48 @@ add_executable(tokenizer_smoke
     tests/tokenizer_smoke.cpp
     src/Tokenizer.cpp
 )
-
 target_include_directories(tokenizer_smoke PRIVATE include)
 
 add_executable(tokenizer_edge_cases
     tests/tokenizer_edge_cases.cpp
     src/Tokenizer.cpp
 )
-
 target_include_directories(tokenizer_edge_cases PRIVATE include)
+
+add_executable(tokenizer_numbers
+    tests/tokenizer_numbers.cpp
+    src/Tokenizer.cpp
+)
+target_include_directories(tokenizer_numbers PRIVATE include)
+
+add_executable(inverted_index_smoke
+    tests/inverted_index_smoke.cpp
+    src/InvertedIndex.cpp
+)
+target_include_directories(inverted_index_smoke PRIVATE include)
+
+add_executable(inverted_index_duplicate_terms
+    tests/inverted_index_duplicate_terms.cpp
+    src/InvertedIndex.cpp
+)
+target_include_directories(inverted_index_duplicate_terms PRIVATE include)
+
+add_executable(inverted_index_empty_tokens
+    tests/inverted_index_empty_tokens.cpp
+    src/InvertedIndex.cpp
+)
+target_include_directories(inverted_index_empty_tokens PRIVATE include)
+
+add_executable(document_smoke
+    tests/document_smoke.cpp
+    src/Document.cpp
+)
+target_include_directories(document_smoke PRIVATE include)
 
 add_test(NAME tokenizer_smoke COMMAND tokenizer_smoke)
 add_test(NAME tokenizer_edge_cases COMMAND tokenizer_edge_cases)
+add_test(NAME tokenizer_numbers COMMAND tokenizer_numbers)
+add_test(NAME inverted_index_smoke COMMAND inverted_index_smoke)
+add_test(NAME inverted_index_duplicate_terms COMMAND inverted_index_duplicate_terms)
+add_test(NAME inverted_index_empty_tokens COMMAND inverted_index_empty_tokens)
+add_test(NAME document_smoke COMMAND document_smoke)
