@@ -29,6 +29,8 @@ add_executable(tokenizer_edge_cases tests/tokenizer_edge_cases.cpp src/Tokenizer
 target_include_directories(tokenizer_edge_cases PRIVATE include)
 add_executable(tokenizer_numbers tests/tokenizer_numbers.cpp src/Tokenizer.cpp)
 target_include_directories(tokenizer_numbers PRIVATE include)
+add_executable(tokenizer_mixed_punctuation tests/tokenizer_mixed_punctuation.cpp src/Tokenizer.cpp)
+target_include_directories(tokenizer_mixed_punctuation PRIVATE include)
 
 add_executable(inverted_index_smoke tests/inverted_index_smoke.cpp src/InvertedIndex.cpp)
 target_include_directories(inverted_index_smoke PRIVATE include)
@@ -57,6 +59,7 @@ target_compile_options(search_pipeline_smoke PRIVATE
 add_test(NAME tokenizer_smoke COMMAND tokenizer_smoke)
 add_test(NAME tokenizer_edge_cases COMMAND tokenizer_edge_cases)
 add_test(NAME tokenizer_numbers COMMAND tokenizer_numbers)
+add_test(NAME tokenizer_mixed_punctuation COMMAND tokenizer_mixed_punctuation)
 add_test(NAME inverted_index_smoke COMMAND inverted_index_smoke)
 add_test(NAME inverted_index_duplicate_terms COMMAND inverted_index_duplicate_terms)
 add_test(NAME inverted_index_empty_tokens COMMAND inverted_index_empty_tokens)
