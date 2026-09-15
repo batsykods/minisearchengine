@@ -1,6 +1,8 @@
 #include "InvertedIndex.h"
 
 void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& tokens) {
+    documentIds.insert(documentId);
+
     for (const std::string& token : tokens) {
         if (token.empty()) {
             continue;
@@ -31,4 +33,8 @@ bool InvertedIndex::contains(const std::string& term) const {
 
 std::size_t InvertedIndex::termCount() const {
     return index.size();
+}
+
+std::size_t InvertedIndex::documentCount() const {
+    return documentIds.size();
 }
