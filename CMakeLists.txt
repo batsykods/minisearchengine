@@ -58,8 +58,6 @@ target_compile_options(search_pipeline_smoke PRIVATE $<$<CXX_COMPILER_ID:GNU,Cla
 add_executable(query_processor_smoke tests/query_processor_smoke.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
 target_include_directories(query_processor_smoke PRIVATE include)
 
-auto_add_test(tokenizer_smoke)
-
 add_test(NAME tokenizer_smoke COMMAND tokenizer_smoke)
 add_test(NAME tokenizer_edge_cases COMMAND tokenizer_edge_cases)
 add_test(NAME tokenizer_numbers COMMAND tokenizer_numbers)
