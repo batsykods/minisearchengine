@@ -4,9 +4,18 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-add_executable(search_engine src/main.cpp src/Document.cpp src/DocumentLoader.cpp src/Tokenizer.cpp src/InvertedIndex.cpp)
+
+add_executable(search_engine
+    src/main.cpp
+    src/Document.cpp
+    src/DocumentLoader.cpp
+    src/Tokenizer.cpp
+    src/InvertedIndex.cpp
+    src/QueryProcessor.cpp
+)
 target_include_directories(search_engine PRIVATE include)
 target_compile_options(search_engine PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
+
 add_executable(tokenizer_smoke tests/tokenizer_smoke.cpp src/Tokenizer.cpp)
 target_include_directories(tokenizer_smoke PRIVATE include)
 add_executable(tokenizer_edge_cases tests/tokenizer_edge_cases.cpp src/Tokenizer.cpp)
@@ -41,9 +50,21 @@ add_executable(document_getters tests/document_getters.cpp src/Document.cpp)
 target_include_directories(document_getters PRIVATE include)
 add_executable(document_loader_failure tests/document_loader_failure.cpp src/DocumentLoader.cpp src/Document.cpp)
 target_include_directories(document_loader_failure PRIVATE include)
-add_executable(search_pipeline_smoke tests/search_pipeline_smoke.cpp src/Document.cpp src/DocumentLoader.cpp src/Tokenizer.cpp src/InvertedIndex.cpp)
+
+add_executable(search_pipeline_smoke
+    tests/search_pipeline_smoke.cpp
+    src/Document.cpp
+    src/DocumentLoader.cpp
+    src/Tokenizer.cpp
+    src/InvertedIndex.cpp
+    src/QueryProcessor.cpp
+)
 target_include_directories(search_pipeline_smoke PRIVATE include)
 target_compile_options(search_pipeline_smoke PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
+
+add_executable(query_processor_smoke tests/query_processor_smoke.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
+target_include_directories(query_processor_smoke PRIVATE include)
+
 add_test(NAME tokenizer_smoke COMMAND tokenizer_smoke)
 add_test(NAME tokenizer_edge_cases COMMAND tokenizer_edge_cases)
 add_test(NAME tokenizer_numbers COMMAND tokenizer_numbers)
@@ -62,3 +83,4 @@ add_test(NAME document_smoke COMMAND document_smoke)
 add_test(NAME document_getters COMMAND document_getters)
 add_test(NAME document_loader_failure COMMAND document_loader_failure)
 add_test(NAME search_pipeline_smoke COMMAND search_pipeline_smoke)
+add_test(NAME query_processor_smoke COMMAND query_processor_smoke)
