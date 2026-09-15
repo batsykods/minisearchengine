@@ -18,6 +18,7 @@ public:
     bool contains(const std::string& term) const;
     std::size_t termCount() const;
     std::size_t documentCount() const;
+    std::size_t documentFrequency(const std::string& term) const;
 };
 
 #endif
