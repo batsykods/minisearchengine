@@ -38,3 +38,8 @@ std::size_t InvertedIndex::termCount() const {
 std::size_t InvertedIndex::documentCount() const {
     return documentIds.size();
 }
+
+std::size_t InvertedIndex::documentFrequency(const std::string& term) const {
+    const auto iterator = index.find(term);
+    return iterator == index.end() ? 0 : iterator->second.size();
+}
