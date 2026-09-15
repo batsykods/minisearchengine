@@ -44,26 +44,21 @@ add_executable(inverted_index_zero_id tests/inverted_index_zero_id.cpp src/Inver
 target_include_directories(inverted_index_zero_id PRIVATE include)
 add_executable(inverted_index_empty_document tests/inverted_index_empty_document.cpp src/InvertedIndex.cpp)
 target_include_directories(inverted_index_empty_document PRIVATE include)
+add_executable(inverted_index_document_count tests/inverted_index_document_count.cpp src/InvertedIndex.cpp)
+target_include_directories(inverted_index_document_count PRIVATE include)
 add_executable(document_smoke tests/document_smoke.cpp src/Document.cpp)
 target_include_directories(document_smoke PRIVATE include)
 add_executable(document_getters tests/document_getters.cpp src/Document.cpp)
 target_include_directories(document_getters PRIVATE include)
 add_executable(document_loader_failure tests/document_loader_failure.cpp src/DocumentLoader.cpp src/Document.cpp)
 target_include_directories(document_loader_failure PRIVATE include)
-
-add_executable(search_pipeline_smoke
-    tests/search_pipeline_smoke.cpp
-    src/Document.cpp
-    src/DocumentLoader.cpp
-    src/Tokenizer.cpp
-    src/InvertedIndex.cpp
-    src/QueryProcessor.cpp
-)
+add_executable(search_pipeline_smoke tests/search_pipeline_smoke.cpp src/Document.cpp src/DocumentLoader.cpp src/Tokenizer.cpp src/InvertedIndex.cpp src/QueryProcessor.cpp)
 target_include_directories(search_pipeline_smoke PRIVATE include)
 target_compile_options(search_pipeline_smoke PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
-
 add_executable(query_processor_smoke tests/query_processor_smoke.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
 target_include_directories(query_processor_smoke PRIVATE include)
+
+auto_add_test(tokenizer_smoke)
 
 add_test(NAME tokenizer_smoke COMMAND tokenizer_smoke)
 add_test(NAME tokenizer_edge_cases COMMAND tokenizer_edge_cases)
@@ -79,6 +74,7 @@ add_test(NAME inverted_index_multiple_documents COMMAND inverted_index_multiple_
 add_test(NAME inverted_index_missing_term COMMAND inverted_index_missing_term)
 add_test(NAME inverted_index_zero_id COMMAND inverted_index_zero_id)
 add_test(NAME inverted_index_empty_document COMMAND inverted_index_empty_document)
+add_test(NAME inverted_index_document_count COMMAND inverted_index_document_count)
 add_test(NAME document_smoke COMMAND document_smoke)
 add_test(NAME document_getters COMMAND document_getters)
 add_test(NAME document_loader_failure COMMAND document_loader_failure)
