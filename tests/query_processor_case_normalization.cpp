@@ -3,7 +3,8 @@
 
 int main() {
     InvertedIndex index;
+    index.addDocument(1, {"search"});
     QueryProcessor processor;
-    const auto result = processor.search(index, "CPP");
-    assert(result.empty());
+    const auto result = processor.search(index, "SEARCH");
+    assert((result == std::vector<int>{1}));
 }
