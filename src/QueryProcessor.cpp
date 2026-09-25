@@ -29,6 +29,8 @@ std::vector<std::string> QueryProcessor::split(const std::string& query) {
         }
     }
 
+    std::sort(terms.begin(), terms.end());
+    terms.erase(std::unique(terms.begin(), terms.end()), terms.end());
     return terms;
 }
 
@@ -50,5 +52,6 @@ std::vector<int> QueryProcessor::search(const InvertedIndex& index, const std::s
         }
     }
 
+    std::sort(results.begin(), results.end());
     return results;
 }
