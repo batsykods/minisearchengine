@@ -1,5 +1,7 @@
 #include "InvertedIndex.h"
 
+#include <algorithm>
+
 void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& tokens) {
     documentIds.insert(documentId);
 
@@ -9,22 +11,19 @@ void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& 
         }
 
         auto& postings = index[token];
+        auto& termFrequencies = frequencies[token];
+        ++termFrequencies[documentId];
 
-        if (postings.empty() || postings.back() != documentId) {
-            postings.push_back(documentId);
+        if (!std::binary_search(postings.begin(), postings.end(), documentId)) {
+            postings.insert(std::lower_bound(postings.begin(), postings.end(), documentId), documentId);
         }
     }
 }
 
 const std::vector<int>& InvertedIndex::search(const std::string& term) const {
     static const std::vector<int> empty;
-
     const auto iterator = index.find(term);
-    if (iterator == index.end()) {
-        return empty;
-    }
-
-    return iterator->second;
+    return iterator == index.end() ? empty : iterator->second;
 }
 
 bool InvertedIndex::contains(const std::string& term) const {
@@ -42,4 +41,13 @@ std::size_t InvertedIndex::documentCount() const {
 std::size_t InvertedIndex::documentFrequency(const std::string& term) const {
     const auto iterator = index.find(term);
     return iterator == index.end() ? 0 : iterator->second.size();
+}
+
+std::size_t InvertedIndex::termFrequency(const std::string& term, int documentId) const {
+    const auto termIterator = frequencies.find(term);
+    if (termIterator == frequencies.end()) {
+        return 0;
+    }
+    const auto documentIterator = termIterator->second.find(documentId);
+    return documentIterator == termIterator->second.end() ? 0 : documentIterator->second;
 }
