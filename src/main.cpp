@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "DocumentLoader.h"
 #include "InvertedIndex.h"
@@ -21,7 +22,16 @@ int main(int argc, char* argv[]) {
         index.addDocument(algorithms.getId(), tokenizer.tokenize(algorithms.getContent()));
         index.addDocument(search.getId(), tokenizer.tokenize(search.getContent()));
 
-        const std::string query = argc > 1 ? argv[1] : "search";
+        std::string query = "search";
+        if (argc > 1) {
+            query.clear();
+            for (int argument = 1; argument < argc; ++argument) {
+                if (!query.empty()) {
+                    query += ' ';
+                }
+                query += argv[argument];
+            }
+        }
         const auto results = queryProcessor.search(index, query);
 
         std::cout << "Indexed terms: " << index.termCount() << '\n';
