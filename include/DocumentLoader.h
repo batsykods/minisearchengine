@@ -2,6 +2,7 @@
 #define DOCUMENT_LOADER_H
 
 #include <string>
+
 #include "Document.h"
 
 class DocumentLoader {
