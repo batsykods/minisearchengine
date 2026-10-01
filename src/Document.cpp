@@ -1,8 +1,7 @@
 #include "Document.h"
 
 Document::Document(int id, const std::string& path, const std::string& content)
-    : id(id), path(path), content(content) {
-}
+    : id(id), path(path), content(content) {}
 
 int Document::getId() const {
     return id;
