@@ -1,4 +1,5 @@
 #include "Tokenizer.h"
+
 #include <cctype>
 
 std::vector<std::string> Tokenizer::tokenize(const std::string& text) const {
@@ -18,6 +19,5 @@ std::vector<std::string> Tokenizer::tokenize(const std::string& text) const {
     if (!current.empty()) {
         tokens.push_back(current);
     }
-
     return tokens;
 }
