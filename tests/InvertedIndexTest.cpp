@@ -25,6 +25,7 @@ int main() {
     assert(index.termFrequency("missing", 1) == 0);
     assert(index.documentFrequency("missing") == 0);
     assert(index.contains("engine"));
+    assert(index.contains("cpp"));
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
