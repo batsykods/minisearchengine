@@ -21,4 +21,5 @@ int main() {
     assert(index.documentFrequency("search") == 2);
     assert(index.termFrequency("search", 1) == 1);
     assert(index.termFrequency("search", 2) == 1);
+    assert(index.termFrequency("cpp", 1) == 1);
 }
