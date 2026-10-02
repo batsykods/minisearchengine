@@ -23,6 +23,7 @@ int main() {
     assert(index.termFrequency("cpp", 1) == 1);
     assert(index.termFrequency("engine", 1) == 1);
     assert(index.termFrequency("missing", 1) == 0);
+    assert(index.documentFrequency("missing") == 0);
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
