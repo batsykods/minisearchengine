@@ -33,6 +33,7 @@ int main() {
     assert(index.documentFrequency("search") == 3);
     assert(index.search("search") == std::vector<int>({1, 2, 3}));
     index.addDocument(4, {});
+    assert(index.documentCount() == 4);
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
