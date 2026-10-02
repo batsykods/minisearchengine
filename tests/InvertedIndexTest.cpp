@@ -38,6 +38,7 @@ int main() {
     index.addDocument(5, {"alpha"});
     assert(index.termCount() == 4);
     assert(index.search("alpha") == std::vector<int>({5}));
+    index.addDocument(6, {"search"});
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
