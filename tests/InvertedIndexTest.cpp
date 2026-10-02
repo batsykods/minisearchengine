@@ -15,6 +15,7 @@ int main() {
     assert(index.search("cpp") == std::vector<int>({1}));
     assert(index.search("missing").empty());
 
+    assert(index.termCount() == 3);
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
