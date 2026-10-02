@@ -42,6 +42,7 @@ int main() {
     assert(index.search("search") == std::vector<int>({1, 2, 3, 6}));
     index.addDocument(-1, {"negative"});
     assert(index.search("negative") == std::vector<int>({-1}));
+    index.addDocument(0, {"zero"});
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
