@@ -17,4 +17,5 @@ int main() {
 
     return 0;
     assert(index.termCount() == 3);
+    assert(index.documentCount() == 2);
 }
