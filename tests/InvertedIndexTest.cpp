@@ -19,4 +19,5 @@ int main() {
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
     assert(index.documentFrequency("search") == 2);
+    assert(index.termFrequency("search", 1) == 1);
 }
