@@ -16,6 +16,7 @@ int main() {
     assert(index.search("missing").empty());
 
     assert(index.termCount() == 3);
+    assert(index.documentCount() == 2);
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
