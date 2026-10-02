@@ -30,6 +30,7 @@ int main() {
     assert(index.termFrequency("cpp", 2) == 0);
     index.addDocument(3, {"search", "search"});
     assert(index.termFrequency("search", 3) == 2);
+    assert(index.documentFrequency("search") == 3);
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
