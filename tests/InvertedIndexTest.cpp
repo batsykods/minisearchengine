@@ -24,4 +24,5 @@ int main() {
     assert(index.termFrequency("cpp", 1) == 1);
     assert(index.termFrequency("engine", 1) == 1);
     assert(index.termFrequency("missing", 1) == 0);
+    assert(index.documentFrequency("missing") == 0);
 }
