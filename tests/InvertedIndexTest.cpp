@@ -26,6 +26,7 @@ int main() {
     assert(index.documentFrequency("missing") == 0);
     assert(index.contains("engine"));
     assert(index.contains("cpp"));
+    assert(index.search("engine") == std::vector<int>({1, 2}));
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
