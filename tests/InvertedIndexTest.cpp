@@ -28,6 +28,7 @@ int main() {
     assert(index.contains("cpp"));
     assert(index.search("engine") == std::vector<int>({1, 2}));
     assert(index.termFrequency("cpp", 2) == 0);
+    index.addDocument(3, {"search", "search"});
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
