@@ -40,6 +40,7 @@ int main() {
     assert(index.search("alpha") == std::vector<int>({5}));
     index.addDocument(6, {"search"});
     assert(index.search("search") == std::vector<int>({1, 2, 3, 6}));
+    index.addDocument(-1, {"negative"});
     return 0;
     assert(index.termCount() == 3);
     assert(index.documentCount() == 2);
