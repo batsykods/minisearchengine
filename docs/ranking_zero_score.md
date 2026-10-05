@@ -1,0 +1,1 @@
+Documents with no positive relevance score should not be promoted into ranked results.
