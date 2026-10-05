@@ -1,0 +1,1 @@
+Query token separation should remain whitespace-based until explicit operator syntax is implemented.
