@@ -1,0 +1,1 @@
+Whitespace variations must not change normalized query semantics.
