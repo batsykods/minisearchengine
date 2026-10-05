@@ -1,0 +1,1 @@
+Document identifiers should be serialized with a fixed-width representation matching the index contract.
