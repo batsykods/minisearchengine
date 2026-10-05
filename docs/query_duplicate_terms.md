@@ -1,0 +1,1 @@
+Repeated query terms must collapse before candidate intersection and future scoring.
