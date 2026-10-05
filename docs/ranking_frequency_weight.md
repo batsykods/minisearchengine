@@ -1,0 +1,1 @@
+Term frequency weighting must be explicitly defined before ranking implementation begins.
