@@ -1,0 +1,1 @@
+Malformed or empty command-line queries must follow the documented query contract without crashing the process.
