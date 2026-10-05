@@ -1,0 +1,1 @@
+Reordering AND query terms must produce the same result set.
