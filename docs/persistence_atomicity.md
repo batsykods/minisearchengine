@@ -1,0 +1,1 @@
+Index persistence should avoid leaving a partially written file visible after a failed save.
