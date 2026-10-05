@@ -1,0 +1,1 @@
+Searching an index must not mutate its postings, frequencies, or document identifier set.
