@@ -1,0 +1,1 @@
+Memory-related changes should be evaluated against index size and corpus growth before release.
