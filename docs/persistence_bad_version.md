@@ -1,0 +1,1 @@
+Unsupported persistence versions must produce a controlled load failure.
