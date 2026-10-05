@@ -1,0 +1,1 @@
+Normalization belongs at the query processor boundary so index lookup receives canonical terms.
