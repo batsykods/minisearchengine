@@ -1,0 +1,1 @@
+Empty tokenizer input produces no tokens and does not create artificial vocabulary entries.
