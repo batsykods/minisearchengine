@@ -1,0 +1,1 @@
+Release checklist covers build, unit tests, integration tests, persistence, ranking, CLI behavior, and benchmark review.
