@@ -1,0 +1,1 @@
+The command-line interface should document indexing, searching, and future persistence operations independently.
