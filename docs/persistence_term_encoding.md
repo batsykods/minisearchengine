@@ -1,0 +1,1 @@
+Persistence term encoding should use an explicit length and byte sequence so arbitrary supported terms can be reconstructed safely.
