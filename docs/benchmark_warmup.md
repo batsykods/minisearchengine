@@ -1,0 +1,1 @@
+Benchmark runs should separate warmup activity from measured iterations to reduce startup noise.
