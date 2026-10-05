@@ -1,0 +1,1 @@
+A future persistence format should protect serialized payloads with integrity metadata.
