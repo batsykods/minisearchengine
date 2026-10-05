@@ -1,0 +1,1 @@
+I/O and malformed-input failures should return controlled errors without corrupting in-memory state.
