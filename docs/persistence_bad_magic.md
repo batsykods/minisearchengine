@@ -1,0 +1,1 @@
+Invalid persistence magic bytes must be rejected immediately.
