@@ -1,0 +1,1 @@
+Serialized record counts must be validated before allocation or reconstruction.
