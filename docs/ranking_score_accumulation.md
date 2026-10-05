@@ -1,0 +1,1 @@
+Multi-term scores should accumulate contributions in a deterministic query-term order.
