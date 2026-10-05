@@ -1,0 +1,1 @@
+Repeated ranked searches over an unchanged index should return identical ordering and scores.
