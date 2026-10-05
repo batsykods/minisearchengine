@@ -1,0 +1,1 @@
+Ranking should operate only on documents returned by the query candidate stage.
