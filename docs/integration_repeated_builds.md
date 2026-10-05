@@ -1,0 +1,1 @@
+Repeated index builds over the same corpus should produce equivalent search behavior.
