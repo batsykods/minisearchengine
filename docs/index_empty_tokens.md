@@ -1,0 +1,1 @@
+Empty tokens must never create vocabulary entries or posting records.
