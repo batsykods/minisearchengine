@@ -1,0 +1,1 @@
+CLI failures should map to documented non-zero exit statuses so scripts can detect errors reliably.
