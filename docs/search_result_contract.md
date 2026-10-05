@@ -1,0 +1,1 @@
+Search results are document identifiers ordered deterministically under the current AND semantics.
