@@ -1,0 +1,1 @@
+Term frequencies should be serialized explicitly and reconstructed without narrowing conversion.
