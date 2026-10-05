@@ -1,0 +1,1 @@
+Term count represents the number of distinct indexed vocabulary terms.
