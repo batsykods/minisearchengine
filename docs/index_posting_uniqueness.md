@@ -1,0 +1,1 @@
+Each term posting contains at most one occurrence of a document identifier.
