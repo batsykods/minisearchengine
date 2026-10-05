@@ -1,0 +1,1 @@
+Saving and loading an empty index must be a supported persistence case.
