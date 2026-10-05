@@ -1,0 +1,1 @@
+Term frequencies for one document must not affect another document sharing the same term.
