@@ -1,0 +1,1 @@
+Posting lists remain sorted by document identifier after out-of-order document insertion.
