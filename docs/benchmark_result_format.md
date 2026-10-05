@@ -1,0 +1,1 @@
+Benchmark results should use a consistent format containing workload, corpus size, latency, and throughput where applicable.
