@@ -1,0 +1,1 @@
+Tokenizer output follows the established normalization contract used by indexing and search.
