@@ -1,0 +1,1 @@
+Existing empty files are valid documents but contribute no vocabulary terms.
