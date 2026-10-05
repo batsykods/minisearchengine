@@ -1,0 +1,1 @@
+Missing document paths must produce controlled loading failure rather than an empty successful document.
