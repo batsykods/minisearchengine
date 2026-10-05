@@ -1,0 +1,1 @@
+Case variations must resolve to the same normalized search terms.
