@@ -1,0 +1,1 @@
+Truncated persistence files must fail before exposing incomplete index state.
