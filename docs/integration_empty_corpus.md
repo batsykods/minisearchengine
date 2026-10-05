@@ -1,0 +1,1 @@
+An empty corpus should build successfully and return empty results for valid queries.
