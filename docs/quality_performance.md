@@ -1,0 +1,1 @@
+Performance improvements should preserve correctness and pass the existing functional test suite.
