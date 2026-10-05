@@ -1,0 +1,1 @@
+Term frequencies must survive a save and load roundtrip without loss.
