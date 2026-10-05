@@ -1,0 +1,1 @@
+Repeated searches must not accumulate state between executions.
