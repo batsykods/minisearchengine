@@ -1,0 +1,1 @@
+Persistence reads must reconstruct terms and postings without relying on unordered container iteration.
