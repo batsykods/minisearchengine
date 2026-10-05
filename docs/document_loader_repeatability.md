@@ -1,0 +1,1 @@
+Loading the same file repeatedly should produce equivalent document content.
