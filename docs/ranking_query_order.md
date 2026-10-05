@@ -1,0 +1,1 @@
+Reordering normalized AND query terms must not alter ranked result semantics.
