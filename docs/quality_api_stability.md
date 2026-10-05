@@ -1,0 +1,1 @@
+Public index and query APIs should remain stable while internal persistence and ranking implementations evolve.
