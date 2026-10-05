@@ -1,0 +1,1 @@
+Punctuation around terms must not create separate normalized terms under the current tokenizer rules.
