@@ -1,0 +1,1 @@
+Index mutation semantics should distinguish adding a new document from re-adding an existing document.
