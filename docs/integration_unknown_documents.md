@@ -1,0 +1,1 @@
+Documents containing no matching terms must not appear in AND search results.
