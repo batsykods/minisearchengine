@@ -1,0 +1,1 @@
+End-to-end searches should remain case-insensitive through tokenization, indexing, and query processing.
