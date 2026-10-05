@@ -1,0 +1,1 @@
+Benchmarks should compare small, medium, and larger corpus sizes to expose scaling behavior.
