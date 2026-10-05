@@ -1,0 +1,1 @@
+Multi-term ranking should combine per-term relevance without depending on query token order.
