@@ -1,0 +1,1 @@
+Unknown document or term frequency lookup returns zero without modifying index state.
