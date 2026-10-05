@@ -1,0 +1,1 @@
+Repeated document identifiers require an explicit update policy so postings and frequencies remain predictable.
