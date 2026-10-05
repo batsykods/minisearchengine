@@ -1,0 +1,1 @@
+Sorted postings enable deterministic set intersection independent of input document insertion order.
