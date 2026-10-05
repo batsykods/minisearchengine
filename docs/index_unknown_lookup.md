@@ -1,0 +1,1 @@
+Unknown term lookup returns an empty posting view and zero document frequency.
