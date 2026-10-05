@@ -1,0 +1,1 @@
+Single-term ranking should order documents by the selected relevance score and use deterministic ties.
