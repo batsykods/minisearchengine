@@ -1,0 +1,1 @@
+Functional output must remain deterministic across repeated executions using the same input.
