@@ -1,0 +1,1 @@
+Integration tests must verify that document identifiers remain consistent from loading through search results.
