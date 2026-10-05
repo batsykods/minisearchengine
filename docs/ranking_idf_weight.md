@@ -1,0 +1,1 @@
+Document frequency can be converted into an IDF-style weight for selective terms.
