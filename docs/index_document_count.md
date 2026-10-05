@@ -1,0 +1,1 @@
+Document count represents the unique identifiers registered in the index.
