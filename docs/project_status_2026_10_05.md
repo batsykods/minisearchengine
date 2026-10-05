@@ -1,0 +1,1 @@
+Status for 2026-10-05: core indexing and query functionality are implemented; persistence, ranking, advanced query syntax, benchmark execution, and final release validation remain implementation work.
