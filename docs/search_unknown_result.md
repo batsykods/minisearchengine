@@ -1,0 +1,1 @@
+A valid query containing an unknown term produces no result under current AND semantics.
