@@ -1,0 +1,1 @@
+Ranking an empty candidate set should return an empty result without special-case errors.
