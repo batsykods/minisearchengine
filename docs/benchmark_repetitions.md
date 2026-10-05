@@ -1,0 +1,1 @@
+Latency benchmarks should use repeated measurements and report a stable aggregate rather than one sample.
