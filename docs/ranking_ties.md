@@ -1,0 +1,1 @@
+Equal relevance scores must use document identifiers as the deterministic secondary ordering.
