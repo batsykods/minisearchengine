@@ -1,0 +1,1 @@
+Ranking score comparisons should use a documented numeric precision policy and deterministic tie handling.
