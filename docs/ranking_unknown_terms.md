@@ -1,0 +1,1 @@
+Unknown query terms must not create synthetic ranking candidates.
