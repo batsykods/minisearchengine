@@ -1,0 +1,1 @@
+Ranked searches with different query casing should produce equivalent results.
