@@ -1,0 +1,1 @@
+Empty or normalization-to-empty queries return an empty result vector.
