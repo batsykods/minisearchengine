@@ -1,0 +1,1 @@
+Persistence must support the full document identifier range accepted by the index API.
