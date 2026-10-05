@@ -1,0 +1,1 @@
+Query benchmarks should include single-term, multi-term, unknown-term, and repeated-term workloads.
