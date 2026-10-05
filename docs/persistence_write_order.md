@@ -1,0 +1,1 @@
+Persistence writes must use a deterministic ordering for terms and document identifiers.
