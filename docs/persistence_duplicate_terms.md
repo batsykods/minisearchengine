@@ -1,0 +1,1 @@
+Persistence must preserve one posting entry per document even when source tokens repeat.
