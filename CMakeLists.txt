@@ -12,6 +12,10 @@ add_executable(search_engine
     src/Tokenizer.cpp
     src/InvertedIndex.cpp
     src/QueryProcessor.cpp
+    src/StopWords.cpp
+    src/Ranker.cpp
+    src/QueryTokenizer.cpp
+    src/SearchEngine.cpp
 )
 target_include_directories(search_engine PRIVATE include)
 target_compile_options(search_engine PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
