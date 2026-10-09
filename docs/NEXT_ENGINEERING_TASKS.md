@@ -1,0 +1,1 @@
+Prioritize CMake integration for new retrieval primitives, register tests, run the full test suite, then integrate Top-K and phrase matching into the public query path.
