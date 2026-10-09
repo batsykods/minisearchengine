@@ -1,0 +1,1 @@
+The foundation milestone is complete when indexing, query normalization, ranking, stable ordering, documented CLI behavior, and automated tests pass in a clean build.
