@@ -1,0 +1,1 @@
+Phrase matching checks for a contiguous token sequence. The primitive is independent of index storage; positional postings can optimize it in a later pass.
