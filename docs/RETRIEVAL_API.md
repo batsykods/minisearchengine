@@ -1,0 +1,1 @@
+Retrieval primitives expose ranking, top-K selection, contiguous phrase matching, and index statistics as separate C++ interfaces.
