@@ -1,0 +1,1 @@
+Top-K retrieval sorts ranked results by descending score and uses document ID as a stable tie-breaker. Limits of zero and limits larger than the result count are defined.
