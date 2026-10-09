@@ -16,6 +16,9 @@ add_executable(search_engine
     src/Ranker.cpp
     src/QueryTokenizer.cpp
     src/SearchEngine.cpp
+    src/TopK.cpp
+    src/PhraseMatcher.cpp
+    src/IndexStats.cpp
 )
 target_include_directories(search_engine PRIVATE include)
 target_compile_options(search_engine PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
@@ -668,3 +671,108 @@ add_test(NAME document_v5_newline COMMAND document_v5_newline)
 add_executable(document_v5_largeid tests/document_v5_largeid.cpp src/Document.cpp)
 target_include_directories(document_v5_largeid PRIVATE include)
 add_test(NAME document_v5_largeid COMMAND document_v5_largeid)
+
+
+add_executable(topk_empty tests/topk_empty.cpp src/TopK.cpp
+target_include_directories(topk_empty PRIVATE include)
+add_test(NAME topk_empty COMMAND topk_empty)
+
+
+add_executable(topk_limit tests/topk_limit.cpp src/TopK.cpp
+target_include_directories(topk_limit PRIVATE include)
+add_test(NAME topk_limit COMMAND topk_limit)
+
+
+add_executable(topk_zero tests/topk_zero.cpp src/TopK.cpp
+target_include_directories(topk_zero PRIVATE include)
+add_test(NAME topk_zero COMMAND topk_zero)
+
+
+add_executable(topk_large tests/topk_large.cpp src/TopK.cpp
+target_include_directories(topk_large PRIVATE include)
+add_test(NAME topk_large COMMAND topk_large)
+
+
+add_executable(topk_tie tests/topk_tie.cpp src/TopK.cpp
+target_include_directories(topk_tie PRIVATE include)
+add_test(NAME topk_tie COMMAND topk_tie)
+
+
+add_executable(topk_sorted tests/topk_sorted.cpp src/TopK.cpp
+target_include_directories(topk_sorted PRIVATE include)
+add_test(NAME topk_sorted COMMAND topk_sorted)
+
+
+add_executable(topk_one tests/topk_one.cpp src/TopK.cpp
+target_include_directories(topk_one PRIVATE include)
+add_test(NAME topk_one COMMAND topk_one)
+
+
+add_executable(phrase_match tests/phrase_match.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_match PRIVATE include)
+add_test(NAME phrase_match COMMAND phrase_match)
+
+
+add_executable(phrase_mismatch tests/phrase_mismatch.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_mismatch PRIVATE include)
+add_test(NAME phrase_mismatch COMMAND phrase_mismatch)
+
+
+add_executable(phrase_empty tests/phrase_empty.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_empty PRIVATE include)
+add_test(NAME phrase_empty COMMAND phrase_empty)
+
+
+add_executable(phrase_long tests/phrase_long.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_long PRIVATE include)
+add_test(NAME phrase_long COMMAND phrase_long)
+
+
+add_executable(phrase_at_start tests/phrase_at_start.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_at_start PRIVATE include)
+add_test(NAME phrase_at_start COMMAND phrase_at_start)
+
+
+add_executable(phrase_at_end tests/phrase_at_end.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_at_end PRIVATE include)
+add_test(NAME phrase_at_end COMMAND phrase_at_end)
+
+
+add_executable(phrase_single tests/phrase_single.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_single PRIVATE include)
+add_test(NAME phrase_single COMMAND phrase_single)
+
+
+add_executable(phrase_no_match tests/phrase_no_match.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_no_match PRIVATE include)
+add_test(NAME phrase_no_match COMMAND phrase_no_match)
+
+
+add_executable(phrase_repeated_tokens tests/phrase_repeated_tokens.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_repeated_tokens PRIVATE include)
+add_test(NAME phrase_repeated_tokens COMMAND phrase_repeated_tokens)
+
+
+add_executable(phrase_reversed tests/phrase_reversed.cpp src/PhraseMatcher.cpp
+target_include_directories(phrase_reversed PRIVATE include)
+add_test(NAME phrase_reversed COMMAND phrase_reversed)
+
+
+add_executable(index_stats tests/index_stats.cpp src/IndexStats.cpp
+target_include_directories(index_stats PRIVATE include)
+add_test(NAME index_stats COMMAND index_stats)
+
+
+add_executable(index_stats_empty tests/index_stats_empty.cpp src/IndexStats.cpp
+target_include_directories(index_stats_empty PRIVATE include)
+add_test(NAME index_stats_empty COMMAND index_stats_empty)
+
+
+add_executable(index_stats_documents tests/index_stats_documents.cpp src/IndexStats.cpp
+target_include_directories(index_stats_documents PRIVATE include)
+add_test(NAME index_stats_documents COMMAND index_stats_documents)
+
+
+add_executable(index_stats_duplicate_terms tests/index_stats_duplicate_terms.cpp src/IndexStats.cpp
+target_include_directories(index_stats_duplicate_terms PRIVATE include)
+add_test(NAME index_stats_duplicate_terms COMMAND index_stats_duplicate_terms)
