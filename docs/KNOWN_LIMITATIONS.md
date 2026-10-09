@@ -1,0 +1,1 @@
+The current retrieval components are not all integrated into the CLI. Stop-word removal is an available primitive, not yet an indexing default. Persistent indexes and performance benchmarks remain open work.
