@@ -1,0 +1,1 @@
+Release checklist: configure CMake, compile with C++17, run CTest, verify CLI behavior, inspect warnings, and validate query normalization and stable result ordering.
