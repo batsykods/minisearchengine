@@ -1,0 +1,1 @@
+Milestone work adds independent Top-K, phrase-matching, and index-statistics components with contract tests and design notes. Full milestone completion depends on build integration and CI validation.
