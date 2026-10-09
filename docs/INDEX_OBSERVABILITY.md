@@ -1,0 +1,1 @@
+IndexStats exposes document and unique-term counts without exposing mutable index internals.
