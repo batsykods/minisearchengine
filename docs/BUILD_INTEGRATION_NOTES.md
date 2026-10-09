@@ -1,0 +1,1 @@
+New source files must be added to the main CMake target and their contract tests registered with CTest before claiming integrated support.
