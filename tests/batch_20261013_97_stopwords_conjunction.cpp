@@ -1,0 +1,6 @@
+#include <cassert>
+#include "StopWords.h"
+int main() {
+    StopWords s; assert(s.contains("and"));
+    return 0;
+}
