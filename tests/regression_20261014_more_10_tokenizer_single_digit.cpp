@@ -1,0 +1,7 @@
+#include <cassert>
+#include <cstdio>
+#include <fstream>
+#include <string>
+#include <vector>
+#include "Tokenizer.h"
+int main(){ Tokenizer t; auto v=t.tokenize("7"); assert(v.size()==1 && v[0]=="7"); return 0; }
