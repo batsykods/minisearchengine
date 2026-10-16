@@ -19,6 +19,8 @@ add_executable(search_engine
     src/TopK.cpp
     src/PhraseMatcher.cpp
     src/IndexStats.cpp
+    src/AutocompleteIndex.cpp
+    src/SearchCache.cpp
 )
 target_include_directories(search_engine PRIVATE include)
 target_compile_options(search_engine PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
@@ -2065,3 +2067,126 @@ add_test(NAME regression_20261014_more_39_querytokenizer_preserves_repetition CO
 add_executable(regression_20261014_more_40_querytokenizer_normalizes_case tests/regression_20261014_more_40_querytokenizer_normalizes_case.cpp src/QueryTokenizer.cpp)
 target_include_directories(regression_20261014_more_40_querytokenizer_normalizes_case PRIVATE include)
 add_test(NAME regression_20261014_more_40_querytokenizer_normalizes_case COMMAND regression_20261014_more_40_querytokenizer_normalizes_case)
+
+
+# Autocomplete and bounded search-cache regression tests.
+
+add_executable(autocomplete_empty_index tests/autocomplete_empty_index.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_empty_index PRIVATE include)
+add_test(NAME autocomplete_empty_index COMMAND autocomplete_empty_index)
+
+add_executable(autocomplete_insert_single tests/autocomplete_insert_single.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_insert_single PRIVATE include)
+add_test(NAME autocomplete_insert_single COMMAND autocomplete_insert_single)
+
+add_executable(autocomplete_duplicate_insert tests/autocomplete_duplicate_insert.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_duplicate_insert PRIVATE include)
+add_test(NAME autocomplete_duplicate_insert COMMAND autocomplete_duplicate_insert)
+
+add_executable(autocomplete_empty_word tests/autocomplete_empty_word.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_empty_word PRIVATE include)
+add_test(NAME autocomplete_empty_word COMMAND autocomplete_empty_word)
+
+add_executable(autocomplete_missing_prefix tests/autocomplete_missing_prefix.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_missing_prefix PRIVATE include)
+add_test(NAME autocomplete_missing_prefix COMMAND autocomplete_missing_prefix)
+
+add_executable(autocomplete_prefix_exact_word tests/autocomplete_prefix_exact_word.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_prefix_exact_word PRIVATE include)
+add_test(NAME autocomplete_prefix_exact_word COMMAND autocomplete_prefix_exact_word)
+
+add_executable(autocomplete_limit_zero tests/autocomplete_limit_zero.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_limit_zero PRIVATE include)
+add_test(NAME autocomplete_limit_zero COMMAND autocomplete_limit_zero)
+
+add_executable(autocomplete_limit_truncates tests/autocomplete_limit_truncates.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_limit_truncates PRIVATE include)
+add_test(NAME autocomplete_limit_truncates COMMAND autocomplete_limit_truncates)
+
+add_executable(autocomplete_lexicographic_order tests/autocomplete_lexicographic_order.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_lexicographic_order PRIVATE include)
+add_test(NAME autocomplete_lexicographic_order COMMAND autocomplete_lexicographic_order)
+
+add_executable(autocomplete_unrelated_prefix tests/autocomplete_unrelated_prefix.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_unrelated_prefix PRIVATE include)
+add_test(NAME autocomplete_unrelated_prefix COMMAND autocomplete_unrelated_prefix)
+
+add_executable(autocomplete_empty_prefix tests/autocomplete_empty_prefix.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_empty_prefix PRIVATE include)
+add_test(NAME autocomplete_empty_prefix COMMAND autocomplete_empty_prefix)
+
+add_executable(autocomplete_shared_prefix tests/autocomplete_shared_prefix.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_shared_prefix PRIVATE include)
+add_test(NAME autocomplete_shared_prefix COMMAND autocomplete_shared_prefix)
+
+add_executable(autocomplete_case_sensitive tests/autocomplete_case_sensitive.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_case_sensitive PRIVATE include)
+add_test(NAME autocomplete_case_sensitive COMMAND autocomplete_case_sensitive)
+
+add_executable(autocomplete_size_after_many tests/autocomplete_size_after_many.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_size_after_many PRIVATE include)
+add_test(NAME autocomplete_size_after_many COMMAND autocomplete_size_after_many)
+
+add_executable(autocomplete_limit_larger_than_results tests/autocomplete_limit_larger_than_results.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_limit_larger_than_results PRIVATE include)
+add_test(NAME autocomplete_limit_larger_than_results COMMAND autocomplete_limit_larger_than_results)
+
+add_executable(autocomplete_long_word tests/autocomplete_long_word.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_long_word PRIVATE include)
+add_test(NAME autocomplete_long_word COMMAND autocomplete_long_word)
+
+add_executable(autocomplete_no_prefix_match tests/autocomplete_no_prefix_match.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_no_prefix_match PRIVATE include)
+add_test(NAME autocomplete_no_prefix_match COMMAND autocomplete_no_prefix_match)
+
+add_executable(autocomplete_insert_order_independent tests/autocomplete_insert_order_independent.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_insert_order_independent PRIVATE include)
+add_test(NAME autocomplete_insert_order_independent COMMAND autocomplete_insert_order_independent)
+
+add_executable(search_cache_empty tests/search_cache_empty.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_empty PRIVATE include)
+add_test(NAME search_cache_empty COMMAND search_cache_empty)
+
+add_executable(search_cache_round_trip tests/search_cache_round_trip.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_round_trip PRIVATE include)
+add_test(NAME search_cache_round_trip COMMAND search_cache_round_trip)
+
+add_executable(search_cache_miss_preserves_output tests/search_cache_miss_preserves_output.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_miss_preserves_output PRIVATE include)
+add_test(NAME search_cache_miss_preserves_output COMMAND search_cache_miss_preserves_output)
+
+add_executable(search_cache_capacity_zero tests/search_cache_capacity_zero.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_capacity_zero PRIVATE include)
+add_test(NAME search_cache_capacity_zero COMMAND search_cache_capacity_zero)
+
+add_executable(search_cache_evicts_lru tests/search_cache_evicts_lru.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_evicts_lru PRIVATE include)
+add_test(NAME search_cache_evicts_lru COMMAND search_cache_evicts_lru)
+
+add_executable(search_cache_update_existing tests/search_cache_update_existing.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_update_existing PRIVATE include)
+add_test(NAME search_cache_update_existing COMMAND search_cache_update_existing)
+
+add_executable(search_cache_empty_results tests/search_cache_empty_results.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_empty_results PRIVATE include)
+add_test(NAME search_cache_empty_results COMMAND search_cache_empty_results)
+
+add_executable(search_cache_clear tests/search_cache_clear.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_clear PRIVATE include)
+add_test(NAME search_cache_clear COMMAND search_cache_clear)
+
+add_executable(search_cache_capacity tests/search_cache_capacity.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_capacity PRIVATE include)
+add_test(NAME search_cache_capacity COMMAND search_cache_capacity)
+
+add_executable(search_cache_distinct_queries tests/search_cache_distinct_queries.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_distinct_queries PRIVATE include)
+add_test(NAME search_cache_distinct_queries COMMAND search_cache_distinct_queries)
+
+add_executable(search_cache_lru_refresh tests/search_cache_lru_refresh.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_lru_refresh PRIVATE include)
+add_test(NAME search_cache_lru_refresh COMMAND search_cache_lru_refresh)
+
+add_executable(search_cache_capacity_bound tests/search_cache_capacity_bound.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_capacity_bound PRIVATE include)
+add_test(NAME search_cache_capacity_bound COMMAND search_cache_capacity_bound)
