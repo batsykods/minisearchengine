@@ -12,6 +12,7 @@ private:
     std::unordered_map<std::string, std::vector<int>> index;
     std::unordered_map<std::string, std::unordered_map<int, std::size_t>> frequencies;
     std::unordered_set<int> documentIds;
+    std::unordered_map<int, std::size_t> documentLengths;
 
 public:
     void addDocument(int documentId, const std::vector<std::string>& tokens);
@@ -19,6 +20,9 @@ public:
     bool contains(const std::string& term) const;
     std::size_t termCount() const;
     std::size_t documentCount() const;
+    std::size_t documentLength(int documentId) const;
+    std::size_t totalTokenCount() const;
+    double averageDocumentLength() const;
     std::size_t documentFrequency(const std::string& term) const;
     std::size_t termFrequency(const std::string& term, int documentId) const;
 };
