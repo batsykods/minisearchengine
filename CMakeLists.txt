@@ -19,6 +19,8 @@ add_executable(search_engine
     src/TopK.cpp
     src/PhraseMatcher.cpp
     src/IndexStats.cpp
+    src/BM25Ranker.cpp
+    src/SnippetBuilder.cpp
     src/AutocompleteIndex.cpp
     src/SearchCache.cpp
 )
@@ -2190,3 +2192,170 @@ add_test(NAME search_cache_lru_refresh COMMAND search_cache_lru_refresh)
 add_executable(search_cache_capacity_bound tests/search_cache_capacity_bound.cpp src/SearchCache.cpp)
 target_include_directories(search_cache_capacity_bound PRIVATE include)
 add_test(NAME search_cache_capacity_bound COMMAND search_cache_capacity_bound)
+
+
+# BM25 ranking, index-length statistics, and snippet regression tests.
+
+add_executable(bm25_empty_index tests/bm25_empty_index.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_empty_index PRIVATE include)
+add_test(NAME bm25_empty_index COMMAND bm25_empty_index)
+
+add_executable(bm25_empty_query tests/bm25_empty_query.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_empty_query PRIVATE include)
+add_test(NAME bm25_empty_query COMMAND bm25_empty_query)
+
+add_executable(bm25_unknown_term tests/bm25_unknown_term.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_unknown_term PRIVATE include)
+add_test(NAME bm25_unknown_term COMMAND bm25_unknown_term)
+
+add_executable(bm25_known_term_returns_document tests/bm25_known_term_returns_document.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_known_term_returns_document PRIVATE include)
+add_test(NAME bm25_known_term_returns_document COMMAND bm25_known_term_returns_document)
+
+add_executable(bm25_scores_positive tests/bm25_scores_positive.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_scores_positive PRIVATE include)
+add_test(NAME bm25_scores_positive COMMAND bm25_scores_positive)
+
+add_executable(bm25_repeated_query_term_stable tests/bm25_repeated_query_term_stable.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_repeated_query_term_stable PRIVATE include)
+add_test(NAME bm25_repeated_query_term_stable COMMAND bm25_repeated_query_term_stable)
+
+add_executable(bm25_rare_term_idf tests/bm25_rare_term_idf.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_rare_term_idf PRIVATE include)
+add_test(NAME bm25_rare_term_idf COMMAND bm25_rare_term_idf)
+
+add_executable(bm25_frequency_influences_score tests/bm25_frequency_influences_score.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_frequency_influences_score PRIVATE include)
+add_test(NAME bm25_frequency_influences_score COMMAND bm25_frequency_influences_score)
+
+add_executable(bm25_invalid_negative_k1 tests/bm25_invalid_negative_k1.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_invalid_negative_k1 PRIVATE include)
+add_test(NAME bm25_invalid_negative_k1 COMMAND bm25_invalid_negative_k1)
+
+add_executable(bm25_invalid_negative_b tests/bm25_invalid_negative_b.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_invalid_negative_b PRIVATE include)
+add_test(NAME bm25_invalid_negative_b COMMAND bm25_invalid_negative_b)
+
+add_executable(bm25_invalid_b_above_one tests/bm25_invalid_b_above_one.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_invalid_b_above_one PRIVATE include)
+add_test(NAME bm25_invalid_b_above_one COMMAND bm25_invalid_b_above_one)
+
+add_executable(bm25_zero_k1 tests/bm25_zero_k1.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_zero_k1 PRIVATE include)
+add_test(NAME bm25_zero_k1 COMMAND bm25_zero_k1)
+
+add_executable(bm25_zero_b tests/bm25_zero_b.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_zero_b PRIVATE include)
+add_test(NAME bm25_zero_b COMMAND bm25_zero_b)
+
+add_executable(bm25_all_terms_unknown tests/bm25_all_terms_unknown.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_all_terms_unknown PRIVATE include)
+add_test(NAME bm25_all_terms_unknown COMMAND bm25_all_terms_unknown)
+
+add_executable(bm25_union_of_matching_terms tests/bm25_union_of_matching_terms.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_union_of_matching_terms PRIVATE include)
+add_test(NAME bm25_union_of_matching_terms COMMAND bm25_union_of_matching_terms)
+
+add_executable(bm25_no_duplicate_results tests/bm25_no_duplicate_results.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_no_duplicate_results PRIVATE include)
+add_test(NAME bm25_no_duplicate_results COMMAND bm25_no_duplicate_results)
+
+add_executable(bm25_tie_break_by_document_id tests/bm25_tie_break_by_document_id.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_tie_break_by_document_id PRIVATE include)
+add_test(NAME bm25_tie_break_by_document_id COMMAND bm25_tie_break_by_document_id)
+
+add_executable(bm25_duplicate_query_terms_do_not_double_score tests/bm25_duplicate_query_terms_do_not_double_score.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_duplicate_query_terms_do_not_double_score PRIVATE include)
+add_test(NAME bm25_duplicate_query_terms_do_not_double_score COMMAND bm25_duplicate_query_terms_do_not_double_score)
+
+add_executable(bm25_empty_document_not_returned tests/bm25_empty_document_not_returned.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_empty_document_not_returned PRIVATE include)
+add_test(NAME bm25_empty_document_not_returned COMMAND bm25_empty_document_not_returned)
+
+add_executable(bm25_handles_zero_average_length tests/bm25_handles_zero_average_length.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_handles_zero_average_length PRIVATE include)
+add_test(NAME bm25_handles_zero_average_length COMMAND bm25_handles_zero_average_length)
+
+add_executable(bm25_length_normalization tests/bm25_length_normalization.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_length_normalization PRIVATE include)
+add_test(NAME bm25_length_normalization COMMAND bm25_length_normalization)
+
+add_executable(bm25_matches_multiple_query_terms tests/bm25_matches_multiple_query_terms.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_matches_multiple_query_terms PRIVATE include)
+add_test(NAME bm25_matches_multiple_query_terms COMMAND bm25_matches_multiple_query_terms)
+
+add_executable(bm25_default_parameters tests/bm25_default_parameters.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_default_parameters PRIVATE include)
+add_test(NAME bm25_default_parameters COMMAND bm25_default_parameters)
+
+add_executable(bm25_deterministic_order tests/bm25_deterministic_order.cpp src/BM25Ranker.cpp)
+target_include_directories(bm25_deterministic_order PRIVATE include)
+add_test(NAME bm25_deterministic_order COMMAND bm25_deterministic_order)
+
+add_executable(index_length_empty_index tests/index_length_empty_index.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_empty_index PRIVATE include)
+add_test(NAME index_length_empty_index COMMAND index_length_empty_index)
+
+add_executable(index_length_one_document tests/index_length_one_document.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_one_document PRIVATE include)
+add_test(NAME index_length_one_document COMMAND index_length_one_document)
+
+add_executable(index_length_unknown_document tests/index_length_unknown_document.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_unknown_document PRIVATE include)
+add_test(NAME index_length_unknown_document COMMAND index_length_unknown_document)
+
+add_executable(index_length_ignores_empty_tokens tests/index_length_ignores_empty_tokens.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_ignores_empty_tokens PRIVATE include)
+add_test(NAME index_length_ignores_empty_tokens COMMAND index_length_ignores_empty_tokens)
+
+add_executable(index_length_multiple_documents tests/index_length_multiple_documents.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_multiple_documents PRIVATE include)
+add_test(NAME index_length_multiple_documents COMMAND index_length_multiple_documents)
+
+add_executable(index_length_empty_document tests/index_length_empty_document.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_empty_document PRIVATE include)
+add_test(NAME index_length_empty_document COMMAND index_length_empty_document)
+
+add_executable(index_length_duplicate_terms_counted tests/index_length_duplicate_terms_counted.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_duplicate_terms_counted PRIVATE include)
+add_test(NAME index_length_duplicate_terms_counted COMMAND index_length_duplicate_terms_counted)
+
+add_executable(index_length_repeated_add_accumulates tests/index_length_repeated_add_accumulates.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_repeated_add_accumulates PRIVATE include)
+add_test(NAME index_length_repeated_add_accumulates COMMAND index_length_repeated_add_accumulates)
+
+add_executable(index_length_total_after_repeated_add tests/index_length_total_after_repeated_add.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_total_after_repeated_add PRIVATE include)
+add_test(NAME index_length_total_after_repeated_add COMMAND index_length_total_after_repeated_add)
+
+add_executable(index_length_distinct_document_average tests/index_length_distinct_document_average.cpp src/InvertedIndex.cpp)
+target_include_directories(index_length_distinct_document_average PRIVATE include)
+add_test(NAME index_length_distinct_document_average COMMAND index_length_distinct_document_average)
+
+add_executable(snippet_empty_content tests/snippet_empty_content.cpp src/SnippetBuilder.cpp)
+target_include_directories(snippet_empty_content PRIVATE include)
+add_test(NAME snippet_empty_content COMMAND snippet_empty_content)
+
+add_executable(snippet_zero_limit tests/snippet_zero_limit.cpp src/SnippetBuilder.cpp)
+target_include_directories(snippet_zero_limit PRIVATE include)
+add_test(NAME snippet_zero_limit COMMAND snippet_zero_limit)
+
+add_executable(snippet_short_content_unchanged tests/snippet_short_content_unchanged.cpp src/SnippetBuilder.cpp)
+target_include_directories(snippet_short_content_unchanged PRIVATE include)
+add_test(NAME snippet_short_content_unchanged COMMAND snippet_short_content_unchanged)
+
+add_executable(snippet_respects_max_length tests/snippet_respects_max_length.cpp src/SnippetBuilder.cpp)
+target_include_directories(snippet_respects_max_length PRIVATE include)
+add_test(NAME snippet_respects_max_length COMMAND snippet_respects_max_length)
+
+add_executable(snippet_no_terms_returns_prefix tests/snippet_no_terms_returns_prefix.cpp src/SnippetBuilder.cpp)
+target_include_directories(snippet_no_terms_returns_prefix PRIVATE include)
+add_test(NAME snippet_no_terms_returns_prefix COMMAND snippet_no_terms_returns_prefix)
+
+add_executable(snippet_ignores_empty_terms tests/snippet_ignores_empty_terms.cpp src/SnippetBuilder.cpp)
+target_include_directories(snippet_ignores_empty_terms PRIVATE include)
+add_test(NAME snippet_ignores_empty_terms COMMAND snippet_ignores_empty_terms)
+
+add_executable(snippet_adds_ellipsis_for_middle tests/snippet_adds_ellipsis_for_middle.cpp src/SnippetBuilder.cpp)
+target_include_directories(snippet_adds_ellipsis_for_middle PRIVATE include)
+add_test(NAME snippet_adds_ellipsis_for_middle COMMAND snippet_adds_ellipsis_for_middle)
