@@ -6,6 +6,7 @@ void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& 
     documentIds.insert(documentId);
     for (const std::string& token : tokens) {
         if (token.empty()) continue;
+        ++documentLengths[documentId];
         auto& postings = index[token];
         auto& termFrequencies = frequencies[token];
         ++termFrequencies[documentId];
@@ -43,4 +44,23 @@ std::size_t InvertedIndex::termFrequency(const std::string& term, int documentId
     if (termIterator == frequencies.end()) return 0;
     const auto documentIterator = termIterator->second.find(documentId);
     return documentIterator == termIterator->second.end() ? 0 : documentIterator->second;
+}
+
+std::size_t InvertedIndex::documentLength(int documentId) const {
+    const auto found = documentLengths.find(documentId);
+    return found == documentLengths.end() ? 0 : found->second;
+}
+
+std::size_t InvertedIndex::totalTokenCount() const {
+    std::size_t total = 0;
+    for (const auto& [documentId, length] : documentLengths) {
+        (void)documentId;
+        total += length;
+    }
+    return total;
+}
+
+double InvertedIndex::averageDocumentLength() const {
+    if (documentIds.empty()) return 0.0;
+    return static_cast<double>(totalTokenCount()) / static_cast<double>(documentIds.size());
 }
