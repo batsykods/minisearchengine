@@ -2280,7 +2280,7 @@ add_executable(bm25_length_normalization tests/bm25_length_normalization.cpp src
 target_include_directories(bm25_length_normalization PRIVATE include)
 add_test(NAME bm25_length_normalization COMMAND bm25_length_normalization)
 
-add_executable(bm25_matches_multiple_query_terms tests/bm25_matches_multiple_query_terms.cpp src/BM25Ranker.cpp)
+add_executable(bm25_matches_multiple_query_terms tests/bm25_matches_multiple_query_terms.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_matches_multiple_query_terms PRIVATE include)
 add_test(NAME bm25_matches_multiple_query_terms COMMAND bm25_matches_multiple_query_terms)
 
