@@ -2276,7 +2276,7 @@ add_executable(bm25_handles_zero_average_length tests/bm25_handles_zero_average_
 target_include_directories(bm25_handles_zero_average_length PRIVATE include)
 add_test(NAME bm25_handles_zero_average_length COMMAND bm25_handles_zero_average_length)
 
-add_executable(bm25_length_normalization tests/bm25_length_normalization.cpp src/BM25Ranker.cpp)
+add_executable(bm25_length_normalization tests/bm25_length_normalization.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_length_normalization PRIVATE include)
 add_test(NAME bm25_length_normalization COMMAND bm25_length_normalization)
 
