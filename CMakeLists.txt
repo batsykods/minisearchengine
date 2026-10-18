@@ -2260,7 +2260,7 @@ add_executable(bm25_no_duplicate_results tests/bm25_no_duplicate_results.cpp src
 target_include_directories(bm25_no_duplicate_results PRIVATE include)
 add_test(NAME bm25_no_duplicate_results COMMAND bm25_no_duplicate_results)
 
-add_executable(bm25_tie_break_by_document_id tests/bm25_tie_break_by_document_id.cpp src/BM25Ranker.cpp)
+add_executable(bm25_tie_break_by_document_id tests/bm25_tie_break_by_document_id.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_tie_break_by_document_id PRIVATE include)
 add_test(NAME bm25_tie_break_by_document_id COMMAND bm25_tie_break_by_document_id)
 
