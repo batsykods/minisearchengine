@@ -2288,7 +2288,7 @@ add_executable(bm25_default_parameters tests/bm25_default_parameters.cpp src/BM2
 target_include_directories(bm25_default_parameters PRIVATE include)
 add_test(NAME bm25_default_parameters COMMAND bm25_default_parameters)
 
-add_executable(bm25_deterministic_order tests/bm25_deterministic_order.cpp src/BM25Ranker.cpp)
+add_executable(bm25_deterministic_order tests/bm25_deterministic_order.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_deterministic_order PRIVATE include)
 add_test(NAME bm25_deterministic_order COMMAND bm25_deterministic_order)
 
