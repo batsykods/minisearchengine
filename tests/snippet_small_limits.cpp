@@ -11,5 +11,6 @@ int main() {
     assert(builder.build(content, {"followed"}, 6).size() == 6);
     assert(builder.build(content, {"missing"}, 4).size() == 4);
     assert(builder.build(content, {}, 5).size() == 5);
+    assert(builder.build(content, {""}, 6).size() == 6);
     return 0;
 }
