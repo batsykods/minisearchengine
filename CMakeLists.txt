@@ -2204,7 +2204,7 @@ add_executable(bm25_empty_query tests/bm25_empty_query.cpp src/BM25Ranker.cpp sr
 target_include_directories(bm25_empty_query PRIVATE include)
 add_test(NAME bm25_empty_query COMMAND bm25_empty_query)
 
-add_executable(bm25_unknown_term tests/bm25_unknown_term.cpp src/BM25Ranker.cpp)
+add_executable(bm25_unknown_term tests/bm25_unknown_term.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_unknown_term PRIVATE include)
 add_test(NAME bm25_unknown_term COMMAND bm25_unknown_term)
 
