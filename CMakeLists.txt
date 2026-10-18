@@ -2232,7 +2232,7 @@ add_executable(bm25_invalid_negative_k1 tests/bm25_invalid_negative_k1.cpp src/B
 target_include_directories(bm25_invalid_negative_k1 PRIVATE include)
 add_test(NAME bm25_invalid_negative_k1 COMMAND bm25_invalid_negative_k1)
 
-add_executable(bm25_invalid_negative_b tests/bm25_invalid_negative_b.cpp src/BM25Ranker.cpp)
+add_executable(bm25_invalid_negative_b tests/bm25_invalid_negative_b.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_invalid_negative_b PRIVATE include)
 add_test(NAME bm25_invalid_negative_b COMMAND bm25_invalid_negative_b)
 
