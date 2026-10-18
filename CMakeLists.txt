@@ -2228,7 +2228,7 @@ add_executable(bm25_frequency_influences_score tests/bm25_frequency_influences_s
 target_include_directories(bm25_frequency_influences_score PRIVATE include)
 add_test(NAME bm25_frequency_influences_score COMMAND bm25_frequency_influences_score)
 
-add_executable(bm25_invalid_negative_k1 tests/bm25_invalid_negative_k1.cpp src/BM25Ranker.cpp)
+add_executable(bm25_invalid_negative_k1 tests/bm25_invalid_negative_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_invalid_negative_k1 PRIVATE include)
 add_test(NAME bm25_invalid_negative_k1 COMMAND bm25_invalid_negative_k1)
 
