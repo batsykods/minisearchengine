@@ -2252,7 +2252,7 @@ add_executable(bm25_all_terms_unknown tests/bm25_all_terms_unknown.cpp src/BM25R
 target_include_directories(bm25_all_terms_unknown PRIVATE include)
 add_test(NAME bm25_all_terms_unknown COMMAND bm25_all_terms_unknown)
 
-add_executable(bm25_union_of_matching_terms tests/bm25_union_of_matching_terms.cpp src/BM25Ranker.cpp)
+add_executable(bm25_union_of_matching_terms tests/bm25_union_of_matching_terms.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_union_of_matching_terms PRIVATE include)
 add_test(NAME bm25_union_of_matching_terms COMMAND bm25_union_of_matching_terms)
 
