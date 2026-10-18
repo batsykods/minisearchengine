@@ -13,5 +13,6 @@ int main() {
     assert(builder.build(content, {}, 5).size() == 5);
     assert(builder.build(content, {""}, 6).size() == 6);
     assert(builder.build(content, {"MATCH"}, 4).size() == 4);
+    assert(builder.build(content, {"middle"}, 5).size() == 5);
     return 0;
 }
