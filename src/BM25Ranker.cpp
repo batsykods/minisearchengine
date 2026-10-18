@@ -7,7 +7,8 @@
 
 std::vector<SearchResult> BM25Ranker::rank(const InvertedIndex& index, const std::vector<std::string>& terms,
                                            double k1, double b) const {
-    if (index.documentCount() == 0 || terms.empty() || k1 < 0.0 || b < 0.0 || b > 1.0) return {};
+    if (index.documentCount() == 0 || terms.empty() || !std::isfinite(k1) || !std::isfinite(b) ||
+        k1 < 0.0 || b < 0.0 || b > 1.0) return {};
     const double averageLength = index.averageDocumentLength();
     const double safeAverageLength = averageLength > 0.0 ? averageLength : 1.0;
     std::unordered_map<int, double> scores;
