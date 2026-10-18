@@ -2359,3 +2359,7 @@ add_test(NAME snippet_ignores_empty_terms COMMAND snippet_ignores_empty_terms)
 add_executable(snippet_adds_ellipsis_for_middle tests/snippet_adds_ellipsis_for_middle.cpp src/SnippetBuilder.cpp)
 target_include_directories(snippet_adds_ellipsis_for_middle PRIVATE include)
 add_test(NAME snippet_adds_ellipsis_for_middle COMMAND snippet_adds_ellipsis_for_middle)
+
+add_executable(snippet_small_limits tests/snippet_small_limits.cpp src/SnippetBuilder.cpp)
+target_include_directories(snippet_small_limits PRIVATE include)
+add_test(NAME snippet_small_limits COMMAND snippet_small_limits)
