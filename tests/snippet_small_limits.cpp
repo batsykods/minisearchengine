@@ -17,5 +17,6 @@ int main() {
     assert(builder.build(content, {"words"}, 6).size() == 6);
     assert(builder.build(content, {"more"}, 4).size() == 4);
     assert(builder.build(content, {"prefix", "MATCH"}, 5).size() == 5);
+    assert(builder.build(content, {"not-found", "followed"}, 6).size() == 6);
     return 0;
 }
