@@ -2224,7 +2224,7 @@ add_executable(bm25_rare_term_idf tests/bm25_rare_term_idf.cpp src/BM25Ranker.cp
 target_include_directories(bm25_rare_term_idf PRIVATE include)
 add_test(NAME bm25_rare_term_idf COMMAND bm25_rare_term_idf)
 
-add_executable(bm25_frequency_influences_score tests/bm25_frequency_influences_score.cpp src/BM25Ranker.cpp)
+add_executable(bm25_frequency_influences_score tests/bm25_frequency_influences_score.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_frequency_influences_score PRIVATE include)
 add_test(NAME bm25_frequency_influences_score COMMAND bm25_frequency_influences_score)
 
