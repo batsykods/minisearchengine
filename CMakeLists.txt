@@ -2208,7 +2208,7 @@ add_executable(bm25_unknown_term tests/bm25_unknown_term.cpp src/BM25Ranker.cpp 
 target_include_directories(bm25_unknown_term PRIVATE include)
 add_test(NAME bm25_unknown_term COMMAND bm25_unknown_term)
 
-add_executable(bm25_known_term_returns_document tests/bm25_known_term_returns_document.cpp src/BM25Ranker.cpp)
+add_executable(bm25_known_term_returns_document tests/bm25_known_term_returns_document.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_known_term_returns_document PRIVATE include)
 add_test(NAME bm25_known_term_returns_document COMMAND bm25_known_term_returns_document)
 
