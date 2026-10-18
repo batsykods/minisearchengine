@@ -26,5 +26,6 @@ int main() {
     assert(builder.build("abcdefghijk", {"ijk"}, 5).size() == 5);
     assert(builder.build("abcdefghijk", {"fgh"}, 6).size() == 6);
     assert(builder.build("abcdefghijk", {"absent"}, 4).size() == 4);
+    assert(builder.build("abcdefghijk", {}, 5).size() == 5);
     return 0;
 }
