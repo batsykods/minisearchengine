@@ -22,5 +22,6 @@ int main() {
     assert(builder.build(content, {"prefix"}, 6).size() <= 6);
     assert(builder.build(content, {"more"}, 5).size() <= 5);
     assert(builder.build(content, {"MATCH"}, 6).size() <= 6);
+    assert(builder.build("abcdefghijk", {"abc"}, 4).size() == 4);
     return 0;
 }
