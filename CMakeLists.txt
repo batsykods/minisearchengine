@@ -2284,7 +2284,7 @@ add_executable(bm25_matches_multiple_query_terms tests/bm25_matches_multiple_que
 target_include_directories(bm25_matches_multiple_query_terms PRIVATE include)
 add_test(NAME bm25_matches_multiple_query_terms COMMAND bm25_matches_multiple_query_terms)
 
-add_executable(bm25_default_parameters tests/bm25_default_parameters.cpp src/BM25Ranker.cpp)
+add_executable(bm25_default_parameters tests/bm25_default_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_default_parameters PRIVATE include)
 add_test(NAME bm25_default_parameters COMMAND bm25_default_parameters)
 
