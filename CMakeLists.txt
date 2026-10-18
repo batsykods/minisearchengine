@@ -2220,7 +2220,7 @@ add_executable(bm25_repeated_query_term_stable tests/bm25_repeated_query_term_st
 target_include_directories(bm25_repeated_query_term_stable PRIVATE include)
 add_test(NAME bm25_repeated_query_term_stable COMMAND bm25_repeated_query_term_stable)
 
-add_executable(bm25_rare_term_idf tests/bm25_rare_term_idf.cpp src/BM25Ranker.cpp)
+add_executable(bm25_rare_term_idf tests/bm25_rare_term_idf.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_rare_term_idf PRIVATE include)
 add_test(NAME bm25_rare_term_idf COMMAND bm25_rare_term_idf)
 
