@@ -20,6 +20,12 @@ std::string SnippetBuilder::build(const std::string& content, const std::vector<
     }
     if (content.size() <= maxLength) return content;
     if (maxLength <= 3) return content.substr(0, maxLength);
+    if (maxLength <= 6) {
+        std::size_t start = 0;
+        if (match != std::string::npos && match > maxLength / 2) start = match - maxLength / 2;
+        if (start + maxLength > content.size()) start = content.size() - maxLength;
+        return content.substr(start, maxLength);
+    }
 
     const std::size_t interior = maxLength - 6;
     std::size_t start = 0;
