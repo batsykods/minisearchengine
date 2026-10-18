@@ -2256,7 +2256,7 @@ add_executable(bm25_union_of_matching_terms tests/bm25_union_of_matching_terms.c
 target_include_directories(bm25_union_of_matching_terms PRIVATE include)
 add_test(NAME bm25_union_of_matching_terms COMMAND bm25_union_of_matching_terms)
 
-add_executable(bm25_no_duplicate_results tests/bm25_no_duplicate_results.cpp src/BM25Ranker.cpp)
+add_executable(bm25_no_duplicate_results tests/bm25_no_duplicate_results.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_no_duplicate_results PRIVATE include)
 add_test(NAME bm25_no_duplicate_results COMMAND bm25_no_duplicate_results)
 
