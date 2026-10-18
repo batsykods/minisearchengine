@@ -2212,7 +2212,7 @@ add_executable(bm25_known_term_returns_document tests/bm25_known_term_returns_do
 target_include_directories(bm25_known_term_returns_document PRIVATE include)
 add_test(NAME bm25_known_term_returns_document COMMAND bm25_known_term_returns_document)
 
-add_executable(bm25_scores_positive tests/bm25_scores_positive.cpp src/BM25Ranker.cpp)
+add_executable(bm25_scores_positive tests/bm25_scores_positive.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_scores_positive PRIVATE include)
 add_test(NAME bm25_scores_positive COMMAND bm25_scores_positive)
 
