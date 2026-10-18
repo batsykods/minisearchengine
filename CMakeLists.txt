@@ -2216,7 +2216,7 @@ add_executable(bm25_scores_positive tests/bm25_scores_positive.cpp src/BM25Ranke
 target_include_directories(bm25_scores_positive PRIVATE include)
 add_test(NAME bm25_scores_positive COMMAND bm25_scores_positive)
 
-add_executable(bm25_repeated_query_term_stable tests/bm25_repeated_query_term_stable.cpp src/BM25Ranker.cpp)
+add_executable(bm25_repeated_query_term_stable tests/bm25_repeated_query_term_stable.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_repeated_query_term_stable PRIVATE include)
 add_test(NAME bm25_repeated_query_term_stable COMMAND bm25_repeated_query_term_stable)
 
