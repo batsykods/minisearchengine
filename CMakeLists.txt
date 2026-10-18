@@ -2196,7 +2196,7 @@ add_test(NAME search_cache_capacity_bound COMMAND search_cache_capacity_bound)
 
 # BM25 ranking, index-length statistics, and snippet regression tests.
 
-add_executable(bm25_empty_index tests/bm25_empty_index.cpp src/BM25Ranker.cpp)
+add_executable(bm25_empty_index tests/bm25_empty_index.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_empty_index PRIVATE include)
 add_test(NAME bm25_empty_index COMMAND bm25_empty_index)
 
