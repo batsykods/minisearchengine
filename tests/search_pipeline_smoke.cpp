@@ -9,7 +9,7 @@ int main() {
     const Tokenizer tokenizer;
     InvertedIndex index;
 
-    const Document document = loader.load(99, "data/documents/cpp.txt");
+    const Document document = loader.load(99, "../data/documents/cpp.txt");
     index.addDocument(document.getId(), tokenizer.tokenize(document.getContent()));
 
     assert(document.getId() == 99);
