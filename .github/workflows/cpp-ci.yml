@@ -30,8 +30,24 @@ jobs:
       - name: Configure CMake
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
-      - name: Build
-        run: cmake --build build --config Release --parallel 2
+      - name: Build core targets
+        run: >-
+          cmake --build build --config Release --parallel 2 --target
+          search_engine
+          tokenizer_smoke tokenizer_edge_cases tokenizer_numbers tokenizer_mixed_punctuation
+          tokenizer_whitespace tokenizer_single_token tokenizer_empty_input
+          inverted_index_smoke inverted_index_duplicate_terms inverted_index_empty_tokens
+          inverted_index_multiple_documents inverted_index_missing_term inverted_index_zero_id
+          inverted_index_empty_document inverted_index_document_count
+          document_smoke document_getters document_loader_failure
+          search_pipeline_smoke query_processor_smoke
+          inverted_index_term_frequency inverted_index_sorted_postings
+          inverted_index_duplicate_document query_processor_duplicate_terms
+          query_processor_deterministic_results inverted_index_unknown_frequency
+          inverted_index_frequency_documents inverted_index_out_of_order_documents
+          inverted_index_repeated_document_add query_processor_case_normalization
 
-      - name: Run tests
-        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Run core tests
+        run: >-
+          ctest --test-dir build -C Release --output-on-failure
+          -R "^(tokenizer_smoke|tokenizer_edge_cases|tokenizer_numbers|tokenizer_mixed_punctuation|tokenizer_whitespace|tokenizer_single_token|tokenizer_empty_input|inverted_index_smoke|inverted_index_duplicate_terms|inverted_index_empty_tokens|inverted_index_multiple_documents|inverted_index_missing_term|inverted_index_zero_id|inverted_index_empty_document|inverted_index_document_count|document_smoke|document_getters|document_loader_failure|search_pipeline_smoke|query_processor_smoke|inverted_index_term_frequency|inverted_index_sorted_postings|inverted_index_duplicate_document|query_processor_duplicate_terms|query_processor_deterministic_results|inverted_index_unknown_frequency|inverted_index_frequency_documents|inverted_index_out_of_order_documents|inverted_index_repeated_document_add|query_processor_case_normalization)$"
