@@ -24,6 +24,15 @@ Pass a term to search for it directly:
 
 On Windows with a multi-config generator, run the executable from the generated configuration directory, for example `build/Debug/search_engine.exe`.
 
+## Performance Notes
+
+- The inverted index stores sorted document postings so lookup results are deterministic.
+- Document ingestion aggregates repeated terms locally before updating posting lists. This avoids repeated binary searches and vector insertions for the same term within a document.
+- Term frequency and document length accounting must remain correct when a document contains repeated terms or is added more than once.
+- The LRU search cache uses a hash lookup and list splice to move hits to the most-recently-used position in constant time.
+- Autocomplete traverses only the trie path for a prefix and stops collecting once the requested result limit is reached.
+- Performance claims should be validated with representative corpus sizes and reproducible benchmarks rather than inferred from asymptotic complexity alone.
+
 ## Project Vision
 
 ```text
