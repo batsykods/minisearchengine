@@ -1,15 +1,23 @@
 #include "InvertedIndex.h"
 
 #include <algorithm>
+#include <unordered_map>
 
 void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& tokens) {
     documentIds.insert(documentId);
+    std::unordered_map<std::string, std::size_t> batchFrequencies;
+    batchFrequencies.reserve(tokens.size());
+
     for (const std::string& token : tokens) {
         if (token.empty()) continue;
         ++documentLengths[documentId];
+        ++batchFrequencies[token];
+    }
+
+    for (const auto& [token, count] : batchFrequencies) {
         auto& postings = index[token];
         auto& termFrequencies = frequencies[token];
-        ++termFrequencies[documentId];
+        termFrequencies[documentId] += count;
         if (!std::binary_search(postings.begin(), postings.end(), documentId)) {
             postings.insert(std::lower_bound(postings.begin(), postings.end(), documentId), documentId);
         }
