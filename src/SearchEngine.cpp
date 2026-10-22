@@ -16,3 +16,7 @@ std::vector<SearchResult> SearchEngine::rankedSearch(const std::string& query) c
 const InvertedIndex& SearchEngine::getIndex() const {
     return index;
 }
+
+std::vector<SearchResult> SearchEngine::bm25Search(const std::string& query, double k1, double b) const {
+    return bm25Ranker.rank(index, queryTokenizer.tokenize(query), k1, b);
+}
