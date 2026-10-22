@@ -1,44 +1,54 @@
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
 
 #include "DocumentLoader.h"
-#include "InvertedIndex.h"
-#include "QueryProcessor.h"
+#include "SearchEngine.h"
+#include "SnippetBuilder.h"
 #include "Tokenizer.h"
 
 int main(int argc, char* argv[]) {
     try {
         DocumentLoader loader;
         Tokenizer tokenizer;
-        InvertedIndex index;
-        QueryProcessor queryProcessor;
+        SearchEngine engine;
+        SnippetBuilder snippets;
+        std::vector<Document> documents;
+        documents.push_back(loader.load(1, "data/documents/cpp.txt"));
+        documents.push_back(loader.load(2, "data/documents/algorithms.txt"));
+        documents.push_back(loader.load(3, "data/documents/search.txt"));
 
-        Document cpp = loader.load(1, "data/documents/cpp.txt");
-        Document algorithms = loader.load(2, "data/documents/algorithms.txt");
-        Document search = loader.load(3, "data/documents/search.txt");
-
-        index.addDocument(cpp.getId(), tokenizer.tokenize(cpp.getContent()));
-        index.addDocument(algorithms.getId(), tokenizer.tokenize(algorithms.getContent()));
-        index.addDocument(search.getId(), tokenizer.tokenize(search.getContent()));
+        for (const auto& document : documents) {
+            engine.addDocument(document.getId(), tokenizer.tokenize(document.getContent()));
+        }
 
         std::string query = "search";
         if (argc > 1) {
             query.clear();
             for (int argument = 1; argument < argc; ++argument) {
-                if (!query.empty()) {
-                    query += ' ';
-                }
+                if (!query.empty()) query += ' ';
                 query += argv[argument];
             }
         }
-        const auto results = queryProcessor.search(index, query);
 
-        std::cout << "Indexed terms: " << index.termCount() << '\n';
+        const auto results = engine.bm25Search(query);
+        const auto queryTerms = tokenizer.tokenize(query);
+
+        std::cout << "Indexed documents: " << engine.getIndex().documentCount() << '\n';
+        std::cout << "Indexed terms: " << engine.getIndex().termCount() << '\n';
         std::cout << "Query: " << query << '\n';
-        std::cout << "Matching document IDs:\n";
-        for (int documentId : results) {
-            std::cout << "  " << documentId << '\n';
+        std::cout << "Results: " << results.size() << '\n';
+
+        for (const auto& result : results) {
+            for (const auto& document : documents) {
+                if (document.getId() != result.documentId) continue;
+                std::cout << std::fixed << std::setprecision(4)
+                          << '[' << result.score << "] "
+                          << document.getPath() << '\n';
+                std::cout << "  " << snippets.build(document.getContent(), queryTerms, 140) << '\n';
+                break;
+            }
         }
     } catch (const std::exception& error) {
         std::cerr << "Error: " << error.what() << '\n';
