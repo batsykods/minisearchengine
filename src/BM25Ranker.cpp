@@ -12,10 +12,12 @@ std::vector<SearchResult> BM25Ranker::rank(const InvertedIndex& index, const std
     const double averageLength = index.averageDocumentLength();
     const double safeAverageLength = averageLength > 0.0 ? averageLength : 1.0;
     std::unordered_map<int, double> scores;
-    std::unordered_set<std::string> uniqueTerms(terms.begin(), terms.end());
+    std::unordered_set<std::string> seen;
+    seen.reserve(terms.size());
     const double documentCount = static_cast<double>(index.documentCount());
 
-    for (const auto& term : uniqueTerms) {
+    for (const auto& term : terms) {
+        if (!seen.insert(term).second) continue;
         const auto& postings = index.search(term);
         if (postings.empty()) continue;
         const double df = static_cast<double>(postings.size());
