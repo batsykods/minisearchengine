@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "DocumentLoader.h"
@@ -19,8 +20,11 @@ int main(int argc, char* argv[]) {
         documents.push_back(loader.load(2, "data/documents/algorithms.txt"));
         documents.push_back(loader.load(3, "data/documents/search.txt"));
 
+        std::unordered_map<int, const Document*> documentsById;
+        documentsById.reserve(documents.size());
         for (const auto& document : documents) {
             engine.addDocument(document.getId(), tokenizer.tokenize(document.getContent()));
+            documentsById.emplace(document.getId(), &document);
         }
 
         std::string query = "search";
@@ -41,14 +45,13 @@ int main(int argc, char* argv[]) {
         std::cout << "Results: " << results.size() << '\n';
 
         for (const auto& result : results) {
-            for (const auto& document : documents) {
-                if (document.getId() != result.documentId) continue;
-                std::cout << std::fixed << std::setprecision(4)
-                          << '[' << result.score << "] "
-                          << document.getPath() << '\n';
-                std::cout << "  " << snippets.build(document.getContent(), queryTerms, 140) << '\n';
-                break;
-            }
+            const auto found = documentsById.find(result.documentId);
+            if (found == documentsById.end()) continue;
+            const Document& document = *found->second;
+            std::cout << std::fixed << std::setprecision(4)
+                      << '[' << result.score << "] "
+                      << document.getPath() << '\n';
+            std::cout << "  " << snippets.build(document.getContent(), queryTerms, 140) << '\n';
         }
     } catch (const std::exception& error) {
         std::cerr << "Error: " << error.what() << '\n';
