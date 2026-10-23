@@ -7,6 +7,6 @@
 int main() {
     SearchEngine engine;
     Tokenizer tokenizer;
-    engine.addDocument(1, tokenizer.tokenize("foo bar")); assert(engine.search("foo-bar").size() == 2);
+    engine.addDocument(1, tokenizer.tokenize("foo bar")); assert(engine.search("foo-bar").size() == 1);
     return 0;
 }
