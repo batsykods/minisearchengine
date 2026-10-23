@@ -1,14 +1,21 @@
 #include "Ranker.h"
+
+#include <algorithm>
 #include <cmath>
 #include <unordered_map>
-#include <algorithm>
+#include <unordered_set>
+
 double Ranker::inverseDocumentFrequency(std::size_t documentCount, std::size_t documentFrequency) {
     if (documentCount == 0 || documentFrequency == 0) return 0.0;
     return std::log(1.0 + static_cast<double>(documentCount) / static_cast<double>(documentFrequency));
 }
+
 std::vector<SearchResult> Ranker::tfidf(const InvertedIndex& index, const std::vector<std::string>& terms) const {
-    std::unordered_map<int,double> scores;
+    std::unordered_map<int, double> scores;
+    std::unordered_set<std::string> seen;
+    seen.reserve(terms.size());
     for (const auto& term : terms) {
+        if (!seen.insert(term).second) continue;
         const auto& postings = index.search(term);
         const double idf = inverseDocumentFrequency(index.documentCount(), postings.size());
         for (int documentId : postings) {
