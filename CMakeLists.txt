@@ -2481,9 +2481,6 @@ add_test(NAME daily_20261022_search_engine_bm25 COMMAND daily_20261022_search_en
 
 # Final regression suite for query normalization, ranking, and top-k selection.
 add_executable(final_query_tokenizer_punctuation tests/final_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_20261027_query_tokenizer_punctuation PRIVATE include)
-add_test(NAME final_20261027_query_tokenizer_punctuation COMMAND final_20261027_query_tokenizer_punctuation)
-
 add_executable(final_query_tokenizer_case tests/final_query_tokenizer_case.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
 target_include_directories(final_query_tokenizer_case PRIVATE include)
 add_test(NAME final_query_tokenizer_case COMMAND final_query_tokenizer_case)
@@ -2493,9 +2490,6 @@ target_include_directories(final_query_tokenizer_whitespace PRIVATE include)
 add_test(NAME final_query_tokenizer_whitespace COMMAND final_query_tokenizer_whitespace)
 
 add_executable(final_query_tokenizer_empty tests/final_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_20261027_query_tokenizer_empty PRIVATE include)
-add_test(NAME final_20261027_query_tokenizer_empty COMMAND final_20261027_query_tokenizer_empty)
-
 add_executable(final_query_tokenizer_symbols tests/final_query_tokenizer_symbols.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
 target_include_directories(final_query_tokenizer_symbols PRIVATE include)
 add_test(NAME final_query_tokenizer_symbols COMMAND final_query_tokenizer_symbols)
@@ -3065,6 +3059,8 @@ target_include_directories(final_snippet_max_seven PRIVATE include)
 add_test(NAME final_snippet_max_seven COMMAND final_snippet_max_seven)
 
 add_executable(final_20261027_query_tokenizer_empty tests/final_20261027_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+target_include_directories(final_20261027_query_tokenizer_empty PRIVATE include)
+add_test(NAME final_20261027_query_tokenizer_empty COMMAND final_20261027_query_tokenizer_empty)
 target_include_directories(final_query_tokenizer_empty PRIVATE include)
 add_test(NAME final_query_tokenizer_empty COMMAND final_query_tokenizer_empty)
 
@@ -3073,6 +3069,8 @@ target_include_directories(final_query_tokenizer_lowercase PRIVATE include)
 add_test(NAME final_query_tokenizer_lowercase COMMAND final_query_tokenizer_lowercase)
 
 add_executable(final_20261027_query_tokenizer_punctuation tests/final_20261027_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+target_include_directories(final_20261027_query_tokenizer_punctuation PRIVATE include)
+add_test(NAME final_20261027_query_tokenizer_punctuation COMMAND final_20261027_query_tokenizer_punctuation)
 target_include_directories(final_query_tokenizer_punctuation PRIVATE include)
 add_test(NAME final_query_tokenizer_punctuation COMMAND final_query_tokenizer_punctuation)
 
