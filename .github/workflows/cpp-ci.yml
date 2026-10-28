@@ -27,6 +27,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Validate CMake target names
+        run: python scripts/check_cmake_names.py
+
       - name: Configure CMake
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
