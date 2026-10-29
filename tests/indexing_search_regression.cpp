@@ -20,5 +20,12 @@ int main() {
         assert(index.search("missing").empty());
         assert(!index.contains("missing"));
     }
+    {
+        InvertedIndex index;
+        index.addDocument(30, {"term"});
+        index.addDocument(10, {"term"});
+        index.addDocument(20, {"term"});
+        assert((index.search("term") == std::vector<int>{10, 20, 30}));
+    }
     return 0;
 }
