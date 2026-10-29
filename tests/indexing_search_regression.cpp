@@ -125,5 +125,11 @@ int main() {
         engine.addDocument(7, {"search", "engine"});
         assert((engine.search("SEARCH") == std::vector<int>{7}));
     }
+    {
+        SearchEngine engine;
+        engine.addDocument(7, {"search", "engine"});
+        assert(engine.search("notfound").empty());
+        assert(engine.bm25Search("notfound").empty());
+    }
     return 0;
 }
