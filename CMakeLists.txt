@@ -3101,3 +3101,18 @@ add_test(NAME final_autocomplete_lexicographic_order COMMAND final_autocomplete_
 add_executable(final_autocomplete_exact_prefix_first tests/final_20261027_autocomplete_exact_prefix_first.cpp src/AutocompleteIndex.cpp)
 target_include_directories(final_autocomplete_exact_prefix_first PRIVATE include)
 add_test(NAME final_autocomplete_exact_prefix_first COMMAND final_autocomplete_exact_prefix_first)
+
+
+add_executable(indexing_search_regression
+    tests/indexing_search_regression.cpp
+    src/InvertedIndex.cpp
+    src/QueryProcessor.cpp
+    src/Tokenizer.cpp
+    src/QueryTokenizer.cpp
+    src/Ranker.cpp
+    src/BM25Ranker.cpp
+    src/SearchEngine.cpp
+    src/AutocompleteIndex.cpp
+)
+target_include_directories(indexing_search_regression PRIVATE include)
+add_test(NAME indexing_search_regression COMMAND indexing_search_regression)
