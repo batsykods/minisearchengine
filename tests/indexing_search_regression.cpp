@@ -105,5 +105,11 @@ int main() {
         BM25Ranker ranker;
         assert(ranker.rank(index, {}).empty());
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha"});
+        BM25Ranker ranker;
+        assert(ranker.rank(index, {"unknown"}).empty());
+    }
     return 0;
 }
