@@ -171,5 +171,18 @@ int main() {
         assert(results.size() == 2);
         assert((results == std::vector<std::string>{"also", "alpha"}));
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha", "beta"});
+        index.addDocument(2, {"alpha", "gamma"});
+        Ranker ranker;
+        const auto first = ranker.tfidf(index, {"alpha", "beta"});
+        const auto second = ranker.tfidf(index, {"beta", "alpha"});
+        assert(first.size() == second.size());
+        for (std::size_t i = 0; i < first.size(); ++i) {
+            assert(first[i].documentId == second[i].documentId);
+            assert(std::abs(first[i].score - second[i].score) < 1e-9);
+        }
+    }
     return 0;
 }
