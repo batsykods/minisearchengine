@@ -84,5 +84,14 @@ int main() {
         QueryProcessor processor;
         assert((processor.search(index, "alpha alpha beta") == std::vector<int>{1}));
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha", "beta"});
+        index.addDocument(2, {"alpha", "alpha", "beta"});
+        Ranker ranker;
+        const auto results = ranker.tfidf(index, {"alpha"});
+        assert(results.size() == 2);
+        assert(results.front().documentId == 2);
+    }
     return 0;
 }
