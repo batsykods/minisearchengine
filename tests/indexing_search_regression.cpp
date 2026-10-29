@@ -99,5 +99,11 @@ int main() {
         Ranker ranker;
         assert(ranker.tfidf(index, {"unknown"}).empty());
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha"});
+        BM25Ranker ranker;
+        assert(ranker.rank(index, {}).empty());
+    }
     return 0;
 }
