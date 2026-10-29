@@ -1,6 +1,5 @@
 #include <cassert>
 #include <cmath>
-#include <cmath>
 #include <string>
 #include <vector>
 #include "AutocompleteIndex.h"
