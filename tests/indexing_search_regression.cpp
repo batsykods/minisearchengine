@@ -144,5 +144,9 @@ int main() {
         autocomplete.insert("alpha");
         assert(autocomplete.size() == 1);
     }
+    {
+        Tokenizer tokenizer;
+        assert((tokenizer.tokenize("Alpha,beta.gamma") == std::vector<std::string>{"alpha", "beta", "gamma"}));
+    }
     return 0;
 }
