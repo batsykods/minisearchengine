@@ -93,5 +93,11 @@ int main() {
         assert(results.size() == 2);
         assert(results.front().documentId == 2);
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha"});
+        Ranker ranker;
+        assert(ranker.tfidf(index, {"unknown"}).empty());
+    }
     return 0;
 }
