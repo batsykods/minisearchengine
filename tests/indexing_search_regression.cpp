@@ -53,5 +53,11 @@ int main() {
         assert(index.documentFrequency("alpha") == 2);
         assert(index.documentFrequency("beta") == 1);
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha", "alpha"});
+        assert(index.termFrequency("alpha", 2) == 0);
+        assert(index.termFrequency("missing", 1) == 0);
+    }
     return 0;
 }
