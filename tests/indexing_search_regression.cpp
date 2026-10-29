@@ -27,5 +27,11 @@ int main() {
         index.addDocument(20, {"term"});
         assert((index.search("term") == std::vector<int>{10, 20, 30}));
     }
+    {
+        InvertedIndex index;
+        index.addDocument(4, {"alpha", "alpha", "alpha"});
+        assert(index.termFrequency("alpha", 4) == 3);
+        assert(index.documentFrequency("alpha") == 1);
+    }
     return 0;
 }
