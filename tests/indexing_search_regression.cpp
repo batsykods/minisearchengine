@@ -162,5 +162,14 @@ int main() {
         assert((index.search("alpha") == std::vector<int>{8}));
         assert((index.search("beta") == std::vector<int>{8}));
     }
+    {
+        AutocompleteIndex autocomplete;
+        autocomplete.insert("alpha");
+        autocomplete.insert("alpine");
+        autocomplete.insert("also");
+        const auto results = autocomplete.suggest("al", 2);
+        assert(results.size() == 2);
+        assert((results == std::vector<std::string>{"also", "alpha"}));
+    }
     return 0;
 }
