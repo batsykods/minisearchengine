@@ -111,5 +111,14 @@ int main() {
         BM25Ranker ranker;
         assert(ranker.rank(index, {"unknown"}).empty());
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha"});
+        index.addDocument(2, {"beta"});
+        BM25Ranker ranker;
+        const auto results = ranker.rank(index, {"alpha"});
+        assert(results.size() == 1);
+        assert(results.front().documentId == 1);
+    }
     return 0;
 }
