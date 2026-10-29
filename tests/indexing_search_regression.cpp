@@ -78,5 +78,11 @@ int main() {
         QueryProcessor processor;
         assert(processor.search(index, "unknown").empty());
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha", "beta"});
+        QueryProcessor processor;
+        assert((processor.search(index, "alpha alpha beta") == std::vector<int>{1}));
+    }
     return 0;
 }
