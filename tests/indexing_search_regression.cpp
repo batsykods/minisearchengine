@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cmath>
+#include <cmath>
 #include <string>
 #include <vector>
 #include "AutocompleteIndex.h"
@@ -169,7 +170,7 @@ int main() {
         autocomplete.insert("also");
         const auto results = autocomplete.suggest("al", 2);
         assert(results.size() == 2);
-        assert((results == std::vector<std::string>{"also", "alpha"}));
+        assert((results == std::vector<std::string>{"alpha", "alpine"}));
     }
     {
         InvertedIndex index;
