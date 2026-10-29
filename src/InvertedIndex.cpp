@@ -18,8 +18,13 @@ void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& 
         auto& postings = index[token];
         auto& termFrequencies = frequencies[token];
         termFrequencies[documentId] += count;
-        if (!std::binary_search(postings.begin(), postings.end(), documentId)) {
-            postings.insert(std::lower_bound(postings.begin(), postings.end(), documentId), documentId);
+        if (postings.empty() || postings.back() < documentId) {
+            postings.push_back(documentId);
+        } else {
+            const auto position = std::lower_bound(postings.begin(), postings.end(), documentId);
+            if (position == postings.end() || *position != documentId) {
+                postings.insert(position, documentId);
+            }
         }
     }
 }
