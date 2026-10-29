@@ -39,5 +39,12 @@ int main() {
         assert(index.documentLength(1) == 2);
         assert(index.totalTokenCount() == 2);
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {});
+        assert(index.documentCount() == 1);
+        assert(index.documentLength(1) == 0);
+        assert(index.averageDocumentLength() == 0.0);
+    }
     return 0;
 }
