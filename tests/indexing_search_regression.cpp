@@ -131,5 +131,12 @@ int main() {
         assert(engine.search("notfound").empty());
         assert(engine.bm25Search("notfound").empty());
     }
+    {
+        AutocompleteIndex autocomplete;
+        autocomplete.insert("search");
+        autocomplete.insert("sea");
+        autocomplete.insert("season");
+        assert((autocomplete.suggest("sea", 10) == std::vector<std::string>{"sea", "search", "season"}));
+    }
     return 0;
 }
