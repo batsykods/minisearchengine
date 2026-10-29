@@ -33,5 +33,11 @@ int main() {
         assert(index.termFrequency("alpha", 4) == 3);
         assert(index.documentFrequency("alpha") == 1);
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha", "", "beta", ""});
+        assert(index.documentLength(1) == 2);
+        assert(index.totalTokenCount() == 2);
+    }
     return 0;
 }
