@@ -148,5 +148,12 @@ int main() {
         Tokenizer tokenizer;
         assert((tokenizer.tokenize("Alpha,beta.gamma") == std::vector<std::string>{"alpha", "beta", "gamma"}));
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha", "beta"});
+        index.addDocument(2, {"gamma", "delta", "epsilon"});
+        assert(index.totalTokenCount() == 5);
+        assert(std::abs(index.averageDocumentLength() - 2.5) < 1e-9);
+    }
     return 0;
 }
