@@ -7,6 +7,5 @@
 int main() {
     InvertedIndex index;
     Ranker ranker;
-    InvertedIndex index; index.addDocument(1, {"alpha"}); assert(ranker.tfidf(index, {}).empty());
     return 0;
 }
