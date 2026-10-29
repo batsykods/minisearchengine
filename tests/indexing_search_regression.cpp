@@ -120,5 +120,10 @@ int main() {
         assert(results.size() == 1);
         assert(results.front().documentId == 1);
     }
+    {
+        SearchEngine engine;
+        engine.addDocument(7, {"search", "engine"});
+        assert((engine.search("SEARCH") == std::vector<int>{7}));
+    }
     return 0;
 }
