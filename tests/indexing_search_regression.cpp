@@ -138,5 +138,11 @@ int main() {
         autocomplete.insert("season");
         assert((autocomplete.suggest("sea", 10) == std::vector<std::string>{"sea", "search", "season"}));
     }
+    {
+        AutocompleteIndex autocomplete;
+        autocomplete.insert("alpha");
+        autocomplete.insert("alpha");
+        assert(autocomplete.size() == 1);
+    }
     return 0;
 }
