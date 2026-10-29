@@ -46,5 +46,12 @@ int main() {
         assert(index.documentLength(1) == 0);
         assert(index.averageDocumentLength() == 0.0);
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha", "beta"});
+        index.addDocument(2, {"alpha"});
+        assert(index.documentFrequency("alpha") == 2);
+        assert(index.documentFrequency("beta") == 1);
+    }
     return 0;
 }
