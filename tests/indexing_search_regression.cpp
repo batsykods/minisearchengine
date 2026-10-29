@@ -59,5 +59,12 @@ int main() {
         assert(index.termFrequency("alpha", 2) == 0);
         assert(index.termFrequency("missing", 1) == 0);
     }
+    {
+        InvertedIndex index;
+        index.addDocument(1, {"alpha", "beta"});
+        index.addDocument(2, {"alpha", "gamma"});
+        QueryProcessor processor;
+        assert((processor.search(index, "alpha beta") == std::vector<int>{1}));
+    }
     return 0;
 }
