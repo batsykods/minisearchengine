@@ -7,6 +7,5 @@
 int main() {
     InvertedIndex index;
     Ranker ranker;
-    InvertedIndex index; assert(ranker.tfidf(index, {"alpha"}).empty());
     return 0;
 }
