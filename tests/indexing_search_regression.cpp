@@ -155,5 +155,12 @@ int main() {
         assert(index.totalTokenCount() == 5);
         assert(std::abs(index.averageDocumentLength() - 2.5) < 1e-9);
     }
+    {
+        InvertedIndex index;
+        index.addDocument(8, {"alpha"});
+        index.addDocument(8, {"beta"});
+        assert((index.search("alpha") == std::vector<int>{8}));
+        assert((index.search("beta") == std::vector<int>{8}));
+    }
     return 0;
 }
