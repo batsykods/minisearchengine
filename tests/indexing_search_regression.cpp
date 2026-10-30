@@ -219,5 +219,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"red", "", "blue"}); assert(x.totalTokenCount() == 2); }
     { InvertedIndex x; x.addDocument(1, {"red", "red", "blue"}); assert(x.documentFrequency("red") == 1); }
     { InvertedIndex x; x.addDocument(1, {"red"}); x.addDocument(2, {"red"}); x.addDocument(3, {"red"}); assert(x.search("red").size() == 3); }
+    { InvertedIndex x; x.addDocument(3, {"red"}); x.addDocument(2, {"red"}); x.addDocument(1, {"red"}); assert((x.search("red") == std::vector<int>{1, 2, 3})); }
     return 0;
 }
