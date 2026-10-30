@@ -205,5 +205,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"one"}); x.addDocument(2, {"one"}); assert(x.documentFrequency("one") == 2); }
     { InvertedIndex x; x.addDocument(1, {"red", "blue"}); assert(x.termCount() == 2); }
     { InvertedIndex x; x.addDocument(1, {"red"}); x.addDocument(2, {"blue"}); assert(x.documentFrequency("red") == 1); }
+    { InvertedIndex x; x.addDocument(1, {"red", "red"}); assert(x.termFrequency("red", 1) == 2); }
     return 0;
 }
