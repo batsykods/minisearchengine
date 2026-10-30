@@ -200,5 +200,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"one", "two"}); x.addDocument(2, {"three", "four"}); assert(x.averageDocumentLength() == 2.0); }
     { InvertedIndex x; x.addDocument(1, {"one"}); assert(x.contains("one")); }
     { InvertedIndex x; x.addDocument(1, {"one"}); assert(!x.contains("two")); }
+    { InvertedIndex x; x.addDocument(1, {"one"}); assert(x.search("one").front() == 1); }
     return 0;
 }
