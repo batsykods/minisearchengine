@@ -211,5 +211,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"red"}); x.addDocument(2, {"blue", "green"}); assert(x.averageDocumentLength() == 1.5); }
     { InvertedIndex x; x.addDocument(10, {"red"}); x.addDocument(1, {"red"}); assert((x.search("red") == std::vector<int>{1, 10})); }
     { InvertedIndex x; x.addDocument(1, {"red"}); assert(x.search("RED").empty()); }
+    { InvertedIndex x; x.addDocument(1, {"red"}); assert(x.termFrequency("blue", 1) == 0); }
     return 0;
 }
