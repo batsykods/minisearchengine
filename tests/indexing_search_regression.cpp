@@ -189,5 +189,6 @@ int main() {
     { InvertedIndex x; assert(x.totalTokenCount() == 0); }
     { InvertedIndex x; assert(x.averageDocumentLength() == 0.0); }
     { InvertedIndex x; x.addDocument(1, {"one"}); assert(x.termCount() == 1); }
+    { InvertedIndex x; x.addDocument(1, {"one", "two"}); assert(x.termCount() == 2); }
     return 0;
 }
