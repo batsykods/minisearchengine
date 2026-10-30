@@ -202,5 +202,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"one"}); assert(!x.contains("two")); }
     { InvertedIndex x; x.addDocument(1, {"one"}); assert(x.search("one").front() == 1); }
     { InvertedIndex x; x.addDocument(1, {"one"}); assert(x.documentFrequency("one") == 1); }
+    { InvertedIndex x; x.addDocument(1, {"one"}); x.addDocument(2, {"one"}); assert(x.documentFrequency("one") == 2); }
     return 0;
 }
