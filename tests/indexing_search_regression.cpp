@@ -215,5 +215,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"red"}); assert(x.documentFrequency("blue") == 0); }
     { InvertedIndex x; x.addDocument(1, {"red"}); x.addDocument(1, {"blue"}); assert(x.documentCount() == 1); }
     { InvertedIndex x; x.addDocument(1, {"red"}); x.addDocument(1, {"blue"}); assert(x.totalTokenCount() == 2); }
+    { InvertedIndex x; x.addDocument(1, {}); x.addDocument(2, {"red"}); assert(x.averageDocumentLength() == 0.5); }
     return 0;
 }
