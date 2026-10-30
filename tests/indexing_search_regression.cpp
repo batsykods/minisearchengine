@@ -192,5 +192,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"one", "two"}); assert(x.termCount() == 2); }
     { InvertedIndex x; x.addDocument(1, {"one", "one"}); assert(x.termCount() == 1); }
     { InvertedIndex x; x.addDocument(1, {"one"}); assert(x.documentCount() == 1); }
+    { InvertedIndex x; x.addDocument(1, {"one"}); x.addDocument(2, {"two"}); assert(x.documentCount() == 2); }
     return 0;
 }
