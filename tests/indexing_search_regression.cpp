@@ -184,5 +184,6 @@ int main() {
             assert(std::abs(first[i].score - second[i].score) < 1e-9);
         }
     }
+    { InvertedIndex x; assert(x.termCount() == 0); }
     return 0;
 }
