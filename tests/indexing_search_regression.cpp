@@ -222,5 +222,6 @@ int main() {
     { InvertedIndex x; x.addDocument(3, {"red"}); x.addDocument(2, {"red"}); x.addDocument(1, {"red"}); assert((x.search("red") == std::vector<int>{1, 2, 3})); }
     { InvertedIndex x; x.addDocument(1, {"red", "blue"}); x.addDocument(2, {"green"}); assert(x.termCount() == 3); }
     { InvertedIndex x; x.addDocument(1, {"red", "blue"}); x.addDocument(2, {"green"}); assert(x.documentCount() == 2); }
+    { InvertedIndex x; x.addDocument(1, {"north", "south"}); assert(x.search("north") == x.search("north")); }
     return 0;
 }
