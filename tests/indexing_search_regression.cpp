@@ -224,5 +224,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"red", "blue"}); x.addDocument(2, {"green"}); assert(x.documentCount() == 2); }
     { InvertedIndex x; x.addDocument(1, {"north", "south"}); assert(x.search("north") == x.search("north")); }
     { InvertedIndex x; x.addDocument(1, {"north", "south"}); assert(x.documentFrequency("north") + x.documentFrequency("south") == 2); }
+    { InvertedIndex index; index.addDocument(1, {"ra0", "rb0"}); index.addDocument(2, {"ra0", "rb0", "rc0"}); index.addDocument(3, {"ra0", "rc0"}); QueryProcessor processor; assert((processor.search(index, "rc0 rb0 ra0") == std::vector<int>{2})); }
     return 0;
 }
