@@ -237,5 +237,6 @@ int main() {
     { InvertedIndex index; index.addDocument(1, {"ra10", "rb10", "rc10"}); index.addDocument(2, {"ra10", "rb10"}); index.addDocument(3, {"ra10", "rb10", "rc10"}); QueryProcessor processor; assert((processor.search(index, "rb10 rc10 ra10") == std::vector<int>{1, 3})); }
     { InvertedIndex index; index.addDocument(1, {"ra11", "rb11"}); index.addDocument(2, {"rb11", "rc11"}); index.addDocument(3, {"ra11", "rc11"}); index.addDocument(4, {"ra11", "rb11", "rc11"}); QueryProcessor processor; assert((processor.search(index, "ra11 rb11 rc11") == std::vector<int>{4})); }
     { InvertedIndex index; index.addDocument(1, {"ra12", "rb12"}); index.addDocument(2, {"ra12", "rb12", "rc12"}); index.addDocument(3, {"ra12", "rc12"}); QueryProcessor processor; assert((processor.search(index, "rc12 rb12 ra12") == std::vector<int>{2})); }
+    { InvertedIndex index; index.addDocument(1, {"ra13", "rb13", "rc13"}); index.addDocument(2, {"ra13", "rb13"}); index.addDocument(3, {"ra13", "rb13", "rc13"}); QueryProcessor processor; assert((processor.search(index, "rb13 ra13 rc13") == std::vector<int>{1, 3})); }
     return 0;
 }
