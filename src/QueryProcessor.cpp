@@ -29,8 +29,14 @@ std::vector<std::string> QueryProcessor::split(const std::string& query) {
 }
 
 std::vector<int> QueryProcessor::search(const InvertedIndex& index, const std::string& query) const {
-    const auto terms = split(query);
+    auto terms = split(query);
     if (terms.empty()) return {};
+
+    std::sort(terms.begin(), terms.end(), [&index](const std::string& left, const std::string& right) {
+        const auto leftFrequency = index.documentFrequency(left);
+        const auto rightFrequency = index.documentFrequency(right);
+        return leftFrequency == rightFrequency ? left < right : leftFrequency < rightFrequency;
+    });
 
     std::vector<int> results = index.search(terms.front());
     for (std::size_t i = 1; i < terms.size(); ++i) {
