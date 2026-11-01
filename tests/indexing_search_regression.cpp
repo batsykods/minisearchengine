@@ -298,4 +298,5 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"alpha"}); BM25Ranker r; assert(r.rank(x, {"alpha"}, 1.2, -0.1).empty()); }
     { InvertedIndex x; x.addDocument(1, {"alpha"}); BM25Ranker r; assert(r.rank(x, {"alpha"}, 1.2, 1.1).empty()); }
     { InvertedIndex x; x.addDocument(1, {"alpha"}); BM25Ranker r; assert(r.rank(x, {"alpha"}, 0.0, 0.75).size()==1); }
+    { InvertedIndex x; x.addDocument(1, {"alpha"}); BM25Ranker r; assert(r.rank(x, {"alpha"}, 1.2, 0.0).size()==1); }
 }
