@@ -281,4 +281,5 @@ int main() {
     { AutocompleteIndex x; x.insert("a"); x.insert("ab"); x.insert("abc"); assert((x.suggest("a", 3) == std::vector<std::string>{"a", "ab", "abc"})); }
     { AutocompleteIndex x; x.insert("alpha"); assert(x.suggest("alpha", 0).empty()); }
     { AutocompleteIndex x; x.insert(""); assert(x.empty()); assert(x.size() == 0); }
+    { AutocompleteIndex x; x.insert("beta"); assert(!x.empty()); assert(x.size() == 1); }
 }
