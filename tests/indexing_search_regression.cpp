@@ -293,4 +293,5 @@ int main() {
     { AutocompleteIndex x; x.insert("a"); x.insert("ab"); x.insert("abc"); assert(x.suggest("abc", 10).size() == 1); }
     { AutocompleteIndex x; x.insert("hello"); assert((x.suggest("he", 10) == std::vector<std::string>{"hello"})); }
     { AutocompleteIndex x; x.insert("hello"); assert(x.suggest("HE", 10).empty()); }
+    { InvertedIndex x; x.addDocument(1, {"alpha", "alpha"}); BM25Ranker r; auto v=r.rank(x, {"alpha"}); assert(v.size()==1); assert(v[0].documentId==1); assert(v[0].score>0.0); }
 }
