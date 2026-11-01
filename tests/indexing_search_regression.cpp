@@ -305,4 +305,5 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"alpha"}); x.addDocument(2, {"alpha"}); BM25Ranker r; auto v=r.rank(x, {"alpha"}); assert(v.size()==2); }
     { InvertedIndex x; x.addDocument(9, {"alpha"}); x.addDocument(3, {"beta"}); BM25Ranker r; auto v=r.rank(x, {"alpha", "beta"}); assert(v.size()==2); }
     { InvertedIndex x; x.addDocument(1, {"alpha"}); QueryProcessor q; assert((q.search(x, " alpha  ") == std::vector<int>{1})); }
+    { InvertedIndex x; x.addDocument(1, {"alpha", "beta"}); QueryProcessor q; assert((q.search(x, "alpha, beta") == std::vector<int>{1})); }
 }
