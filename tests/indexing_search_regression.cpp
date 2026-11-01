@@ -295,4 +295,5 @@ int main() {
     { AutocompleteIndex x; x.insert("hello"); assert(x.suggest("HE", 10).empty()); }
     { InvertedIndex x; x.addDocument(1, {"alpha", "alpha"}); BM25Ranker r; auto v=r.rank(x, {"alpha"}); assert(v.size()==1); assert(v[0].documentId==1); assert(v[0].score>0.0); }
     { InvertedIndex x; x.addDocument(1, {"alpha"}); BM25Ranker r; assert(r.rank(x, {"alpha"}, -1.0, 0.75).empty()); }
+    { InvertedIndex x; x.addDocument(1, {"alpha"}); BM25Ranker r; assert(r.rank(x, {"alpha"}, 1.2, -0.1).empty()); }
 }
