@@ -313,4 +313,5 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"alpha"}); x.addDocument(2, {"beta"}); QueryProcessor q; assert(q.search(x, "alpha beta").empty()); }
     { InvertedIndex x; x.addDocument(1, {"alpha", "beta", "gamma"}); QueryProcessor q; assert((q.search(x, "gamma beta alpha") == std::vector<int>{1})); }
     { InvertedIndex x; x.addDocument(1, {"alpha"}); QueryProcessor q; assert(q.search(x, "alpha\nunknown").empty()); }
+    { InvertedIndex x; x.addDocument(1, {"alpha", "beta"}); QueryProcessor q; assert((q.search(x, "alpha\tbeta") == std::vector<int>{1})); }
 }
