@@ -277,4 +277,5 @@ int main() {
     { AutocompleteIndex x; x.insert("cat"); x.insert("car"); assert((x.suggest("ca", 10) == std::vector<std::string>{"car", "cat"})); }
     { AutocompleteIndex x; x.insert("dog"); assert(x.suggest("z").empty()); }
     { AutocompleteIndex x; x.insert("dog"); assert((x.suggest("dog") == std::vector<std::string>{"dog"})); }
+    { AutocompleteIndex x; x.insert("dog"); assert(x.suggest("dogs").empty()); }
 }
