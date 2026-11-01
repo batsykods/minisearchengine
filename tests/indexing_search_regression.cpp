@@ -287,4 +287,5 @@ int main() {
     { AutocompleteIndex x; x.insert("same"); x.insert("same"); x.insert("same"); assert(x.size() == 1); }
     { AutocompleteIndex x; x.insert("a"); x.insert("b"); x.insert("c"); assert(x.suggest("", 5).size() == 3); }
     { AutocompleteIndex x; x.insert("apple"); x.insert("apply"); x.insert("apt"); assert((x.suggest("app", 10) == std::vector<std::string>{"apple", "apply"})); }
+    { AutocompleteIndex x; x.insert("zoo"); x.insert("zoom"); assert((x.suggest("zo", 10) == std::vector<std::string>{"zoo", "zoom"})); }
 }
