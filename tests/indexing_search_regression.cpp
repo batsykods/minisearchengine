@@ -283,4 +283,5 @@ int main() {
     { AutocompleteIndex x; x.insert(""); assert(x.empty()); assert(x.size() == 0); }
     { AutocompleteIndex x; x.insert("beta"); assert(!x.empty()); assert(x.size() == 1); }
     { AutocompleteIndex x; x.insert("beta"); x.insert("alpha"); x.insert("gamma"); assert((x.suggest("", 2) == std::vector<std::string>{"alpha", "beta"})); }
+    { AutocompleteIndex x; x.insert("prefix"); x.insert("prelude"); assert((x.suggest("pre", 1) == std::vector<std::string>{"prefix"})); }
 }
