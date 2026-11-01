@@ -292,4 +292,5 @@ int main() {
     { AutocompleteIndex x; x.insert("a"); x.insert("ab"); assert(x.suggest("ab", 10).size() == 1); }
     { AutocompleteIndex x; x.insert("a"); x.insert("ab"); x.insert("abc"); assert(x.suggest("abc", 10).size() == 1); }
     { AutocompleteIndex x; x.insert("hello"); assert((x.suggest("he", 10) == std::vector<std::string>{"hello"})); }
+    { AutocompleteIndex x; x.insert("hello"); assert(x.suggest("HE", 10).empty()); }
 }
