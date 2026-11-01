@@ -275,4 +275,5 @@ int main() {
     { InvertedIndex index; index.addDocument(1, {"ra48", "rb48"}); index.addDocument(2, {"ra48", "rb48", "rc48"}); index.addDocument(3, {"ra48", "rc48"}); QueryProcessor processor; assert((processor.search(index, "ra48 rb48 rc48") == std::vector<int>{2})); }
     return 0;
     { AutocompleteIndex x; x.insert("cat"); x.insert("car"); assert((x.suggest("ca", 10) == std::vector<std::string>{"car", "cat"})); }
+    { AutocompleteIndex x; x.insert("dog"); assert(x.suggest("z").empty()); }
 }
