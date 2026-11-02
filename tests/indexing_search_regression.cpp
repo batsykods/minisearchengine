@@ -356,5 +356,6 @@ int main() {
     { BM25Ranker r; InvertedIndex x; assert(r.rank(x, {"alpha"}).empty()); }
     { BM25Ranker r; InvertedIndex x; x.addDocument(1, {}); assert(r.rank(x, {"alpha"}).empty()); }
     { BM25Ranker r; InvertedIndex x; x.addDocument(1, {"alpha"}); auto v=r.rank(x, {"alpha"}); assert(v.size()==1); }
+    { BM25Ranker r; InvertedIndex x; x.addDocument(1, {"alpha"}); x.addDocument(2, {"beta"}); auto v=r.rank(x, {"alpha"}); assert(v.front().documentId==1); }
     return 0;
 }
