@@ -317,5 +317,6 @@ int main() {
     { AutocompleteIndex x; x.insert("alpha"); x.insert("beta"); assert(x.suggest("z", 4).empty()); }
     { AutocompleteIndex x; x.insert("prefix"); assert((x.suggest("prefix", 2) == std::vector<std::string>{"prefix"})); }
     { AutocompleteIndex x; x.insert("app"); x.insert("apple"); assert((x.suggest("app", 2) == std::vector<std::string>{"app", "apple"})); }
+    { AutocompleteIndex x; x.insert("car"); x.insert("cart"); x.insert("carbon"); assert((x.suggest("car", 2) == std::vector<std::string>{"car", "carbon"})); }
     return 0;
 }
