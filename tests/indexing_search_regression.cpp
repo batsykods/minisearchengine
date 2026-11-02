@@ -341,5 +341,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"a"}); assert(x.documentFrequency("missing") == 0); }
     { InvertedIndex x; x.addDocument(1, {"a"}); x.addDocument(1, {"b"}); assert(x.documentCount() == 1); }
     { InvertedIndex x; x.addDocument(1, {"a"}); x.addDocument(1, {"b"}); assert(x.documentLength(1) == 2); }
+    { InvertedIndex x; x.addDocument(3, {"a"}); x.addDocument(1, {"a"}); x.addDocument(2, {"a"}); assert((x.search("a") == std::vector<int>{1, 2, 3})); }
     return 0;
 }
