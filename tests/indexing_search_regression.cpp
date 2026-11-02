@@ -315,5 +315,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"alpha", "beta"}); QueryProcessor q; assert((q.search(x, "alpha\tbeta") == std::vector<int>{1})); }
     { AutocompleteIndex x; x.insert("bat"); x.insert("ball"); x.insert("barn"); assert((x.suggest("ba", 3) == std::vector<std::string>{"ball", "barn", "bat"})); }
     { AutocompleteIndex x; x.insert("alpha"); x.insert("beta"); assert(x.suggest("z", 4).empty()); }
+    { AutocompleteIndex x; x.insert("prefix"); assert((x.suggest("prefix", 2) == std::vector<std::string>{"prefix"})); }
     return 0;
 }
