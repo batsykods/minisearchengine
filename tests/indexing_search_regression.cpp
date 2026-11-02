@@ -337,5 +337,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"a", "b"}); x.addDocument(2, {"c"}); assert(x.totalTokenCount() == 3); }
     { InvertedIndex x; x.addDocument(1, {"a", "b"}); x.addDocument(2, {"c"}); assert(std::abs(x.averageDocumentLength() - 1.5) < 1e-9); }
     { InvertedIndex x; x.addDocument(1, {"a"}); assert(x.documentLength(99) == 0); }
+    { InvertedIndex x; x.addDocument(1, {"a"}); assert(x.termFrequency("a", 99) == 0); }
     return 0;
 }
