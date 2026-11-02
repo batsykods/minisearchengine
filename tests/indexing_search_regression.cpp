@@ -339,5 +339,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"a"}); assert(x.documentLength(99) == 0); }
     { InvertedIndex x; x.addDocument(1, {"a"}); assert(x.termFrequency("a", 99) == 0); }
     { InvertedIndex x; x.addDocument(1, {"a"}); assert(x.documentFrequency("missing") == 0); }
+    { InvertedIndex x; x.addDocument(1, {"a"}); x.addDocument(1, {"b"}); assert(x.documentCount() == 1); }
     return 0;
 }
