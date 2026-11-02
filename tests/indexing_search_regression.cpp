@@ -325,5 +325,6 @@ int main() {
     { AutocompleteIndex x; x.insert("first"); x.insert("second"); x.insert("third"); assert(x.size() == 3); }
     { AutocompleteIndex x; x.insert("first"); x.insert("second"); x.insert("third"); x.insert("second"); assert(x.size() == 3); }
     { AutocompleteIndex x; x.insert("a"); assert(x.suggest("", 0).empty()); }
+    { AutocompleteIndex x; x.insert("lower"); assert(x.suggest("LOW").empty()); }
     return 0;
 }
