@@ -273,7 +273,6 @@ int main() {
     { InvertedIndex index; index.addDocument(1, {"ra46", "rb46", "rc46"}); index.addDocument(2, {"ra46", "rb46"}); index.addDocument(3, {"ra46", "rb46", "rc46"}); QueryProcessor processor; assert((processor.search(index, "rc46 rb46 ra46") == std::vector<int>{1, 3})); }
     { InvertedIndex index; index.addDocument(1, {"ra47", "rb47"}); index.addDocument(2, {"rb47", "rc47"}); index.addDocument(3, {"ra47", "rc47"}); index.addDocument(4, {"ra47", "rb47", "rc47"}); QueryProcessor processor; assert((processor.search(index, "rb47 ra47 rc47") == std::vector<int>{4})); }
     { InvertedIndex index; index.addDocument(1, {"ra48", "rb48"}); index.addDocument(2, {"ra48", "rb48", "rc48"}); index.addDocument(3, {"ra48", "rc48"}); QueryProcessor processor; assert((processor.search(index, "ra48 rb48 rc48") == std::vector<int>{2})); }
-    return 0;
     { AutocompleteIndex x; x.insert("cat"); x.insert("car"); assert((x.suggest("ca", 10) == std::vector<std::string>{"car", "cat"})); }
     { AutocompleteIndex x; x.insert("dog"); assert(x.suggest("z").empty()); }
     { AutocompleteIndex x; x.insert("dog"); assert((x.suggest("dog") == std::vector<std::string>{"dog"})); }
@@ -314,4 +313,5 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"alpha", "beta", "gamma"}); QueryProcessor q; assert((q.search(x, "gamma beta alpha") == std::vector<int>{1})); }
     { InvertedIndex x; x.addDocument(1, {"alpha"}); QueryProcessor q; assert(q.search(x, "alpha\nunknown").empty()); }
     { InvertedIndex x; x.addDocument(1, {"alpha", "beta"}); QueryProcessor q; assert((q.search(x, "alpha\tbeta") == std::vector<int>{1})); }
+    return 0;
 }
