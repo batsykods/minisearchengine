@@ -334,5 +334,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"a", "a", "b"}); assert(x.documentLength(1) == 3); }
     { InvertedIndex x; x.addDocument(1, {"a"}); x.addDocument(2, {"b"}); assert(x.documentFrequency("a") == 1); }
     { InvertedIndex x; x.addDocument(1, {"a"}); x.addDocument(2, {"b"}); assert(x.termCount() == 2); }
+    { InvertedIndex x; x.addDocument(1, {"a", "b"}); x.addDocument(2, {"c"}); assert(x.totalTokenCount() == 3); }
     return 0;
 }
