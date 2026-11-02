@@ -328,5 +328,6 @@ int main() {
     { AutocompleteIndex x; x.insert("lower"); assert(x.suggest("LOW").empty()); }
     { AutocompleteIndex x; x.insert("a1"); x.insert("a2"); assert(x.suggest("a", 10).size() == 2); }
     { AutocompleteIndex x; x.insert("longword"); assert(x.suggest("longw", 10).front() == "longword"); }
+    { InvertedIndex x; x.addDocument(5, {"alpha", "beta"}); assert(x.search("alpha").front() == 5); }
     return 0;
 }
