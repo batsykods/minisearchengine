@@ -331,5 +331,6 @@ int main() {
     { InvertedIndex x; x.addDocument(5, {"alpha", "beta"}); assert(x.search("alpha").front() == 5); }
     { InvertedIndex x; x.addDocument(5, {"alpha", "beta"}); x.addDocument(2, {"alpha"}); assert((x.search("alpha") == std::vector<int>{2, 5})); }
     { InvertedIndex x; x.addDocument(1, {"a", "a", "b"}); assert(x.termFrequency("a", 1) == 2); }
+    { InvertedIndex x; x.addDocument(1, {"a", "a", "b"}); assert(x.documentLength(1) == 3); }
     return 0;
 }
