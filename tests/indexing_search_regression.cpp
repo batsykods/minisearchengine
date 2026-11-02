@@ -327,5 +327,6 @@ int main() {
     { AutocompleteIndex x; x.insert("a"); assert(x.suggest("", 0).empty()); }
     { AutocompleteIndex x; x.insert("lower"); assert(x.suggest("LOW").empty()); }
     { AutocompleteIndex x; x.insert("a1"); x.insert("a2"); assert(x.suggest("a", 10).size() == 2); }
+    { AutocompleteIndex x; x.insert("longword"); assert(x.suggest("longw", 10).front() == "longword"); }
     return 0;
 }
