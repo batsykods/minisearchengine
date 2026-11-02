@@ -345,5 +345,6 @@ int main() {
     { InvertedIndex x; x.addDocument(1, {"a", "", "b"}); assert(x.documentLength(1) == 2); }
     { QueryProcessor q; InvertedIndex x; x.addDocument(1, {"alpha"}); assert(q.search(x, "").empty()); }
     { QueryProcessor q; InvertedIndex x; x.addDocument(1, {"alpha"}); assert(q.search(x, "   ").empty()); }
+    { QueryProcessor q; InvertedIndex x; x.addDocument(1, {"alpha"}); assert((q.search(x, "alpha") == std::vector<int>{1})); }
     return 0;
 }
