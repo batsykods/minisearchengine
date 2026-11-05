@@ -13,6 +13,7 @@ private:
     std::unordered_map<std::string, std::unordered_map<int, std::size_t>> frequencies;
     std::unordered_set<int> documentIds;
     std::unordered_map<int, std::size_t> documentLengths;
+    std::size_t totalTokens = 0;
 
 public:
     void addDocument(int documentId, const std::vector<std::string>& tokens);
