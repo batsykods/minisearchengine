@@ -11,6 +11,7 @@ void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& 
     for (const std::string& token : tokens) {
         if (token.empty()) continue;
         ++documentLengths[documentId];
+        ++totalTokens;
         ++batchFrequencies[token];
     }
 
@@ -65,12 +66,7 @@ std::size_t InvertedIndex::documentLength(int documentId) const {
 }
 
 std::size_t InvertedIndex::totalTokenCount() const {
-    std::size_t total = 0;
-    for (const auto& [documentId, length] : documentLengths) {
-        (void)documentId;
-        total += length;
-    }
-    return total;
+    return totalTokens;
 }
 
 double InvertedIndex::averageDocumentLength() const {
