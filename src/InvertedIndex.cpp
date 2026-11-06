@@ -7,10 +7,11 @@ void InvertedIndex::addDocument(int documentId, const std::vector<std::string>& 
     documentIds.insert(documentId);
     std::unordered_map<std::string, std::size_t> batchFrequencies;
     batchFrequencies.reserve(tokens.size());
+    auto& documentLength = documentLengths[documentId];
 
     for (const std::string& token : tokens) {
         if (token.empty()) continue;
-        ++documentLengths[documentId];
+        ++documentLength;
         ++totalTokens;
         ++batchFrequencies[token];
     }
