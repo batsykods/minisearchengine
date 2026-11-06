@@ -3129,3 +3129,7 @@ add_executable(indexing_search_regression
 )
 target_include_directories(indexing_search_regression PRIVATE include)
 add_test(NAME indexing_search_regression COMMAND indexing_search_regression)
+
+add_executable(autocomplete_regression tests/autocomplete_regression.cpp src/AutocompleteIndex.cpp)
+target_include_directories(autocomplete_regression PRIVATE include)
+add_test(NAME autocomplete_regression COMMAND autocomplete_regression)
