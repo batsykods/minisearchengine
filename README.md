@@ -28,6 +28,7 @@ On Windows with a multi-config generator, run the executable from the generated 
 
 - The inverted index stores sorted document postings so lookup results are deterministic.
 - Document ingestion aggregates repeated terms locally before updating posting lists. This avoids repeated binary searches and vector insertions for the same term within a document.
+- The inverted index maintains an aggregate token counter during ingestion, making total token count and average document length queries O(1).
 - Term frequency and document length accounting must remain correct when a document contains repeated terms or is added more than once.
 - The LRU search cache uses a hash lookup and list splice to move hits to the most-recently-used position in constant time.
 - Autocomplete traverses only the trie path for a prefix and stops collecting once the requested result limit is reached.
