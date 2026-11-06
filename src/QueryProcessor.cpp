@@ -42,6 +42,7 @@ std::vector<int> QueryProcessor::search(const InvertedIndex& index, const std::s
     for (std::size_t i = 1; i < terms.size(); ++i) {
         const auto& postings = index.search(terms[i]);
         std::vector<int> intersection;
+        intersection.reserve(std::min(results.size(), postings.size()));
         std::set_intersection(results.begin(), results.end(), postings.begin(), postings.end(),
                               std::back_inserter(intersection));
         results = std::move(intersection);
