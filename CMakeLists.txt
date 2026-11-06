@@ -25,6 +25,11 @@ add_executable(search_engine
     src/SearchCache.cpp
 )
 target_include_directories(search_engine PRIVATE include)
+
+add_executable(search_cache_regression tests/search_cache_regression.cpp src/SearchCache.cpp)
+target_include_directories(search_cache_regression PRIVATE include)
+add_executable(top_k_regression tests/top_k_regression.cpp src/TopK.cpp)
+target_include_directories(top_k_regression PRIVATE include)
 target_compile_options(search_engine PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
 
 add_executable(tokenizer_smoke tests/tokenizer_smoke.cpp src/Tokenizer.cpp)
@@ -70,6 +75,8 @@ add_executable(query_processor_smoke tests/query_processor_smoke.cpp src/QueryPr
 target_include_directories(query_processor_smoke PRIVATE include)
 
 add_test(NAME tokenizer_smoke COMMAND tokenizer_smoke)
+add_test(NAME search_cache_regression COMMAND search_cache_regression)
+add_test(NAME top_k_regression COMMAND top_k_regression)
 add_test(NAME tokenizer_edge_cases COMMAND tokenizer_edge_cases)
 add_test(NAME tokenizer_numbers COMMAND tokenizer_numbers)
 add_test(NAME tokenizer_mixed_punctuation COMMAND tokenizer_mixed_punctuation)
