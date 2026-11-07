@@ -3133,3 +3133,15 @@ add_test(NAME indexing_search_regression COMMAND indexing_search_regression)
 add_executable(autocomplete_regression tests/autocomplete_regression.cpp src/AutocompleteIndex.cpp)
 target_include_directories(autocomplete_regression PRIVATE include)
 add_test(NAME autocomplete_regression COMMAND autocomplete_regression)
+
+add_executable(search_engine_bm25_regression
+    tests/search_engine_bm25_regression.cpp
+    src/SearchEngine.cpp
+    src/BM25Ranker.cpp
+    src/Ranker.cpp
+    src/QueryTokenizer.cpp
+    src/Tokenizer.cpp
+    src/InvertedIndex.cpp
+)
+target_include_directories(search_engine_bm25_regression PRIVATE include)
+add_test(NAME search_engine_bm25_regression COMMAND search_engine_bm25_regression)
