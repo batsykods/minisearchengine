@@ -3145,3 +3145,7 @@ add_executable(search_engine_bm25_regression
 )
 target_include_directories(search_engine_bm25_regression PRIVATE include)
 add_test(NAME search_engine_bm25_regression COMMAND search_engine_bm25_regression)
+
+add_executable(bm25_non_finite_parameters tests/bm25_non_finite_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+target_include_directories(bm25_non_finite_parameters PRIVATE include)
+add_test(NAME bm25_non_finite_parameters COMMAND bm25_non_finite_parameters)
