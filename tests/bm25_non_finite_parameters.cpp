@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cmath>
+#include <limits>
 #include "BM25Ranker.h"
 
 int main() {
