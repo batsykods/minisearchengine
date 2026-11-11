@@ -60,7 +60,22 @@ The goal is not simply to use an existing search library. The core search compon
 
 ## Current Stage
 
-Phase 1 — Search Engine Foundation
+Phase 1 — Search Engine Foundation completed; Phase 2 — Information Retrieval implemented in part, with Phase 3 search-engine components underway.
+
+### Implemented Search Components
+
+- Inverted-index keyword retrieval
+- Query tokenization and normalization
+- TF-IDF-style ranked retrieval and BM25 ranking
+- Top-K result selection
+- Trie-based autocomplete
+- LRU query-result cache
+- Search-result snippet generation
+- Phrase matching utility
+- Index statistics
+- Integrated `SearchEngine` API for keyword, ranked, and BM25 search
+
+These components are implemented in the repository; this list does not imply that every planned feature is integrated into the command-line application.
 
 ```text
 Documents
@@ -95,6 +110,7 @@ The first version operates on local `.txt` documents.
 - Command-line queries are normalized before lookup
 - CMake build and CTest test flow configured
 - Tokenizer and inverted-index edge cases covered by executable tests
+- Regression tests cover ranking, BM25 validation, autocomplete, caching, and search-engine integration
 
 ## Planned Features
 
