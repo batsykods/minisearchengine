@@ -111,6 +111,7 @@ The first version operates on local `.txt` documents.
 - CMake build and CTest test flow configured
 - Tokenizer and inverted-index edge cases covered by executable tests
 - Regression tests cover ranking, BM25 validation, autocomplete, caching, and search-engine integration
+- Dedicated regression targets cover phrase matching and index statistics
 
 ## Planned Features
 
