@@ -3159,3 +3159,8 @@ add_test(NAME bm25_large_parameter_stability COMMAND bm25_large_parameter_stabil
 add_executable(phrase_matcher_regression tests/phrase_matcher_regression.cpp src/PhraseMatcher.cpp)
 target_include_directories(phrase_matcher_regression PRIVATE include)
 add_test(NAME phrase_matcher_regression COMMAND phrase_matcher_regression)
+
+
+add_executable(index_stats_regression tests/index_stats_regression.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+target_include_directories(index_stats_regression PRIVATE include)
+add_test(NAME index_stats_regression COMMAND index_stats_regression)
