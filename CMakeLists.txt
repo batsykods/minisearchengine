@@ -3149,3 +3149,8 @@ add_test(NAME search_engine_bm25_regression COMMAND search_engine_bm25_regressio
 add_executable(bm25_non_finite_parameters tests/bm25_non_finite_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_non_finite_parameters PRIVATE include)
 add_test(NAME bm25_non_finite_parameters COMMAND bm25_non_finite_parameters)
+
+
+add_executable(bm25_large_parameter_stability tests/bm25_large_parameter_stability.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+target_include_directories(bm25_large_parameter_stability PRIVATE include)
+add_test(NAME bm25_large_parameter_stability COMMAND bm25_large_parameter_stability)
