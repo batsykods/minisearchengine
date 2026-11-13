@@ -3164,3 +3164,8 @@ add_test(NAME phrase_matcher_regression COMMAND phrase_matcher_regression)
 add_executable(index_stats_regression tests/index_stats_regression.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
 target_include_directories(index_stats_regression PRIVATE include)
 add_test(NAME index_stats_regression COMMAND index_stats_regression)
+
+
+add_executable(bm25_parameter_boundaries tests/bm25_parameter_boundaries.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+target_include_directories(bm25_parameter_boundaries PRIVATE include)
+add_test(NAME bm25_parameter_boundaries COMMAND bm25_parameter_boundaries)
