@@ -3154,3 +3154,8 @@ add_test(NAME bm25_non_finite_parameters COMMAND bm25_non_finite_parameters)
 add_executable(bm25_large_parameter_stability tests/bm25_large_parameter_stability.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
 target_include_directories(bm25_large_parameter_stability PRIVATE include)
 add_test(NAME bm25_large_parameter_stability COMMAND bm25_large_parameter_stability)
+
+
+add_executable(phrase_matcher_regression tests/phrase_matcher_regression.cpp src/PhraseMatcher.cpp)
+target_include_directories(phrase_matcher_regression PRIVATE include)
+add_test(NAME phrase_matcher_regression COMMAND phrase_matcher_regression)
