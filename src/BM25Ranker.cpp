@@ -25,8 +25,16 @@ std::vector<SearchResult> BM25Ranker::rank(const InvertedIndex& index, const std
         for (int documentId : postings) {
             const double tf = static_cast<double>(index.termFrequency(term, documentId));
             const double length = static_cast<double>(index.documentLength(documentId));
-            const double normalization = k1 * (1.0 - b + b * length / safeAverageLength);
-            scores[documentId] += idf * (tf * (k1 + 1.0)) / (tf + normalization);
+            const double lengthNormalization = 1.0 - b + b * length / safeAverageLength;
+            double termScore;
+            if (k1 > 1.0) {
+                const double inverseK1 = 1.0 / k1;
+                termScore = tf * (1.0 + inverseK1) / (tf * inverseK1 + lengthNormalization);
+            } else {
+                const double normalization = k1 * lengthNormalization;
+                termScore = (tf * (k1 + 1.0)) / (tf + normalization);
+            }
+            scores[documentId] += idf * termScore;
         }
     }
 
