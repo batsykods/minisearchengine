@@ -60,7 +60,7 @@ The goal is not simply to use an existing search library. The core search compon
 
 ## Current Stage
 
-Phase 1 — Search Engine Foundation completed; Phase 2 — Information Retrieval implemented in part, with Phase 3 search-engine components underway.
+Phase 1 — Search Engine Foundation is implemented. Phase 2 — Information Retrieval has core ranking and retrieval components implemented, while positional indexing, Boolean query syntax, and full phrase-query integration remain planned. Phase 3 — Search Engine Engineering is partially implemented.
 
 ### Implemented Search Components
 
@@ -312,14 +312,17 @@ Currently under development.
 
 ### In Progress
 
-- Phase 1: Search Engine Foundation
+- Phase 3: Search Engine Engineering
 
 ### Next
 
-- Query processing
-- Better indexing coverage
-- Search result scoring
-- Unit tests
+- Integrate autocomplete and query suggestions into the application flow
+- Add positional postings for efficient phrase queries
+- Add Boolean query operators
+- Add reproducible corpus benchmarks
+- Add persistent index storage
+
+The component list above describes implemented library functionality; it does not imply that autocomplete, caching, snippets, or phrase matching are all exposed through the CLI.
 
 ## License
 
