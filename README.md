@@ -110,7 +110,7 @@ The first version operates on local `.txt` documents.
 - Command-line queries are normalized before lookup
 - CMake build and CTest test flow configured
 - Tokenizer and inverted-index edge cases covered by executable tests
-- Regression tests cover ranking, BM25 validation, autocomplete, caching, and search-engine integration
+- Regression tests cover ranking, BM25 validation (including parameter boundaries and extreme finite values), autocomplete, caching, and search-engine integration
 - Dedicated regression targets cover phrase matching and index statistics
 
 ## Planned Features
