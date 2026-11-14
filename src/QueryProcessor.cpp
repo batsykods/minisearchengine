@@ -1,15 +1,15 @@
 #include "QueryProcessor.h"
+#include "TextNormalization.h"
 
 #include <algorithm>
-#include <cctype>
 #include <sstream>
 
 std::string QueryProcessor::normalizeTerm(const std::string& term) {
     std::string normalized;
     normalized.reserve(term.size());
     for (char character : term) {
-        if (std::isalnum(static_cast<unsigned char>(character))) {
-            normalized += static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+        if (text_normalization::isAlphaNumeric(static_cast<unsigned char>(character))) {
+            normalized += text_normalization::toLower(static_cast<unsigned char>(character));
         }
     }
     return normalized;
