@@ -1,30 +1,13 @@
 #include "QueryProcessor.h"
-#include "TextNormalization.h"
+
+#include "Tokenizer.h"
 
 #include <algorithm>
 #include <iterator>
-#include <sstream>
 #include <utility>
 
-std::string QueryProcessor::normalizeTerm(const std::string& term) {
-    std::string normalized;
-    normalized.reserve(term.size());
-    for (char character : term) {
-        if (text_normalization::isAlphaNumeric(static_cast<unsigned char>(character))) {
-            normalized += text_normalization::toLower(static_cast<unsigned char>(character));
-        }
-    }
-    return normalized;
-}
-
 std::vector<std::string> QueryProcessor::split(const std::string& query) {
-    std::istringstream stream(query);
-    std::vector<std::string> terms;
-    std::string term;
-    while (stream >> term) {
-        const std::string normalized = normalizeTerm(term);
-        if (!normalized.empty()) terms.push_back(normalized);
-    }
+    auto terms = Tokenizer{}.tokenize(query);
     std::sort(terms.begin(), terms.end());
     terms.erase(std::unique(terms.begin(), terms.end()), terms.end());
     return terms;
