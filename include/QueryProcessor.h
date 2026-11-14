@@ -11,7 +11,6 @@ public:
     std::vector<int> search(const InvertedIndex& index, const std::string& query) const;
 
 private:
-    static std::string normalizeTerm(const std::string& term);
     static std::vector<std::string> split(const std::string& query);
 };
 
