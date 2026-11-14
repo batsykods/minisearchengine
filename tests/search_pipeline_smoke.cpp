@@ -15,8 +15,8 @@ int main() {
     assert(document.getId() == 99);
     assert(!document.getContent().empty());
     assert(index.termCount() > 0);
-    assert(!index.search("cpp").empty());
-    assert(index.search("cpp").front() == 99);
+    assert(!index.search("c").empty());
+    assert(index.search("c").front() == 99);
 
     return 0;
 }
