@@ -70,6 +70,7 @@ Phase 1 — Search Engine Foundation is implemented. Phase 2 — Information Ret
 
 - Inverted-index keyword retrieval
 - Query tokenization and normalization
+- Document and query parsing share the same tokenizer, so case folding and punctuation boundaries stay consistent
 - TF-IDF-style ranked retrieval and BM25 ranking
 - Top-K result selection
 - Trie-based autocomplete
