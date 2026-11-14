@@ -1,14 +1,14 @@
 #include "SnippetBuilder.h"
+#include "TextNormalization.h"
 
 #include <algorithm>
-#include <cctype>
 
 std::string SnippetBuilder::build(const std::string& content, const std::vector<std::string>& terms,
                                   std::size_t maxLength) const {
     if (content.empty() || maxLength == 0) return {};
     std::string loweredContent = content;
     std::transform(loweredContent.begin(), loweredContent.end(), loweredContent.begin(),
-                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+                   [](unsigned char c) { return text_normalization::toLower(c); });
     std::size_t match = std::string::npos;
     for (const auto& term : terms) {
         if (term.empty()) continue;
