@@ -9,9 +9,9 @@ The project will begin as a basic local search engine and progressively evolve i
 The project uses CMake and requires C++17 or newer.
 
 ```bash
-cmake -S . -B build
-cmake --build build
-ctest --test-dir build --output-on-failure
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release --parallel 2
+ctest --test-dir build -C Release --output-on-failure --no-tests=error
 ./build/search_engine
 ```
 
@@ -22,7 +22,11 @@ Pass a term to search for it directly:
 ./build/search_engine algorithms
 ```
 
-On Windows with a multi-config generator, run the executable from the generated configuration directory, for example `build/Debug/search_engine.exe`.
+On Windows with a multi-config generator, run the executable from the generated configuration directory, for example `build/Release/search_engine.exe`.
+
+## Build Architecture
+
+CMake compiles the production components once into the reusable `search_core` static library. The command-line executable and regression test executables link against that library instead of recompiling production sources for every test. The `add_search_test` CMake helper centralizes test include paths, linking, and CTest registration.
 
 ## Performance Notes
 
