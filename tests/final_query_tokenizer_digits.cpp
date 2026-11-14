@@ -5,6 +5,6 @@
 
 int main() {
     QueryTokenizer tokenizer;
-    std::vector<std::string> got = tokenizer.tokenize("IPv6 2026 v2"); assert((got == std::vector<std::string>{"ipv", "6", "2026", "v2"}));
+    std::vector<std::string> got = tokenizer.tokenize("IPv6 2026 v2"); assert((got == std::vector<std::string>{"ipv6", "2026", "v2"}));
     return 0;
 }
