@@ -1,6 +1,6 @@
 #include "Tokenizer.h"
+#include "TextNormalization.h"
 
-#include <cctype>
 
 std::vector<std::string> Tokenizer::tokenize(const std::string& text) const {
     std::vector<std::string> tokens;
@@ -8,8 +8,8 @@ std::vector<std::string> Tokenizer::tokenize(const std::string& text) const {
     tokens.reserve(text.empty() ? 0 : text.size() / 5 + 1);
 
     for (char character : text) {
-        if (std::isalnum(static_cast<unsigned char>(character))) {
-            current += static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+        if (text_normalization::isAlphaNumeric(static_cast<unsigned char>(character))) {
+            current += text_normalization::toLower(static_cast<unsigned char>(character));
         } else if (!current.empty()) {
             tokens.push_back(current);
             current.clear();
