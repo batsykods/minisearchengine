@@ -5,7 +5,7 @@ function(add_search_test target)
     if(NOT TARGET "${target}")
         message(FATAL_ERROR "Cannot register test for missing target: ${target}")
     endif()
-    target_include_directories("${target}" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    target_link_libraries("${target}" PRIVATE search_core)
     add_test(NAME "${target}" COMMAND "${target}")
 endfunction()
 
@@ -13,8 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(search_engine
-    src/main.cpp
+add_library(search_core STATIC
     src/Document.cpp
     src/DocumentLoader.cpp
     src/Tokenizer.cpp
@@ -32,34 +31,38 @@ add_executable(search_engine
     src/AutocompleteIndex.cpp
     src/SearchCache.cpp
 )
-target_include_directories(search_engine PRIVATE include)
+target_include_directories(search_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-add_executable(search_cache_regression tests/search_cache_regression.cpp src/SearchCache.cpp)
-add_executable(top_k_regression tests/top_k_regression.cpp src/TopK.cpp)
-add_executable(bm25_ranker_regression tests/bm25_ranker_regression.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(search_engine src/main.cpp)
+
+add_executable(search_cache_regression tests/search_cache_regression.cpp)
+add_executable(top_k_regression tests/top_k_regression.cpp)
+add_executable(bm25_ranker_regression tests/bm25_ranker_regression.cpp)
+target_link_libraries(search_engine PRIVATE search_core)
+target_compile_options(search_core PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
 target_compile_options(search_engine PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
 
-add_executable(tokenizer_smoke tests/tokenizer_smoke.cpp src/Tokenizer.cpp)
-add_executable(tokenizer_edge_cases tests/tokenizer_edge_cases.cpp src/Tokenizer.cpp)
-add_executable(tokenizer_numbers tests/tokenizer_numbers.cpp src/Tokenizer.cpp)
-add_executable(tokenizer_mixed_punctuation tests/tokenizer_mixed_punctuation.cpp src/Tokenizer.cpp)
-add_executable(tokenizer_whitespace tests/tokenizer_whitespace.cpp src/Tokenizer.cpp)
-add_executable(tokenizer_single_token tests/tokenizer_single_token.cpp src/Tokenizer.cpp)
-add_executable(tokenizer_empty_input tests/tokenizer_empty_input.cpp src/Tokenizer.cpp)
-add_executable(inverted_index_smoke tests/inverted_index_smoke.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_duplicate_terms tests/inverted_index_duplicate_terms.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_empty_tokens tests/inverted_index_empty_tokens.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_multiple_documents tests/inverted_index_multiple_documents.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_missing_term tests/inverted_index_missing_term.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_zero_id tests/inverted_index_zero_id.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_empty_document tests/inverted_index_empty_document.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_document_count tests/inverted_index_document_count.cpp src/InvertedIndex.cpp)
-add_executable(document_smoke tests/document_smoke.cpp src/Document.cpp)
-add_executable(document_getters tests/document_getters.cpp src/Document.cpp)
-add_executable(document_loader_failure tests/document_loader_failure.cpp src/DocumentLoader.cpp src/Document.cpp)
-add_executable(search_pipeline_smoke tests/search_pipeline_smoke.cpp src/Document.cpp src/DocumentLoader.cpp src/Tokenizer.cpp src/InvertedIndex.cpp src/QueryProcessor.cpp)
+add_executable(tokenizer_smoke tests/tokenizer_smoke.cpp)
+add_executable(tokenizer_edge_cases tests/tokenizer_edge_cases.cpp)
+add_executable(tokenizer_numbers tests/tokenizer_numbers.cpp)
+add_executable(tokenizer_mixed_punctuation tests/tokenizer_mixed_punctuation.cpp)
+add_executable(tokenizer_whitespace tests/tokenizer_whitespace.cpp)
+add_executable(tokenizer_single_token tests/tokenizer_single_token.cpp)
+add_executable(tokenizer_empty_input tests/tokenizer_empty_input.cpp)
+add_executable(inverted_index_smoke tests/inverted_index_smoke.cpp)
+add_executable(inverted_index_duplicate_terms tests/inverted_index_duplicate_terms.cpp)
+add_executable(inverted_index_empty_tokens tests/inverted_index_empty_tokens.cpp)
+add_executable(inverted_index_multiple_documents tests/inverted_index_multiple_documents.cpp)
+add_executable(inverted_index_missing_term tests/inverted_index_missing_term.cpp)
+add_executable(inverted_index_zero_id tests/inverted_index_zero_id.cpp)
+add_executable(inverted_index_empty_document tests/inverted_index_empty_document.cpp)
+add_executable(inverted_index_document_count tests/inverted_index_document_count.cpp)
+add_executable(document_smoke tests/document_smoke.cpp)
+add_executable(document_getters tests/document_getters.cpp)
+add_executable(document_loader_failure tests/document_loader_failure.cpp)
+add_executable(search_pipeline_smoke tests/search_pipeline_smoke.cpp)
 target_compile_options(search_pipeline_smoke PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
-add_executable(query_processor_smoke tests/query_processor_smoke.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_processor_smoke tests/query_processor_smoke.cpp)
 
 
 
@@ -84,17 +87,17 @@ add_executable(query_processor_smoke tests/query_processor_smoke.cpp src/QueryPr
 
 
 
-add_executable(inverted_index_total_token_count tests/inverted_index_total_token_count.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_term_frequency tests/inverted_index_term_frequency.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_sorted_postings tests/inverted_index_sorted_postings.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_duplicate_document tests/inverted_index_duplicate_document.cpp src/InvertedIndex.cpp)
-add_executable(query_processor_duplicate_terms tests/query_processor_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
-add_executable(query_processor_deterministic_results tests/query_processor_deterministic_results.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
-add_executable(inverted_index_unknown_frequency tests/inverted_index_unknown_frequency.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_frequency_documents tests/inverted_index_frequency_documents.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_out_of_order_documents tests/inverted_index_out_of_order_documents.cpp src/InvertedIndex.cpp)
-add_executable(inverted_index_repeated_document_add tests/inverted_index_repeated_document_add.cpp src/InvertedIndex.cpp)
-add_executable(query_processor_case_normalization tests/query_processor_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(inverted_index_total_token_count tests/inverted_index_total_token_count.cpp)
+add_executable(inverted_index_term_frequency tests/inverted_index_term_frequency.cpp)
+add_executable(inverted_index_sorted_postings tests/inverted_index_sorted_postings.cpp)
+add_executable(inverted_index_duplicate_document tests/inverted_index_duplicate_document.cpp)
+add_executable(query_processor_duplicate_terms tests/query_processor_duplicate_terms.cpp)
+add_executable(query_processor_deterministic_results tests/query_processor_deterministic_results.cpp)
+add_executable(inverted_index_unknown_frequency tests/inverted_index_unknown_frequency.cpp)
+add_executable(inverted_index_frequency_documents tests/inverted_index_frequency_documents.cpp)
+add_executable(inverted_index_out_of_order_documents tests/inverted_index_out_of_order_documents.cpp)
+add_executable(inverted_index_repeated_document_add tests/inverted_index_repeated_document_add.cpp)
+add_executable(query_processor_case_normalization tests/query_processor_case_normalization.cpp)
 
 
 
@@ -106,1639 +109,1621 @@ add_executable(query_processor_case_normalization tests/query_processor_case_nor
 
 
 # Regression coverage added during the 2026-09-29 validation pass.
-add_executable(tokenizer_case_regression tests/tokenizer_case_regression.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_case_regression tests/tokenizer_case_regression.cpp)
 
-add_executable(tokenizer_punctuation_regression tests/tokenizer_punctuation_regression.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_punctuation_regression tests/tokenizer_punctuation_regression.cpp)
 
-add_executable(tokenizer_numeric_regression tests/tokenizer_numeric_regression.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_numeric_regression tests/tokenizer_numeric_regression.cpp)
 
-add_executable(tokenizer_whitespace_regression tests/tokenizer_whitespace_regression.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_whitespace_regression tests/tokenizer_whitespace_regression.cpp)
 
-add_executable(tokenizer_empty_regression tests/tokenizer_empty_regression.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_empty_regression tests/tokenizer_empty_regression.cpp)
 
-add_executable(tokenizer_boundary_regression tests/tokenizer_boundary_regression.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_boundary_regression tests/tokenizer_boundary_regression.cpp)
 
-add_executable(tokenizer_repeated_separator tests/tokenizer_repeated_separator.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_repeated_separator tests/tokenizer_repeated_separator.cpp)
 
-add_executable(tokenizer_single_character tests/tokenizer_single_character.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_single_character tests/tokenizer_single_character.cpp)
 
-add_executable(tokenizer_mixed_case tests/tokenizer_mixed_case.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_mixed_case tests/tokenizer_mixed_case.cpp)
 
-add_executable(tokenizer_long_token tests/tokenizer_long_token.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_long_token tests/tokenizer_long_token.cpp)
 
-add_executable(index_document_count_regression tests/index_document_count_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_document_count_regression tests/index_document_count_regression.cpp)
 
-add_executable(index_term_count_regression tests/index_term_count_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_term_count_regression tests/index_term_count_regression.cpp)
 
-add_executable(index_duplicate_document_regression tests/index_duplicate_document_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_duplicate_document_regression tests/index_duplicate_document_regression.cpp)
 
-add_executable(index_sorted_postings_regression tests/index_sorted_postings_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_sorted_postings_regression tests/index_sorted_postings_regression.cpp)
 
-add_executable(index_frequency_regression tests/index_frequency_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_frequency_regression tests/index_frequency_regression.cpp)
 
-add_executable(index_missing_term_regression tests/index_missing_term_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_missing_term_regression tests/index_missing_term_regression.cpp)
 
-add_executable(index_empty_tokens_regression tests/index_empty_tokens_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_empty_tokens_regression tests/index_empty_tokens_regression.cpp)
 
-add_executable(index_negative_id_regression tests/index_negative_id_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_negative_id_regression tests/index_negative_id_regression.cpp)
 
-add_executable(index_zero_id_regression tests/index_zero_id_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_zero_id_regression tests/index_zero_id_regression.cpp)
 
-add_executable(index_empty_document_regression tests/index_empty_document_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_empty_document_regression tests/index_empty_document_regression.cpp)
 
-add_executable(index_out_of_order_regression tests/index_out_of_order_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_out_of_order_regression tests/index_out_of_order_regression.cpp)
 
-add_executable(index_isolation_regression tests/index_isolation_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_isolation_regression tests/index_isolation_regression.cpp)
 
-add_executable(index_large_frequency_regression tests/index_large_frequency_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_large_frequency_regression tests/index_large_frequency_regression.cpp)
 
-add_executable(index_repeated_document_add_regression tests/index_repeated_document_add_regression.cpp src/InvertedIndex.cpp)
+add_executable(index_repeated_document_add_regression tests/index_repeated_document_add_regression.cpp)
 
-add_executable(query_and_regression tests/query_and_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_and_regression tests/query_and_regression.cpp)
 
-add_executable(query_case_regression tests/query_case_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_case_regression tests/query_case_regression.cpp)
 
-add_executable(query_punctuation_regression tests/query_punctuation_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_punctuation_regression tests/query_punctuation_regression.cpp)
 
-add_executable(query_duplicate_terms_regression tests/query_duplicate_terms_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_duplicate_terms_regression tests/query_duplicate_terms_regression.cpp)
 
-add_executable(query_empty_regression tests/query_empty_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_empty_regression tests/query_empty_regression.cpp)
 
-add_executable(query_missing_regression tests/query_missing_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_missing_regression tests/query_missing_regression.cpp)
 
-add_executable(query_numeric_regression tests/query_numeric_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_numeric_regression tests/query_numeric_regression.cpp)
 
-add_executable(query_whitespace_regression tests/query_whitespace_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_whitespace_regression tests/query_whitespace_regression.cpp)
 
-add_executable(query_result_order_regression tests/query_result_order_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_result_order_regression tests/query_result_order_regression.cpp)
 
-add_executable(query_three_terms_regression tests/query_three_terms_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_three_terms_regression tests/query_three_terms_regression.cpp)
 
-add_executable(query_no_side_effect_regression tests/query_no_side_effect_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_no_side_effect_regression tests/query_no_side_effect_regression.cpp)
 
-add_executable(document_getters_regression tests/document_getters_regression.cpp src/Document.cpp)
+add_executable(document_getters_regression tests/document_getters_regression.cpp)
 
-add_executable(document_loader_regression tests/document_loader_regression.cpp src/DocumentLoader.cpp src/Document.cpp)
+add_executable(document_loader_regression tests/document_loader_regression.cpp)
 
-add_executable(document_loader_missing_regression tests/document_loader_missing_regression.cpp src/DocumentLoader.cpp src/Document.cpp)
+add_executable(document_loader_missing_regression tests/document_loader_missing_regression.cpp)
 
-add_executable(query_repeated_spaces_regression tests/query_repeated_spaces_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_repeated_spaces_regression tests/query_repeated_spaces_regression.cpp)
 
-add_executable(query_hyphen_normalization_regression tests/query_hyphen_normalization_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_hyphen_normalization_regression tests/query_hyphen_normalization_regression.cpp)
 
 # Additional normalization regression coverage.
-add_executable(query_punctuation_only_v2 tests/query_punctuation_only_v2.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_punctuation_only_v2 tests/query_punctuation_only_v2.cpp)
 
-add_executable(query_duplicate_spacing_v2 tests/query_duplicate_spacing_v2.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_duplicate_spacing_v2 tests/query_duplicate_spacing_v2.cpp)
 
-add_executable(tokenizer_tabs_v2 tests/tokenizer_tabs_v2.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_tabs_v2 tests/tokenizer_tabs_v2.cpp)
 
-add_executable(tokenizer_newlines_v2 tests/tokenizer_newlines_v2.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_newlines_v2 tests/tokenizer_newlines_v2.cpp)
 
-add_executable(tokenizer_digits_v2 tests/tokenizer_digits_v2.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_digits_v2 tests/tokenizer_digits_v2.cpp)
 
 # Focused regression coverage.
-add_executable(tokenizer_apostrophe_v3 tests/tokenizer_apostrophe_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_apostrophe_v3 tests/tokenizer_apostrophe_v3.cpp)
 
-add_executable(tokenizer_slash_v3 tests/tokenizer_slash_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_slash_v3 tests/tokenizer_slash_v3.cpp)
 
-add_executable(tokenizer_leading_punctuation_v3 tests/tokenizer_leading_punctuation_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_leading_punctuation_v3 tests/tokenizer_leading_punctuation_v3.cpp)
 
-add_executable(tokenizer_trailing_punctuation_v3 tests/tokenizer_trailing_punctuation_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_trailing_punctuation_v3 tests/tokenizer_trailing_punctuation_v3.cpp)
 
-add_executable(tokenizer_repeated_punctuation_v3 tests/tokenizer_repeated_punctuation_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_repeated_punctuation_v3 tests/tokenizer_repeated_punctuation_v3.cpp)
 
-add_executable(tokenizer_uppercase_digits_v3 tests/tokenizer_uppercase_digits_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_uppercase_digits_v3 tests/tokenizer_uppercase_digits_v3.cpp)
 
-add_executable(tokenizer_long_token_v3 tests/tokenizer_long_token_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_long_token_v3 tests/tokenizer_long_token_v3.cpp)
 
-add_executable(tokenizer_carriage_return_v3 tests/tokenizer_carriage_return_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_carriage_return_v3 tests/tokenizer_carriage_return_v3.cpp)
 
-add_executable(tokenizer_numeric_token_v3 tests/tokenizer_numeric_token_v3.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_numeric_token_v3 tests/tokenizer_numeric_token_v3.cpp)
 
-add_executable(index_term_count_growth_v3 tests/index_term_count_growth_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_term_count_growth_v3 tests/index_term_count_growth_v3.cpp)
 
-add_executable(index_document_frequency_v3 tests/index_document_frequency_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_document_frequency_v3 tests/index_document_frequency_v3.cpp)
 
-add_executable(index_term_frequency_v3 tests/index_term_frequency_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_term_frequency_v3 tests/index_term_frequency_v3.cpp)
 
-add_executable(index_posting_uniqueness_v3 tests/index_posting_uniqueness_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_posting_uniqueness_v3 tests/index_posting_uniqueness_v3.cpp)
 
-add_executable(index_posting_order_v3 tests/index_posting_order_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_posting_order_v3 tests/index_posting_order_v3.cpp)
 
-add_executable(index_empty_term_v3 tests/index_empty_term_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_empty_term_v3 tests/index_empty_term_v3.cpp)
 
-add_executable(index_negative_document_v3 tests/index_negative_document_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_negative_document_v3 tests/index_negative_document_v3.cpp)
 
-add_executable(index_large_document_v3 tests/index_large_document_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_large_document_v3 tests/index_large_document_v3.cpp)
 
-add_executable(index_document_isolation_v3 tests/index_document_isolation_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_document_isolation_v3 tests/index_document_isolation_v3.cpp)
 
-add_executable(index_unknown_document_frequency_v3 tests/index_unknown_document_frequency_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_unknown_document_frequency_v3 tests/index_unknown_document_frequency_v3.cpp)
 
-add_executable(index_repeated_document_terms_v3 tests/index_repeated_document_terms_v3.cpp src/InvertedIndex.cpp)
+add_executable(index_repeated_document_terms_v3 tests/index_repeated_document_terms_v3.cpp)
 
-add_executable(tokenizer_apostrophe_v4 tests/tokenizer_apostrophe_v4.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_apostrophe_v4 tests/tokenizer_apostrophe_v4.cpp)
 
-add_executable(tokenizer_slash_v4 tests/tokenizer_slash_v4.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_slash_v4 tests/tokenizer_slash_v4.cpp)
 
-add_executable(tokenizer_leading_v4 tests/tokenizer_leading_v4.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_leading_v4 tests/tokenizer_leading_v4.cpp)
 
-add_executable(tokenizer_trailing_v4 tests/tokenizer_trailing_v4.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_trailing_v4 tests/tokenizer_trailing_v4.cpp)
 
-add_executable(tokenizer_repeatsep_v4 tests/tokenizer_repeatsep_v4.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_repeatsep_v4 tests/tokenizer_repeatsep_v4.cpp)
 
-add_executable(tokenizer_alnum_v4 tests/tokenizer_alnum_v4.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_alnum_v4 tests/tokenizer_alnum_v4.cpp)
 
-add_executable(tokenizer_long_v4 tests/tokenizer_long_v4.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_long_v4 tests/tokenizer_long_v4.cpp)
 
-add_executable(index_count_v4 tests/index_count_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_count_v4 tests/index_count_v4.cpp)
 
-add_executable(index_frequency_v4 tests/index_frequency_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_frequency_v4 tests/index_frequency_v4.cpp)
 
-add_executable(index_order_v4 tests/index_order_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_order_v4 tests/index_order_v4.cpp)
 
-add_executable(index_unique_v4 tests/index_unique_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_unique_v4 tests/index_unique_v4.cpp)
 
-add_executable(index_missing_v4 tests/index_missing_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_missing_v4 tests/index_missing_v4.cpp)
 
-add_executable(index_negative_v4 tests/index_negative_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_negative_v4 tests/index_negative_v4.cpp)
 
-add_executable(index_large_v4 tests/index_large_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_large_v4 tests/index_large_v4.cpp)
 
-add_executable(index_empty_v4 tests/index_empty_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_empty_v4 tests/index_empty_v4.cpp)
 
-add_executable(index_isolation_v4 tests/index_isolation_v4.cpp src/InvertedIndex.cpp)
+add_executable(index_isolation_v4 tests/index_isolation_v4.cpp)
 
-add_executable(query_single_v4 tests/query_single_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_single_v4 tests/query_single_v4.cpp)
 
-add_executable(query_case_v4 tests/query_case_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_case_v4 tests/query_case_v4.cpp)
 
-add_executable(query_punct_v4 tests/query_punct_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_punct_v4 tests/query_punct_v4.cpp)
 
 # 2026-10-07 focused regression expansion.
-add_executable(tokenizer_uppercase_word_v5 tests/tokenizer_uppercase_word_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_uppercase_word_v5 tests/tokenizer_uppercase_word_v5.cpp)
 
-add_executable(tokenizer_lowercase_word_v5 tests/tokenizer_lowercase_word_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_lowercase_word_v5 tests/tokenizer_lowercase_word_v5.cpp)
 
-add_executable(tokenizer_mixed_word_v5 tests/tokenizer_mixed_word_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_mixed_word_v5 tests/tokenizer_mixed_word_v5.cpp)
 
-add_executable(tokenizer_alpha_digits_v5 tests/tokenizer_alpha_digits_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_alpha_digits_v5 tests/tokenizer_alpha_digits_v5.cpp)
 
-add_executable(tokenizer_digits_v5 tests/tokenizer_digits_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_digits_v5 tests/tokenizer_digits_v5.cpp)
 
-add_executable(tokenizer_spaces_v5 tests/tokenizer_spaces_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_spaces_v5 tests/tokenizer_spaces_v5.cpp)
 
-add_executable(tokenizer_tabs_v5 tests/tokenizer_tabs_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_tabs_v5 tests/tokenizer_tabs_v5.cpp)
 
-add_executable(tokenizer_newlines_v5 tests/tokenizer_newlines_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_newlines_v5 tests/tokenizer_newlines_v5.cpp)
 
-add_executable(tokenizer_symbols_v5 tests/tokenizer_symbols_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_symbols_v5 tests/tokenizer_symbols_v5.cpp)
 
-add_executable(tokenizer_periods_v5 tests/tokenizer_periods_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_periods_v5 tests/tokenizer_periods_v5.cpp)
 
-add_executable(tokenizer_commas_v5 tests/tokenizer_commas_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_commas_v5 tests/tokenizer_commas_v5.cpp)
 
-add_executable(tokenizer_colons_v5 tests/tokenizer_colons_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_colons_v5 tests/tokenizer_colons_v5.cpp)
 
-add_executable(tokenizer_semicolons_v5 tests/tokenizer_semicolons_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_semicolons_v5 tests/tokenizer_semicolons_v5.cpp)
 
-add_executable(tokenizer_parentheses_v5 tests/tokenizer_parentheses_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_parentheses_v5 tests/tokenizer_parentheses_v5.cpp)
 
-add_executable(tokenizer_braces_v5 tests/tokenizer_braces_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_braces_v5 tests/tokenizer_braces_v5.cpp)
 
-add_executable(tokenizer_quotes_v5 tests/tokenizer_quotes_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_quotes_v5 tests/tokenizer_quotes_v5.cpp)
 
-add_executable(tokenizer_ampersand_v5 tests/tokenizer_ampersand_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_ampersand_v5 tests/tokenizer_ampersand_v5.cpp)
 
-add_executable(tokenizer_plus_v5 tests/tokenizer_plus_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_plus_v5 tests/tokenizer_plus_v5.cpp)
 
-add_executable(tokenizer_equals_v5 tests/tokenizer_equals_v5.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_equals_v5 tests/tokenizer_equals_v5.cpp)
 
-add_executable(tokenizer_v5_uppercase tests/tokenizer_v5_uppercase.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_uppercase tests/tokenizer_v5_uppercase.cpp)
 
-add_executable(tokenizer_v5_mixedcase tests/tokenizer_v5_mixedcase.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_mixedcase tests/tokenizer_v5_mixedcase.cpp)
 
-add_executable(tokenizer_v5_digits tests/tokenizer_v5_digits.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_digits tests/tokenizer_v5_digits.cpp)
 
-add_executable(tokenizer_v5_alnum tests/tokenizer_v5_alnum.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_alnum tests/tokenizer_v5_alnum.cpp)
 
-add_executable(tokenizer_v5_space tests/tokenizer_v5_space.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_space tests/tokenizer_v5_space.cpp)
 
-add_executable(tokenizer_v5_tab tests/tokenizer_v5_tab.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_tab tests/tokenizer_v5_tab.cpp)
 
-add_executable(tokenizer_v5_newline tests/tokenizer_v5_newline.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_newline tests/tokenizer_v5_newline.cpp)
 
-add_executable(tokenizer_v5_symbols tests/tokenizer_v5_symbols.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_symbols tests/tokenizer_v5_symbols.cpp)
 
-add_executable(tokenizer_v5_period tests/tokenizer_v5_period.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_period tests/tokenizer_v5_period.cpp)
 
-add_executable(tokenizer_v5_comma tests/tokenizer_v5_comma.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_comma tests/tokenizer_v5_comma.cpp)
 
-add_executable(tokenizer_v5_colon tests/tokenizer_v5_colon.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_colon tests/tokenizer_v5_colon.cpp)
 
-add_executable(tokenizer_v5_semicolon tests/tokenizer_v5_semicolon.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_semicolon tests/tokenizer_v5_semicolon.cpp)
 
-add_executable(tokenizer_v5_parentheses tests/tokenizer_v5_parentheses.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_parentheses tests/tokenizer_v5_parentheses.cpp)
 
-add_executable(tokenizer_v5_brackets tests/tokenizer_v5_brackets.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_brackets tests/tokenizer_v5_brackets.cpp)
 
-add_executable(tokenizer_v5_braces tests/tokenizer_v5_braces.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_braces tests/tokenizer_v5_braces.cpp)
 
-add_executable(tokenizer_v5_quotes tests/tokenizer_v5_quotes.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_quotes tests/tokenizer_v5_quotes.cpp)
 
-add_executable(tokenizer_v5_slash tests/tokenizer_v5_slash.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_slash tests/tokenizer_v5_slash.cpp)
 
-add_executable(tokenizer_v5_hyphen tests/tokenizer_v5_hyphen.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_hyphen tests/tokenizer_v5_hyphen.cpp)
 
-add_executable(tokenizer_v5_underscore tests/tokenizer_v5_underscore.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_underscore tests/tokenizer_v5_underscore.cpp)
 
-add_executable(tokenizer_v5_repeated tests/tokenizer_v5_repeated.cpp src/Tokenizer.cpp)
+add_executable(tokenizer_v5_repeated tests/tokenizer_v5_repeated.cpp)
 
-add_executable(index_v5_single tests/index_v5_single.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_single tests/index_v5_single.cpp)
 
-add_executable(index_v5_multi tests/index_v5_multi.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_multi tests/index_v5_multi.cpp)
 
-add_executable(index_v5_sorted tests/index_v5_sorted.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_sorted tests/index_v5_sorted.cpp)
 
-add_executable(index_v5_unique tests/index_v5_unique.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_unique tests/index_v5_unique.cpp)
 
-add_executable(index_v5_frequency tests/index_v5_frequency.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_frequency tests/index_v5_frequency.cpp)
 
-add_executable(index_v5_docfreq tests/index_v5_docfreq.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_docfreq tests/index_v5_docfreq.cpp)
 
-add_executable(index_v5_termcount tests/index_v5_termcount.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_termcount tests/index_v5_termcount.cpp)
 
-add_executable(index_v5_doccount tests/index_v5_doccount.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_doccount tests/index_v5_doccount.cpp)
 
-add_executable(index_v5_missing tests/index_v5_missing.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_missing tests/index_v5_missing.cpp)
 
-add_executable(index_v5_empty tests/index_v5_empty.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_empty tests/index_v5_empty.cpp)
 
-add_executable(index_v5_negative tests/index_v5_negative.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_negative tests/index_v5_negative.cpp)
 
-add_executable(index_v5_zero tests/index_v5_zero.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_zero tests/index_v5_zero.cpp)
 
-add_executable(index_v5_largeid tests/index_v5_largeid.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_largeid tests/index_v5_largeid.cpp)
 
-add_executable(index_v5_outoforder tests/index_v5_outoforder.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_outoforder tests/index_v5_outoforder.cpp)
 
-add_executable(index_v5_isolation tests/index_v5_isolation.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_isolation tests/index_v5_isolation.cpp)
 
-add_executable(index_v5_repeateddoc tests/index_v5_repeateddoc.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_repeateddoc tests/index_v5_repeateddoc.cpp)
 
-add_executable(index_v5_emptytoken tests/index_v5_emptytoken.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_emptytoken tests/index_v5_emptytoken.cpp)
 
-add_executable(index_v5_unknownfreq tests/index_v5_unknownfreq.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_unknownfreq tests/index_v5_unknownfreq.cpp)
 
-add_executable(index_v5_unknowntermfreq tests/index_v5_unknowntermfreq.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_unknowntermfreq tests/index_v5_unknowntermfreq.cpp)
 
-add_executable(index_v5_unknownterm tests/index_v5_unknownterm.cpp src/InvertedIndex.cpp)
+add_executable(index_v5_unknownterm tests/index_v5_unknownterm.cpp)
 
-add_executable(query_v5_single tests/query_v5_single.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_single tests/query_v5_single.cpp)
 
-add_executable(query_v5_case tests/query_v5_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_case tests/query_v5_case.cpp)
 
-add_executable(query_v5_spaces tests/query_v5_spaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_spaces tests/query_v5_spaces.cpp)
 
-add_executable(query_v5_duplicate tests/query_v5_duplicate.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_duplicate tests/query_v5_duplicate.cpp)
 
-add_executable(query_v5_missing tests/query_v5_missing.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_missing tests/query_v5_missing.cpp)
 
-add_executable(query_v5_empty tests/query_v5_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_empty tests/query_v5_empty.cpp)
 
-add_executable(query_v5_punct tests/query_v5_punct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_punct tests/query_v5_punct.cpp)
 
-add_executable(query_v5_numeric tests/query_v5_numeric.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_numeric tests/query_v5_numeric.cpp)
 
-add_executable(query_v5_and tests/query_v5_and.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_and tests/query_v5_and.cpp)
 
-add_executable(query_v5_three tests/query_v5_three.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_three tests/query_v5_three.cpp)
 
-add_executable(query_v5_hyphen tests/query_v5_hyphen.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_hyphen tests/query_v5_hyphen.cpp)
 
-add_executable(query_v5_slash tests/query_v5_slash.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_slash tests/query_v5_slash.cpp)
 
-add_executable(query_v5_punctonly tests/query_v5_punctonly.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_punctonly tests/query_v5_punctonly.cpp)
 
-add_executable(query_v5_repeatspaces tests/query_v5_repeatspaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_repeatspaces tests/query_v5_repeatspaces.cpp)
 
-add_executable(query_v5_resultorder tests/query_v5_resultorder.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_resultorder tests/query_v5_resultorder.cpp)
 
-add_executable(query_v5_disjoint tests/query_v5_disjoint.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_disjoint tests/query_v5_disjoint.cpp)
 
-add_executable(query_v5_isolation tests/query_v5_isolation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_isolation tests/query_v5_isolation.cpp)
 
-add_executable(query_v5_numericcase tests/query_v5_numericcase.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_numericcase tests/query_v5_numericcase.cpp)
 
-add_executable(query_v5_mixedpunct tests/query_v5_mixedpunct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_mixedpunct tests/query_v5_mixedpunct.cpp)
 
-add_executable(query_v5_no_sideeffect tests/query_v5_no_sideeffect.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_no_sideeffect tests/query_v5_no_sideeffect.cpp)
 
-add_executable(query_v5_fourspaces tests/query_v5_fourspaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_fourspaces tests/query_v5_fourspaces.cpp)
 
-add_executable(query_v5_casefold tests/query_v5_casefold.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_casefold tests/query_v5_casefold.cpp)
 
-add_executable(query_v5_duplicatecase tests/query_v5_duplicatecase.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_duplicatecase tests/query_v5_duplicatecase.cpp)
 
-add_executable(query_v5_emptytoken tests/query_v5_emptytoken.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_emptytoken tests/query_v5_emptytoken.cpp)
 
-add_executable(query_v5_unknownmixed tests/query_v5_unknownmixed.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_unknownmixed tests/query_v5_unknownmixed.cpp)
 
-add_executable(query_v5_threepartial tests/query_v5_threepartial.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_threepartial tests/query_v5_threepartial.cpp)
 
-add_executable(query_v5_singlepunct tests/query_v5_singlepunct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_singlepunct tests/query_v5_singlepunct.cpp)
 
-add_executable(query_v5_numericand tests/query_v5_numericand.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_v5_numericand tests/query_v5_numericand.cpp)
 
-add_executable(document_v5_id tests/document_v5_id.cpp src/Document.cpp)
+add_executable(document_v5_id tests/document_v5_id.cpp)
 
-add_executable(document_v5_path tests/document_v5_path.cpp src/Document.cpp)
+add_executable(document_v5_path tests/document_v5_path.cpp)
 
-add_executable(document_v5_content tests/document_v5_content.cpp src/Document.cpp)
+add_executable(document_v5_content tests/document_v5_content.cpp)
 
-add_executable(document_v5_negative tests/document_v5_negative.cpp src/Document.cpp)
+add_executable(document_v5_negative tests/document_v5_negative.cpp)
 
-add_executable(document_v5_emptycontent tests/document_v5_emptycontent.cpp src/Document.cpp)
+add_executable(document_v5_emptycontent tests/document_v5_emptycontent.cpp)
 
-add_executable(document_v5_empty_path tests/document_v5_empty_path.cpp src/Document.cpp)
+add_executable(document_v5_empty_path tests/document_v5_empty_path.cpp)
 
-add_executable(document_v5_spaces_path tests/document_v5_spaces_path.cpp src/Document.cpp)
+add_executable(document_v5_spaces_path tests/document_v5_spaces_path.cpp)
 
-add_executable(document_v5_newline tests/document_v5_newline.cpp src/Document.cpp)
+add_executable(document_v5_newline tests/document_v5_newline.cpp)
 
-add_executable(document_v5_largeid tests/document_v5_largeid.cpp src/Document.cpp)
+add_executable(document_v5_largeid tests/document_v5_largeid.cpp)
 
-add_executable(topk_empty tests/topk_empty.cpp src/TopK.cpp)
+add_executable(topk_empty tests/topk_empty.cpp)
 
-add_executable(topk_limit tests/topk_limit.cpp src/TopK.cpp)
+add_executable(topk_limit tests/topk_limit.cpp)
 
-add_executable(topk_zero tests/topk_zero.cpp src/TopK.cpp)
+add_executable(topk_zero tests/topk_zero.cpp)
 
-add_executable(topk_large tests/topk_large.cpp src/TopK.cpp)
+add_executable(topk_large tests/topk_large.cpp)
 
-add_executable(topk_tie tests/topk_tie.cpp src/TopK.cpp)
+add_executable(topk_tie tests/topk_tie.cpp)
 
-add_executable(topk_sorted tests/topk_sorted.cpp src/TopK.cpp)
+add_executable(topk_sorted tests/topk_sorted.cpp)
 
-add_executable(topk_one tests/topk_one.cpp src/TopK.cpp)
+add_executable(topk_one tests/topk_one.cpp)
 
-add_executable(phrase_match tests/phrase_match.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_match tests/phrase_match.cpp)
 
-add_executable(phrase_mismatch tests/phrase_mismatch.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_mismatch tests/phrase_mismatch.cpp)
 
-add_executable(phrase_empty tests/phrase_empty.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_empty tests/phrase_empty.cpp)
 
-add_executable(phrase_long tests/phrase_long.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_long tests/phrase_long.cpp)
 
-add_executable(phrase_at_start tests/phrase_at_start.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_at_start tests/phrase_at_start.cpp)
 
-add_executable(phrase_at_end tests/phrase_at_end.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_at_end tests/phrase_at_end.cpp)
 
-add_executable(phrase_single tests/phrase_single.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_single tests/phrase_single.cpp)
 
-add_executable(phrase_no_match tests/phrase_no_match.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_no_match tests/phrase_no_match.cpp)
 
-add_executable(phrase_repeated_tokens tests/phrase_repeated_tokens.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_repeated_tokens tests/phrase_repeated_tokens.cpp)
 
-add_executable(phrase_reversed tests/phrase_reversed.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_reversed tests/phrase_reversed.cpp)
 
-add_executable(index_stats tests/index_stats.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(index_stats tests/index_stats.cpp)
 
-add_executable(index_stats_empty tests/index_stats_empty.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(index_stats_empty tests/index_stats_empty.cpp)
 
-add_executable(index_stats_documents tests/index_stats_documents.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(index_stats_documents tests/index_stats_documents.cpp)
 
-add_executable(index_stats_duplicate_terms tests/index_stats_duplicate_terms.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(index_stats_duplicate_terms tests/index_stats_duplicate_terms.cpp)
 
-add_executable(regression_20261009_01_query_tokenizer_empty tests/regression_20261009_01_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261009_01_query_tokenizer_empty tests/regression_20261009_01_query_tokenizer_empty.cpp)
 
-add_executable(regression_20261009_02_query_tokenizer_punctuation tests/regression_20261009_02_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261009_02_query_tokenizer_punctuation tests/regression_20261009_02_query_tokenizer_punctuation.cpp)
 
-add_executable(regression_20261009_03_query_tokenizer_lowercase tests/regression_20261009_03_query_tokenizer_lowercase.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261009_03_query_tokenizer_lowercase tests/regression_20261009_03_query_tokenizer_lowercase.cpp)
 
-add_executable(regression_20261009_04_query_tokenizer_whitespace tests/regression_20261009_04_query_tokenizer_whitespace.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261009_04_query_tokenizer_whitespace tests/regression_20261009_04_query_tokenizer_whitespace.cpp)
 
-add_executable(regression_20261009_05_stopwords_known tests/regression_20261009_05_stopwords_known.cpp src/StopWords.cpp)
+add_executable(regression_20261009_05_stopwords_known tests/regression_20261009_05_stopwords_known.cpp)
 
-add_executable(regression_20261009_06_stopwords_unknown tests/regression_20261009_06_stopwords_unknown.cpp src/StopWords.cpp)
+add_executable(regression_20261009_06_stopwords_unknown tests/regression_20261009_06_stopwords_unknown.cpp)
 
-add_executable(regression_20261009_07_stopwords_case tests/regression_20261009_07_stopwords_case.cpp src/StopWords.cpp)
+add_executable(regression_20261009_07_stopwords_case tests/regression_20261009_07_stopwords_case.cpp)
 
-add_executable(regression_20261009_08_ranker_empty tests/regression_20261009_08_ranker_empty.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261009_08_ranker_empty tests/regression_20261009_08_ranker_empty.cpp)
 
-add_executable(regression_20261009_09_ranker_unknown_term tests/regression_20261009_09_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261009_09_ranker_unknown_term tests/regression_20261009_09_ranker_unknown_term.cpp)
 
-add_executable(regression_20261009_10_ranker_frequency_order tests/regression_20261009_10_ranker_frequency_order.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261009_10_ranker_frequency_order tests/regression_20261009_10_ranker_frequency_order.cpp)
 
-add_executable(regression_20261009_11_ranker_tie_order tests/regression_20261009_11_ranker_tie_order.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261009_11_ranker_tie_order tests/regression_20261009_11_ranker_tie_order.cpp)
 
-add_executable(regression_20261009_12_search_engine_empty tests/regression_20261009_12_search_engine_empty.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
+add_executable(regression_20261009_12_search_engine_empty tests/regression_20261009_12_search_engine_empty.cpp)
 
-add_executable(regression_20261009_13_search_engine_basic tests/regression_20261009_13_search_engine_basic.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
+add_executable(regression_20261009_13_search_engine_basic tests/regression_20261009_13_search_engine_basic.cpp)
 
-add_executable(regression_20261009_14_search_engine_no_results tests/regression_20261009_14_search_engine_no_results.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
+add_executable(regression_20261009_14_search_engine_no_results tests/regression_20261009_14_search_engine_no_results.cpp)
 
-add_executable(regression_20261009_15_search_engine_ranked tests/regression_20261009_15_search_engine_ranked.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
+add_executable(regression_20261009_15_search_engine_ranked tests/regression_20261009_15_search_engine_ranked.cpp)
 
-add_executable(regression_20261009_16_search_engine_index_stats tests/regression_20261009_16_search_engine_index_stats.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
+add_executable(regression_20261009_16_search_engine_index_stats tests/regression_20261009_16_search_engine_index_stats.cpp)
 
-add_executable(regression_20261009_17_query_processor_empty tests/regression_20261009_17_query_processor_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261009_17_query_processor_empty tests/regression_20261009_17_query_processor_empty.cpp)
 
-add_executable(regression_20261009_18_query_processor_punctuation tests/regression_20261009_18_query_processor_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261009_18_query_processor_punctuation tests/regression_20261009_18_query_processor_punctuation.cpp)
 
-add_executable(regression_20261009_19_query_processor_no_intersection tests/regression_20261009_19_query_processor_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261009_19_query_processor_no_intersection tests/regression_20261009_19_query_processor_no_intersection.cpp)
 
-add_executable(regression_20261009_20_query_processor_case tests/regression_20261009_20_query_processor_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261009_20_query_processor_case tests/regression_20261009_20_query_processor_case.cpp)
 
-add_executable(regression_20261009_28_ranker_repeated_query_term tests/regression_20261009_28_ranker_repeated_query_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261009_28_ranker_repeated_query_term tests/regression_20261009_28_ranker_repeated_query_term.cpp)
 
-add_executable(regression_20261010_index_empty_search tests/regression_20261010_index_empty_search.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_index_empty_search tests/regression_20261010_index_empty_search.cpp)
 
-add_executable(regression_20261010_index_postings_sorted tests/regression_20261010_index_postings_sorted.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_index_postings_sorted tests/regression_20261010_index_postings_sorted.cpp)
 
-add_executable(regression_20261010_index_frequency_unknown_doc tests/regression_20261010_index_frequency_unknown_doc.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_index_frequency_unknown_doc tests/regression_20261010_index_frequency_unknown_doc.cpp)
 
-add_executable(regression_20261010_query_processor_duplicate_terms tests/regression_20261010_query_processor_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261010_query_processor_duplicate_terms tests/regression_20261010_query_processor_duplicate_terms.cpp)
 
-add_executable(regression_20261010_query_processor_order tests/regression_20261010_query_processor_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261010_query_processor_order tests/regression_20261010_query_processor_order.cpp)
 
-add_executable(regression_20261010_topk_empty_limit tests/regression_20261010_topk_empty_limit.cpp src/TopK.cpp)
+add_executable(regression_20261010_topk_empty_limit tests/regression_20261010_topk_empty_limit.cpp)
 
-add_executable(regression_20261010_phrase_exact tests/regression_20261010_phrase_exact.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261010_phrase_exact tests/regression_20261010_phrase_exact.cpp)
 
-add_executable(regression_20261010_index_stats_consistency tests/regression_20261010_index_stats_consistency.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_index_stats_consistency tests/regression_20261010_index_stats_consistency.cpp)
 
-add_executable(regression_20261010_query_tokenizer_join_punctuation tests/regression_20261010_query_tokenizer_join_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261010_query_tokenizer_join_punctuation tests/regression_20261010_query_tokenizer_join_punctuation.cpp)
 
-add_executable(regression_20261010_query_tokenizer_numeric tests/regression_20261010_query_tokenizer_numeric.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261010_query_tokenizer_numeric tests/regression_20261010_query_tokenizer_numeric.cpp)
 
-add_executable(regression_20261010_ranker_unknown_and_known tests/regression_20261010_ranker_unknown_and_known.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_ranker_unknown_and_known tests/regression_20261010_ranker_unknown_and_known.cpp)
 
-add_executable(regression_20261010_ranker_multiple_terms tests/regression_20261010_ranker_multiple_terms.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_ranker_multiple_terms tests/regression_20261010_ranker_multiple_terms.cpp)
 
-add_executable(regression_20261010_search_engine_query_normalization tests/regression_20261010_search_engine_query_normalization.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
+add_executable(regression_20261010_search_engine_query_normalization tests/regression_20261010_search_engine_query_normalization.cpp)
 
-add_executable(regression_20261010_search_engine_multiple_terms tests/regression_20261010_search_engine_multiple_terms.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
+add_executable(regression_20261010_search_engine_multiple_terms tests/regression_20261010_search_engine_multiple_terms.cpp)
 
-add_executable(regression_20261010_search_engine_index_reference tests/regression_20261010_search_engine_index_reference.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
+add_executable(regression_20261010_search_engine_index_reference tests/regression_20261010_search_engine_index_reference.cpp)
 
-add_executable(regression_20261010_stopwords_empty tests/regression_20261010_stopwords_empty.cpp src/StopWords.cpp)
+add_executable(regression_20261010_stopwords_empty tests/regression_20261010_stopwords_empty.cpp)
 
-add_executable(regression_20261010_phrase_middle tests/regression_20261010_phrase_middle.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261010_phrase_middle tests/regression_20261010_phrase_middle.cpp)
 
-add_executable(regression_20261010_phrase_noncontiguous tests/regression_20261010_phrase_noncontiguous.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261010_phrase_noncontiguous tests/regression_20261010_phrase_noncontiguous.cpp)
 
-add_executable(regression_20261010_phrase_empty_document tests/regression_20261010_phrase_empty_document.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261010_phrase_empty_document tests/regression_20261010_phrase_empty_document.cpp)
 
-add_executable(regression_20261010_topk_preserves_tie_order tests/regression_20261010_topk_preserves_tie_order.cpp src/TopK.cpp)
+add_executable(regression_20261010_topk_preserves_tie_order tests/regression_20261010_topk_preserves_tie_order.cpp)
 
-add_executable(regression_20261010_topk_all_results tests/regression_20261010_topk_all_results.cpp src/TopK.cpp)
+add_executable(regression_20261010_topk_all_results tests/regression_20261010_topk_all_results.cpp)
 
-add_executable(regression_20261010_index_duplicate_postings tests/regression_20261010_index_duplicate_postings.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_index_duplicate_postings tests/regression_20261010_index_duplicate_postings.cpp)
 
-add_executable(regression_20261010_index_empty_term tests/regression_20261010_index_empty_term.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_index_empty_term tests/regression_20261010_index_empty_term.cpp)
 
-add_executable(regression_20261010_index_document_frequency tests/regression_20261010_index_document_frequency.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_index_document_frequency tests/regression_20261010_index_document_frequency.cpp)
 
-add_executable(regression_20261010_query_processor_missing_term tests/regression_20261010_query_processor_missing_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261010_query_processor_missing_term tests/regression_20261010_query_processor_missing_term.cpp)
 
-add_executable(regression_20261010_query_processor_duplicate_order tests/regression_20261010_query_processor_duplicate_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261010_query_processor_duplicate_order tests/regression_20261010_query_processor_duplicate_order.cpp)
 
-add_executable(regression_20261010_index_stats_after_updates tests/regression_20261010_index_stats_after_updates.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_index_stats_after_updates tests/regression_20261010_index_stats_after_updates.cpp)
 
-add_executable(regression_20261010_ranker_empty_query tests/regression_20261010_ranker_empty_query.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261010_ranker_empty_query tests/regression_20261010_ranker_empty_query.cpp)
 
 # Regression coverage added on 2026-10-11
 
-add_executable(daily_01_tokenizer_empty_string tests/daily_20261011_01_tokenizer_empty_string.cpp src/Tokenizer.cpp)
+add_executable(daily_01_tokenizer_empty_string tests/daily_20261011_01_tokenizer_empty_string.cpp)
 
-add_executable(daily_02_tokenizer_whitespace_only tests/daily_20261011_02_tokenizer_whitespace_only.cpp src/Tokenizer.cpp)
+add_executable(daily_02_tokenizer_whitespace_only tests/daily_20261011_02_tokenizer_whitespace_only.cpp)
 
-add_executable(daily_03_tokenizer_uppercase tests/daily_20261011_03_tokenizer_uppercase.cpp src/Tokenizer.cpp)
+add_executable(daily_03_tokenizer_uppercase tests/daily_20261011_03_tokenizer_uppercase.cpp)
 
-add_executable(daily_04_tokenizer_digits tests/daily_20261011_04_tokenizer_digits.cpp src/Tokenizer.cpp)
+add_executable(daily_04_tokenizer_digits tests/daily_20261011_04_tokenizer_digits.cpp)
 
-add_executable(daily_05_tokenizer_mixed_case tests/daily_20261011_05_tokenizer_mixed_case.cpp src/Tokenizer.cpp)
+add_executable(daily_05_tokenizer_mixed_case tests/daily_20261011_05_tokenizer_mixed_case.cpp)
 
-add_executable(daily_06_tokenizer_repeated_terms tests/daily_20261011_06_tokenizer_repeated_terms.cpp src/Tokenizer.cpp)
+add_executable(daily_06_tokenizer_repeated_terms tests/daily_20261011_06_tokenizer_repeated_terms.cpp)
 
-add_executable(daily_07_tokenizer_punctuation_boundaries tests/daily_20261011_07_tokenizer_punctuation_boundaries.cpp src/Tokenizer.cpp)
+add_executable(daily_07_tokenizer_punctuation_boundaries tests/daily_20261011_07_tokenizer_punctuation_boundaries.cpp)
 
-add_executable(daily_08_tokenizer_newlines tests/daily_20261011_08_tokenizer_newlines.cpp src/Tokenizer.cpp)
+add_executable(daily_08_tokenizer_newlines tests/daily_20261011_08_tokenizer_newlines.cpp)
 
-add_executable(daily_09_tokenizer_tabs tests/daily_20261011_09_tokenizer_tabs.cpp src/Tokenizer.cpp)
+add_executable(daily_09_tokenizer_tabs tests/daily_20261011_09_tokenizer_tabs.cpp)
 
-add_executable(daily_10_tokenizer_leading_trailing_punctuation tests/daily_20261011_10_tokenizer_leading_trailing_punctuation.cpp src/Tokenizer.cpp)
+add_executable(daily_10_tokenizer_leading_trailing_punctuation tests/daily_20261011_10_tokenizer_leading_trailing_punctuation.cpp)
 
-add_executable(daily_11_tokenizer_single_character tests/daily_20261011_11_tokenizer_single_character.cpp src/Tokenizer.cpp)
+add_executable(daily_11_tokenizer_single_character tests/daily_20261011_11_tokenizer_single_character.cpp)
 
-add_executable(daily_12_tokenizer_long_token tests/daily_20261011_12_tokenizer_long_token.cpp src/Tokenizer.cpp)
+add_executable(daily_12_tokenizer_long_token tests/daily_20261011_12_tokenizer_long_token.cpp)
 
-add_executable(daily_13_tokenizer_unicode_bytes_are_delimiters tests/daily_20261011_13_tokenizer_unicode_bytes_are_delimiters.cpp src/Tokenizer.cpp)
+add_executable(daily_13_tokenizer_unicode_bytes_are_delimiters tests/daily_20261011_13_tokenizer_unicode_bytes_are_delimiters.cpp)
 
-add_executable(daily_14_index_empty_document tests/daily_20261011_14_index_empty_document.cpp src/InvertedIndex.cpp)
+add_executable(daily_14_index_empty_document tests/daily_20261011_14_index_empty_document.cpp)
 
-add_executable(daily_15_index_empty_token_ignored tests/daily_20261011_15_index_empty_token_ignored.cpp src/InvertedIndex.cpp)
+add_executable(daily_15_index_empty_token_ignored tests/daily_20261011_15_index_empty_token_ignored.cpp)
 
-add_executable(daily_16_index_frequency_repeats tests/daily_20261011_16_index_frequency_repeats.cpp src/InvertedIndex.cpp)
+add_executable(daily_16_index_frequency_repeats tests/daily_20261011_16_index_frequency_repeats.cpp)
 
-add_executable(daily_17_index_missing_term_frequency tests/daily_20261011_17_index_missing_term_frequency.cpp src/InvertedIndex.cpp)
+add_executable(daily_17_index_missing_term_frequency tests/daily_20261011_17_index_missing_term_frequency.cpp)
 
-add_executable(daily_18_index_missing_document_frequency tests/daily_20261011_18_index_missing_document_frequency.cpp src/InvertedIndex.cpp)
+add_executable(daily_18_index_missing_document_frequency tests/daily_20261011_18_index_missing_document_frequency.cpp)
 
-add_executable(daily_19_index_postings_sorted tests/daily_20261011_19_index_postings_sorted.cpp src/InvertedIndex.cpp)
+add_executable(daily_19_index_postings_sorted tests/daily_20261011_19_index_postings_sorted.cpp)
 
-add_executable(daily_20_index_duplicate_document_id tests/daily_20261011_20_index_duplicate_document_id.cpp src/InvertedIndex.cpp)
+add_executable(daily_20_index_duplicate_document_id tests/daily_20261011_20_index_duplicate_document_id.cpp)
 
-add_executable(daily_21_index_document_isolation tests/daily_20261011_21_index_document_isolation.cpp src/InvertedIndex.cpp)
+add_executable(daily_21_index_document_isolation tests/daily_20261011_21_index_document_isolation.cpp)
 
-add_executable(daily_22_index_many_terms tests/daily_20261011_22_index_many_terms.cpp src/InvertedIndex.cpp)
+add_executable(daily_22_index_many_terms tests/daily_20261011_22_index_many_terms.cpp)
 
-add_executable(daily_23_index_same_term_many_documents tests/daily_20261011_23_index_same_term_many_documents.cpp src/InvertedIndex.cpp)
+add_executable(daily_23_index_same_term_many_documents tests/daily_20261011_23_index_same_term_many_documents.cpp)
 
-add_executable(daily_24_index_negative_id_supported tests/daily_20261011_24_index_negative_id_supported.cpp src/InvertedIndex.cpp)
+add_executable(daily_24_index_negative_id_supported tests/daily_20261011_24_index_negative_id_supported.cpp)
 
-add_executable(daily_25_index_zero_id_supported tests/daily_20261011_25_index_zero_id_supported.cpp src/InvertedIndex.cpp)
+add_executable(daily_25_index_zero_id_supported tests/daily_20261011_25_index_zero_id_supported.cpp)
 
-add_executable(daily_26_index_unknown_search_empty tests/daily_20261011_26_index_unknown_search_empty.cpp src/InvertedIndex.cpp)
+add_executable(daily_26_index_unknown_search_empty tests/daily_20261011_26_index_unknown_search_empty.cpp)
 
-add_executable(daily_27_index_term_count_growth tests/daily_20261011_27_index_term_count_growth.cpp src/InvertedIndex.cpp)
+add_executable(daily_27_index_term_count_growth tests/daily_20261011_27_index_term_count_growth.cpp)
 
-add_executable(daily_28_index_duplicate_tokens_keep_one_posting tests/daily_20261011_28_index_duplicate_tokens_keep_one_posting.cpp src/InvertedIndex.cpp)
+add_executable(daily_28_index_duplicate_tokens_keep_one_posting tests/daily_20261011_28_index_duplicate_tokens_keep_one_posting.cpp)
 
-add_executable(daily_29_index_document_count_unique_ids tests/daily_20261011_29_index_document_count_unique_ids.cpp src/InvertedIndex.cpp)
+add_executable(daily_29_index_document_count_unique_ids tests/daily_20261011_29_index_document_count_unique_ids.cpp)
 
-add_executable(daily_30_index_empty_term_query tests/daily_20261011_30_index_empty_term_query.cpp src/InvertedIndex.cpp)
+add_executable(daily_30_index_empty_term_query tests/daily_20261011_30_index_empty_term_query.cpp)
 
-add_executable(daily_31_query_empty_string tests/daily_20261011_31_query_empty_string.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_31_query_empty_string tests/daily_20261011_31_query_empty_string.cpp)
 
-add_executable(daily_32_query_whitespace_only tests/daily_20261011_32_query_whitespace_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_32_query_whitespace_only tests/daily_20261011_32_query_whitespace_only.cpp)
 
-add_executable(daily_33_query_case_normalization tests/daily_20261011_33_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_33_query_case_normalization tests/daily_20261011_33_query_case_normalization.cpp)
 
-add_executable(daily_34_query_and_semantics tests/daily_20261011_34_query_and_semantics.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_34_query_and_semantics tests/daily_20261011_34_query_and_semantics.cpp)
 
-add_executable(daily_35_query_unknown_term tests/daily_20261011_35_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_35_query_unknown_term tests/daily_20261011_35_query_unknown_term.cpp)
 
-add_executable(daily_36_query_repeated_term_deduplicated tests/daily_20261011_36_query_repeated_term_deduplicated.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_36_query_repeated_term_deduplicated tests/daily_20261011_36_query_repeated_term_deduplicated.cpp)
 
-add_executable(daily_37_query_punctuation_normalization tests/daily_20261011_37_query_punctuation_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_37_query_punctuation_normalization tests/daily_20261011_37_query_punctuation_normalization.cpp)
 
-add_executable(daily_38_query_result_order tests/daily_20261011_38_query_result_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_38_query_result_order tests/daily_20261011_38_query_result_order.cpp)
 
-add_executable(daily_39_query_multiple_terms_intersection tests/daily_20261011_39_query_multiple_terms_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_39_query_multiple_terms_intersection tests/daily_20261011_39_query_multiple_terms_intersection.cpp)
 
-add_executable(daily_40_query_no_partial_match tests/daily_20261011_40_query_no_partial_match.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_40_query_no_partial_match tests/daily_20261011_40_query_no_partial_match.cpp)
 
-add_executable(daily_41_query_tabs_between_terms tests/daily_20261011_41_query_tabs_between_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_41_query_tabs_between_terms tests/daily_20261011_41_query_tabs_between_terms.cpp)
 
-add_executable(daily_42_query_newlines_between_terms tests/daily_20261011_42_query_newlines_between_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_42_query_newlines_between_terms tests/daily_20261011_42_query_newlines_between_terms.cpp)
 
-add_executable(daily_43_query_sorted_term_order_independent tests/daily_20261011_43_query_sorted_term_order_independent.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_43_query_sorted_term_order_independent tests/daily_20261011_43_query_sorted_term_order_independent.cpp)
 
-add_executable(daily_44_query_leading_trailing_spaces tests/daily_20261011_44_query_leading_trailing_spaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_44_query_leading_trailing_spaces tests/daily_20261011_44_query_leading_trailing_spaces.cpp)
 
-add_executable(daily_45_query_many_documents tests/daily_20261011_45_query_many_documents.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_45_query_many_documents tests/daily_20261011_45_query_many_documents.cpp)
 
-add_executable(daily_46_query_empty_normalized_token tests/daily_20261011_46_query_empty_normalized_token.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_46_query_empty_normalized_token tests/daily_20261011_46_query_empty_normalized_token.cpp)
 
-add_executable(daily_47_index_frequency_per_document tests/daily_20261011_47_index_frequency_per_document.cpp src/InvertedIndex.cpp)
+add_executable(daily_47_index_frequency_per_document tests/daily_20261011_47_index_frequency_per_document.cpp)
 
-add_executable(daily_48_index_document_frequency_distinct tests/daily_20261011_48_index_document_frequency_distinct.cpp src/InvertedIndex.cpp)
+add_executable(daily_48_index_document_frequency_distinct tests/daily_20261011_48_index_document_frequency_distinct.cpp)
 
-add_executable(daily_49_tokenizer_adjacent_delimiters tests/daily_20261011_49_tokenizer_adjacent_delimiters.cpp src/Tokenizer.cpp)
+add_executable(daily_49_tokenizer_adjacent_delimiters tests/daily_20261011_49_tokenizer_adjacent_delimiters.cpp)
 
 # Additional component regression tests added on 2026-10-13.
 
-add_executable(batch_01_phrase_exact_match tests/batch_20261013_01_phrase_exact_match.cpp src/PhraseMatcher.cpp)
+add_executable(batch_01_phrase_exact_match tests/batch_20261013_01_phrase_exact_match.cpp)
 
-add_executable(batch_02_phrase_middle_match tests/batch_20261013_02_phrase_middle_match.cpp src/PhraseMatcher.cpp)
+add_executable(batch_02_phrase_middle_match tests/batch_20261013_02_phrase_middle_match.cpp)
 
-add_executable(batch_03_phrase_missing_token tests/batch_20261013_03_phrase_missing_token.cpp src/PhraseMatcher.cpp)
+add_executable(batch_03_phrase_missing_token tests/batch_20261013_03_phrase_missing_token.cpp)
 
-add_executable(batch_04_phrase_empty_phrase tests/batch_20261013_04_phrase_empty_phrase.cpp src/PhraseMatcher.cpp)
+add_executable(batch_04_phrase_empty_phrase tests/batch_20261013_04_phrase_empty_phrase.cpp)
 
-add_executable(batch_05_phrase_longer_than_tokens tests/batch_20261013_05_phrase_longer_than_tokens.cpp src/PhraseMatcher.cpp)
+add_executable(batch_05_phrase_longer_than_tokens tests/batch_20261013_05_phrase_longer_than_tokens.cpp)
 
-add_executable(batch_06_phrase_single_token tests/batch_20261013_06_phrase_single_token.cpp src/PhraseMatcher.cpp)
+add_executable(batch_06_phrase_single_token tests/batch_20261013_06_phrase_single_token.cpp)
 
-add_executable(batch_07_phrase_duplicate_tokens tests/batch_20261013_07_phrase_duplicate_tokens.cpp src/PhraseMatcher.cpp)
+add_executable(batch_07_phrase_duplicate_tokens tests/batch_20261013_07_phrase_duplicate_tokens.cpp)
 
-add_executable(batch_08_phrase_order_matters tests/batch_20261013_08_phrase_order_matters.cpp src/PhraseMatcher.cpp)
+add_executable(batch_08_phrase_order_matters tests/batch_20261013_08_phrase_order_matters.cpp)
 
-add_executable(batch_09_phrase_repeated_sequence tests/batch_20261013_09_phrase_repeated_sequence.cpp src/PhraseMatcher.cpp)
+add_executable(batch_09_phrase_repeated_sequence tests/batch_20261013_09_phrase_repeated_sequence.cpp)
 
-add_executable(batch_10_phrase_full_document tests/batch_20261013_10_phrase_full_document.cpp src/PhraseMatcher.cpp)
+add_executable(batch_10_phrase_full_document tests/batch_20261013_10_phrase_full_document.cpp)
 
-add_executable(batch_11_query_tokenizer_empty tests/batch_20261013_11_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_11_query_tokenizer_empty tests/batch_20261013_11_query_tokenizer_empty.cpp)
 
-add_executable(batch_12_query_tokenizer_whitespace tests/batch_20261013_12_query_tokenizer_whitespace.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_12_query_tokenizer_whitespace tests/batch_20261013_12_query_tokenizer_whitespace.cpp)
 
-add_executable(batch_13_query_tokenizer_lowercase tests/batch_20261013_13_query_tokenizer_lowercase.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_13_query_tokenizer_lowercase tests/batch_20261013_13_query_tokenizer_lowercase.cpp)
 
-add_executable(batch_14_query_tokenizer_punctuation tests/batch_20261013_14_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_14_query_tokenizer_punctuation tests/batch_20261013_14_query_tokenizer_punctuation.cpp)
 
-add_executable(batch_15_query_tokenizer_numbers tests/batch_20261013_15_query_tokenizer_numbers.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_15_query_tokenizer_numbers tests/batch_20261013_15_query_tokenizer_numbers.cpp)
 
-add_executable(batch_16_query_tokenizer_duplicate_terms tests/batch_20261013_16_query_tokenizer_duplicate_terms.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_16_query_tokenizer_duplicate_terms tests/batch_20261013_16_query_tokenizer_duplicate_terms.cpp)
 
-add_executable(batch_17_query_tokenizer_tabs tests/batch_20261013_17_query_tokenizer_tabs.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_17_query_tokenizer_tabs tests/batch_20261013_17_query_tokenizer_tabs.cpp)
 
-add_executable(batch_18_query_tokenizer_newlines tests/batch_20261013_18_query_tokenizer_newlines.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_18_query_tokenizer_newlines tests/batch_20261013_18_query_tokenizer_newlines.cpp)
 
-add_executable(batch_19_query_tokenizer_symbol_only tests/batch_20261013_19_query_tokenizer_symbol_only.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_19_query_tokenizer_symbol_only tests/batch_20261013_19_query_tokenizer_symbol_only.cpp)
 
-add_executable(batch_20_query_tokenizer_mixed_alphanumeric tests/batch_20261013_20_query_tokenizer_mixed_alphanumeric.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20_query_tokenizer_mixed_alphanumeric tests/batch_20261013_20_query_tokenizer_mixed_alphanumeric.cpp)
 
-add_executable(batch_21_topk_empty_input tests/batch_20261013_21_topk_empty_input.cpp src/TopK.cpp)
+add_executable(batch_21_topk_empty_input tests/batch_20261013_21_topk_empty_input.cpp)
 
-add_executable(batch_22_topk_zero_limit tests/batch_20261013_22_topk_zero_limit.cpp src/TopK.cpp)
+add_executable(batch_22_topk_zero_limit tests/batch_20261013_22_topk_zero_limit.cpp)
 
-add_executable(batch_23_topk_limit_one tests/batch_20261013_23_topk_limit_one.cpp src/TopK.cpp)
+add_executable(batch_23_topk_limit_one tests/batch_20261013_23_topk_limit_one.cpp)
 
-add_executable(batch_24_topk_sorted_scores tests/batch_20261013_24_topk_sorted_scores.cpp src/TopK.cpp)
+add_executable(batch_24_topk_sorted_scores tests/batch_20261013_24_topk_sorted_scores.cpp)
 
-add_executable(batch_25_topk_tie_break_document_id tests/batch_20261013_25_topk_tie_break_document_id.cpp src/TopK.cpp)
+add_executable(batch_25_topk_tie_break_document_id tests/batch_20261013_25_topk_tie_break_document_id.cpp)
 
-add_executable(batch_26_topk_truncate_results tests/batch_20261013_26_topk_truncate_results.cpp src/TopK.cpp)
+add_executable(batch_26_topk_truncate_results tests/batch_20261013_26_topk_truncate_results.cpp)
 
-add_executable(batch_27_topk_limit_above_size tests/batch_20261013_27_topk_limit_above_size.cpp src/TopK.cpp)
+add_executable(batch_27_topk_limit_above_size tests/batch_20261013_27_topk_limit_above_size.cpp)
 
-add_executable(batch_28_topk_negative_scores tests/batch_20261013_28_topk_negative_scores.cpp src/TopK.cpp)
+add_executable(batch_28_topk_negative_scores tests/batch_20261013_28_topk_negative_scores.cpp)
 
-add_executable(batch_29_topk_preserves_zero_score_tie_order tests/batch_20261013_29_topk_preserves_zero_score_tie_order.cpp src/TopK.cpp)
+add_executable(batch_29_topk_preserves_zero_score_tie_order tests/batch_20261013_29_topk_preserves_zero_score_tie_order.cpp)
 
-add_executable(batch_30_topk_duplicate_ids_allowed tests/batch_20261013_30_topk_duplicate_ids_allowed.cpp src/TopK.cpp)
+add_executable(batch_30_topk_duplicate_ids_allowed tests/batch_20261013_30_topk_duplicate_ids_allowed.cpp)
 
-add_executable(batch_31_stopwords_common_article tests/batch_20261013_31_stopwords_common_article.cpp src/StopWords.cpp)
+add_executable(batch_31_stopwords_common_article tests/batch_20261013_31_stopwords_common_article.cpp)
 
-add_executable(batch_32_stopwords_common_preposition tests/batch_20261013_32_stopwords_common_preposition.cpp src/StopWords.cpp)
+add_executable(batch_32_stopwords_common_preposition tests/batch_20261013_32_stopwords_common_preposition.cpp)
 
-add_executable(batch_33_stopwords_conjunction tests/batch_20261013_33_stopwords_conjunction.cpp src/StopWords.cpp)
+add_executable(batch_33_stopwords_conjunction tests/batch_20261013_33_stopwords_conjunction.cpp)
 
-add_executable(batch_34_stopwords_unknown_word tests/batch_20261013_34_stopwords_unknown_word.cpp src/StopWords.cpp)
+add_executable(batch_34_stopwords_unknown_word tests/batch_20261013_34_stopwords_unknown_word.cpp)
 
-add_executable(batch_35_stopwords_case_sensitive_contract tests/batch_20261013_35_stopwords_case_sensitive_contract.cpp src/StopWords.cpp)
+add_executable(batch_35_stopwords_case_sensitive_contract tests/batch_20261013_35_stopwords_case_sensitive_contract.cpp)
 
-add_executable(batch_36_document_id tests/batch_20261013_36_document_id.cpp src/Document.cpp)
+add_executable(batch_36_document_id tests/batch_20261013_36_document_id.cpp)
 
-add_executable(batch_37_document_path tests/batch_20261013_37_document_path.cpp src/Document.cpp)
+add_executable(batch_37_document_path tests/batch_20261013_37_document_path.cpp)
 
-add_executable(batch_38_document_content tests/batch_20261013_38_document_content.cpp src/Document.cpp)
+add_executable(batch_38_document_content tests/batch_20261013_38_document_content.cpp)
 
-add_executable(batch_39_document_empty_content tests/batch_20261013_39_document_empty_content.cpp src/Document.cpp)
+add_executable(batch_39_document_empty_content tests/batch_20261013_39_document_empty_content.cpp)
 
-add_executable(batch_40_document_empty_path tests/batch_20261013_40_document_empty_path.cpp src/Document.cpp)
+add_executable(batch_40_document_empty_path tests/batch_20261013_40_document_empty_path.cpp)
 
-add_executable(batch_41_index_stats_empty tests/batch_20261013_41_index_stats_empty.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(batch_41_index_stats_empty tests/batch_20261013_41_index_stats_empty.cpp)
 
-add_executable(batch_42_index_stats_document_count tests/batch_20261013_42_index_stats_document_count.cpp src/Document.cpp)
+add_executable(batch_42_index_stats_document_count tests/batch_20261013_42_index_stats_document_count.cpp)
 
-add_executable(batch_43_index_stats_term_count tests/batch_20261013_43_index_stats_term_count.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(batch_43_index_stats_term_count tests/batch_20261013_43_index_stats_term_count.cpp)
 
-add_executable(batch_44_index_stats_empty_document tests/batch_20261013_44_index_stats_empty_document.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(batch_44_index_stats_empty_document tests/batch_20261013_44_index_stats_empty_document.cpp)
 
-add_executable(batch_45_index_stats_after_growth tests/batch_20261013_45_index_stats_after_growth.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(batch_45_index_stats_after_growth tests/batch_20261013_45_index_stats_after_growth.cpp)
 
-add_executable(batch_46_ranker_empty_index tests/batch_20261013_46_ranker_empty_index.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(batch_46_ranker_empty_index tests/batch_20261013_46_ranker_empty_index.cpp)
 
-add_executable(batch_47_ranker_unknown_term tests/batch_20261013_47_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(batch_47_ranker_unknown_term tests/batch_20261013_47_ranker_unknown_term.cpp)
 
-add_executable(batch_48_ranker_single_match tests/batch_20261013_48_ranker_single_match.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(batch_48_ranker_single_match tests/batch_20261013_48_ranker_single_match.cpp)
 
-add_executable(batch_49_ranker_frequency_increases_score tests/batch_20261013_49_ranker_frequency_increases_score.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(batch_49_ranker_frequency_increases_score tests/batch_20261013_49_ranker_frequency_increases_score.cpp)
 
-add_executable(batch_50_ranker_deterministic_tie_break tests/batch_20261013_50_ranker_deterministic_tie_break.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(batch_50_ranker_deterministic_tie_break tests/batch_20261013_50_ranker_deterministic_tie_break.cpp)
 
 # Additional component regression coverage added on 2026-10-13.
 
-add_executable(batch_20261013_51_phrase_empty_tokens tests/batch_20261013_51_phrase_empty_tokens.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_51_phrase_empty_tokens tests/batch_20261013_51_phrase_empty_tokens.cpp)
 
-add_executable(batch_20261013_52_phrase_empty_phrase tests/batch_20261013_52_phrase_empty_phrase.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_52_phrase_empty_phrase tests/batch_20261013_52_phrase_empty_phrase.cpp)
 
-add_executable(batch_20261013_53_phrase_phrase_longer_than_tokens tests/batch_20261013_53_phrase_phrase_longer_than_tokens.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_53_phrase_phrase_longer_than_tokens tests/batch_20261013_53_phrase_phrase_longer_than_tokens.cpp)
 
-add_executable(batch_20261013_54_phrase_single_token_match tests/batch_20261013_54_phrase_single_token_match.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_54_phrase_single_token_match tests/batch_20261013_54_phrase_single_token_match.cpp)
 
-add_executable(batch_20261013_55_phrase_absent_phrase tests/batch_20261013_55_phrase_absent_phrase.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_55_phrase_absent_phrase tests/batch_20261013_55_phrase_absent_phrase.cpp)
 
-add_executable(batch_20261013_56_phrase_middle_phrase tests/batch_20261013_56_phrase_middle_phrase.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_56_phrase_middle_phrase tests/batch_20261013_56_phrase_middle_phrase.cpp)
 
-add_executable(batch_20261013_57_phrase_end_phrase tests/batch_20261013_57_phrase_end_phrase.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_57_phrase_end_phrase tests/batch_20261013_57_phrase_end_phrase.cpp)
 
-add_executable(batch_20261013_58_phrase_case_sensitive tests/batch_20261013_58_phrase_case_sensitive.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_58_phrase_case_sensitive tests/batch_20261013_58_phrase_case_sensitive.cpp)
 
-add_executable(batch_20261013_59_phrase_overlapping_tokens tests/batch_20261013_59_phrase_overlapping_tokens.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_59_phrase_overlapping_tokens tests/batch_20261013_59_phrase_overlapping_tokens.cpp)
 
-add_executable(batch_20261013_60_phrase_exact_sequence tests/batch_20261013_60_phrase_exact_sequence.cpp src/PhraseMatcher.cpp)
+add_executable(batch_20261013_60_phrase_exact_sequence tests/batch_20261013_60_phrase_exact_sequence.cpp)
 
-add_executable(batch_20261013_61_topk_sort_descending tests/batch_20261013_61_topk_sort_descending.cpp src/TopK.cpp)
+add_executable(batch_20261013_61_topk_sort_descending tests/batch_20261013_61_topk_sort_descending.cpp)
 
-add_executable(batch_20261013_62_topk_zero_limit tests/batch_20261013_62_topk_zero_limit.cpp src/TopK.cpp)
+add_executable(batch_20261013_62_topk_zero_limit tests/batch_20261013_62_topk_zero_limit.cpp)
 
-add_executable(batch_20261013_63_topk_limit_above_size tests/batch_20261013_63_topk_limit_above_size.cpp src/TopK.cpp)
+add_executable(batch_20261013_63_topk_limit_above_size tests/batch_20261013_63_topk_limit_above_size.cpp)
 
-add_executable(batch_20261013_64_topk_tie_document_id tests/batch_20261013_64_topk_tie_document_id.cpp src/TopK.cpp)
+add_executable(batch_20261013_64_topk_tie_document_id tests/batch_20261013_64_topk_tie_document_id.cpp)
 
-add_executable(batch_20261013_65_topk_exact_limit tests/batch_20261013_65_topk_exact_limit.cpp src/TopK.cpp)
+add_executable(batch_20261013_65_topk_exact_limit tests/batch_20261013_65_topk_exact_limit.cpp)
 
-add_executable(batch_20261013_66_topk_negative_scores tests/batch_20261013_66_topk_negative_scores.cpp src/TopK.cpp)
+add_executable(batch_20261013_66_topk_negative_scores tests/batch_20261013_66_topk_negative_scores.cpp)
 
-add_executable(batch_20261013_67_topk_zero_scores tests/batch_20261013_67_topk_zero_scores.cpp src/TopK.cpp)
+add_executable(batch_20261013_67_topk_zero_scores tests/batch_20261013_67_topk_zero_scores.cpp)
 
-add_executable(batch_20261013_68_topk_input_by_value tests/batch_20261013_68_topk_input_by_value.cpp src/TopK.cpp)
+add_executable(batch_20261013_68_topk_input_by_value tests/batch_20261013_68_topk_input_by_value.cpp)
 
-add_executable(batch_20261013_69_topk_empty_results tests/batch_20261013_69_topk_empty_results.cpp src/TopK.cpp)
+add_executable(batch_20261013_69_topk_empty_results tests/batch_20261013_69_topk_empty_results.cpp)
 
-add_executable(batch_20261013_70_topk_limit_one tests/batch_20261013_70_topk_limit_one.cpp src/TopK.cpp)
+add_executable(batch_20261013_70_topk_limit_one tests/batch_20261013_70_topk_limit_one.cpp)
 
-add_executable(batch_20261013_71_tokenizer_empty_input tests/batch_20261013_71_tokenizer_empty_input.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_71_tokenizer_empty_input tests/batch_20261013_71_tokenizer_empty_input.cpp)
 
-add_executable(batch_20261013_72_tokenizer_lowercase tests/batch_20261013_72_tokenizer_lowercase.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_72_tokenizer_lowercase tests/batch_20261013_72_tokenizer_lowercase.cpp)
 
-add_executable(batch_20261013_73_tokenizer_punctuation_split tests/batch_20261013_73_tokenizer_punctuation_split.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_73_tokenizer_punctuation_split tests/batch_20261013_73_tokenizer_punctuation_split.cpp)
 
-add_executable(batch_20261013_74_tokenizer_numbers tests/batch_20261013_74_tokenizer_numbers.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_74_tokenizer_numbers tests/batch_20261013_74_tokenizer_numbers.cpp)
 
-add_executable(batch_20261013_75_tokenizer_repeated_separators tests/batch_20261013_75_tokenizer_repeated_separators.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_75_tokenizer_repeated_separators tests/batch_20261013_75_tokenizer_repeated_separators.cpp)
 
-add_executable(batch_20261013_76_tokenizer_leading_trailing_spaces tests/batch_20261013_76_tokenizer_leading_trailing_spaces.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_76_tokenizer_leading_trailing_spaces tests/batch_20261013_76_tokenizer_leading_trailing_spaces.cpp)
 
-add_executable(batch_20261013_77_tokenizer_single_character tests/batch_20261013_77_tokenizer_single_character.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_77_tokenizer_single_character tests/batch_20261013_77_tokenizer_single_character.cpp)
 
-add_executable(batch_20261013_78_tokenizer_mixed_case_words tests/batch_20261013_78_tokenizer_mixed_case_words.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_78_tokenizer_mixed_case_words tests/batch_20261013_78_tokenizer_mixed_case_words.cpp)
 
-add_executable(batch_20261013_79_query_tokenizer_empty_input tests/batch_20261013_79_query_tokenizer_empty_input.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_79_query_tokenizer_empty_input tests/batch_20261013_79_query_tokenizer_empty_input.cpp)
 
-add_executable(batch_20261013_80_query_tokenizer_whitespace_only tests/batch_20261013_80_query_tokenizer_whitespace_only.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_80_query_tokenizer_whitespace_only tests/batch_20261013_80_query_tokenizer_whitespace_only.cpp)
 
-add_executable(batch_20261013_81_query_tokenizer_lowercase tests/batch_20261013_81_query_tokenizer_lowercase.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_81_query_tokenizer_lowercase tests/batch_20261013_81_query_tokenizer_lowercase.cpp)
 
-add_executable(batch_20261013_82_query_tokenizer_punctuation_removal tests/batch_20261013_82_query_tokenizer_punctuation_removal.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_82_query_tokenizer_punctuation_removal tests/batch_20261013_82_query_tokenizer_punctuation_removal.cpp)
 
-add_executable(batch_20261013_83_query_tokenizer_symbol_only tests/batch_20261013_83_query_tokenizer_symbol_only.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_83_query_tokenizer_symbol_only tests/batch_20261013_83_query_tokenizer_symbol_only.cpp)
 
-add_executable(batch_20261013_84_query_tokenizer_duplicate_terms tests/batch_20261013_84_query_tokenizer_duplicate_terms.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_84_query_tokenizer_duplicate_terms tests/batch_20261013_84_query_tokenizer_duplicate_terms.cpp)
 
-add_executable(batch_20261013_85_query_tokenizer_tabs_and_newlines tests/batch_20261013_85_query_tokenizer_tabs_and_newlines.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_85_query_tokenizer_tabs_and_newlines tests/batch_20261013_85_query_tokenizer_tabs_and_newlines.cpp)
 
-add_executable(batch_20261013_86_query_tokenizer_alphanumeric tests/batch_20261013_86_query_tokenizer_alphanumeric.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(batch_20261013_86_query_tokenizer_alphanumeric tests/batch_20261013_86_query_tokenizer_alphanumeric.cpp)
 
-add_executable(batch_20261013_87_index_empty_document_count tests/batch_20261013_87_index_empty_document_count.cpp src/InvertedIndex.cpp)
+add_executable(batch_20261013_87_index_empty_document_count tests/batch_20261013_87_index_empty_document_count.cpp)
 
-add_executable(batch_20261013_88_index_empty_tokens_ignored tests/batch_20261013_88_index_empty_tokens_ignored.cpp src/InvertedIndex.cpp)
+add_executable(batch_20261013_88_index_empty_tokens_ignored tests/batch_20261013_88_index_empty_tokens_ignored.cpp)
 
-add_executable(batch_20261013_89_index_sorted_postings tests/batch_20261013_89_index_sorted_postings.cpp src/InvertedIndex.cpp)
+add_executable(batch_20261013_89_index_sorted_postings tests/batch_20261013_89_index_sorted_postings.cpp)
 
-add_executable(batch_20261013_90_index_frequency tests/batch_20261013_90_index_frequency.cpp src/InvertedIndex.cpp)
+add_executable(batch_20261013_90_index_frequency tests/batch_20261013_90_index_frequency.cpp)
 
-add_executable(batch_20261013_91_index_missing_term tests/batch_20261013_91_index_missing_term.cpp src/InvertedIndex.cpp)
+add_executable(batch_20261013_91_index_missing_term tests/batch_20261013_91_index_missing_term.cpp)
 
-add_executable(batch_20261013_92_document_id tests/batch_20261013_92_document_id.cpp src/Document.cpp)
+add_executable(batch_20261013_92_document_id tests/batch_20261013_92_document_id.cpp)
 
-add_executable(batch_20261013_93_document_path tests/batch_20261013_93_document_path.cpp src/Document.cpp)
+add_executable(batch_20261013_93_document_path tests/batch_20261013_93_document_path.cpp)
 
-add_executable(batch_20261013_94_document_content tests/batch_20261013_94_document_content.cpp src/Document.cpp)
+add_executable(batch_20261013_94_document_content tests/batch_20261013_94_document_content.cpp)
 
-add_executable(batch_20261013_95_document_empty_fields tests/batch_20261013_95_document_empty_fields.cpp src/Document.cpp)
+add_executable(batch_20261013_95_document_empty_fields tests/batch_20261013_95_document_empty_fields.cpp)
 
-add_executable(batch_20261013_96_stopwords_article tests/batch_20261013_96_stopwords_article.cpp src/StopWords.cpp)
+add_executable(batch_20261013_96_stopwords_article tests/batch_20261013_96_stopwords_article.cpp)
 
-add_executable(batch_20261013_97_stopwords_conjunction tests/batch_20261013_97_stopwords_conjunction.cpp src/StopWords.cpp)
+add_executable(batch_20261013_97_stopwords_conjunction tests/batch_20261013_97_stopwords_conjunction.cpp)
 
-add_executable(batch_20261013_98_stopwords_unknown_word tests/batch_20261013_98_stopwords_unknown_word.cpp src/StopWords.cpp)
+add_executable(batch_20261013_98_stopwords_unknown_word tests/batch_20261013_98_stopwords_unknown_word.cpp)
 
-add_executable(batch_20261013_99_stopwords_case_contract tests/batch_20261013_99_stopwords_case_contract.cpp src/StopWords.cpp)
+add_executable(batch_20261013_99_stopwords_case_contract tests/batch_20261013_99_stopwords_case_contract.cpp)
 
 # Query, ranking, index-statistics, and index regression tests added 2026-10-14.
 
-add_executable(regression_20261014_01_query_empty tests/regression_20261014_01_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_01_query_empty tests/regression_20261014_01_query_empty.cpp)
 
-add_executable(regression_20261014_02_query_whitespace tests/regression_20261014_02_query_whitespace.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_02_query_whitespace tests/regression_20261014_02_query_whitespace.cpp)
 
-add_executable(regression_20261014_03_query_single_term tests/regression_20261014_03_query_single_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_03_query_single_term tests/regression_20261014_03_query_single_term.cpp)
 
-add_executable(regression_20261014_04_query_case_normalization tests/regression_20261014_04_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_04_query_case_normalization tests/regression_20261014_04_query_case_normalization.cpp)
 
-add_executable(regression_20261014_05_query_punctuation tests/regression_20261014_05_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_05_query_punctuation tests/regression_20261014_05_query_punctuation.cpp)
 
-add_executable(regression_20261014_06_query_duplicate_terms tests/regression_20261014_06_query_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_06_query_duplicate_terms tests/regression_20261014_06_query_duplicate_terms.cpp)
 
-add_executable(regression_20261014_07_query_and_intersection tests/regression_20261014_07_query_and_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_07_query_and_intersection tests/regression_20261014_07_query_and_intersection.cpp)
 
-add_executable(regression_20261014_08_query_no_intersection tests/regression_20261014_08_query_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_08_query_no_intersection tests/regression_20261014_08_query_no_intersection.cpp)
 
-add_executable(regression_20261014_09_query_unknown_term tests/regression_20261014_09_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_09_query_unknown_term tests/regression_20261014_09_query_unknown_term.cpp)
 
-add_executable(regression_20261014_10_query_unknown_with_known tests/regression_20261014_10_query_unknown_with_known.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_10_query_unknown_with_known tests/regression_20261014_10_query_unknown_with_known.cpp)
 
-add_executable(regression_20261014_11_query_result_order tests/regression_20261014_11_query_result_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_11_query_result_order tests/regression_20261014_11_query_result_order.cpp)
 
-add_executable(regression_20261014_12_query_three_term_intersection tests/regression_20261014_12_query_three_term_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_12_query_three_term_intersection tests/regression_20261014_12_query_three_term_intersection.cpp)
 
-add_executable(regression_20261014_13_query_symbols_only tests/regression_20261014_13_query_symbols_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_13_query_symbols_only tests/regression_20261014_13_query_symbols_only.cpp)
 
-add_executable(regression_20261014_14_query_reordered_terms tests/regression_20261014_14_query_reordered_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_14_query_reordered_terms tests/regression_20261014_14_query_reordered_terms.cpp)
 
-add_executable(regression_20261014_15_query_mixed_case_and_punctuation tests/regression_20261014_15_query_mixed_case_and_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_15_query_mixed_case_and_punctuation tests/regression_20261014_15_query_mixed_case_and_punctuation.cpp)
 
-add_executable(regression_20261014_16_ranker_empty_index tests/regression_20261014_16_ranker_empty_index.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_16_ranker_empty_index tests/regression_20261014_16_ranker_empty_index.cpp)
 
-add_executable(regression_20261014_17_ranker_empty_terms tests/regression_20261014_17_ranker_empty_terms.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_17_ranker_empty_terms tests/regression_20261014_17_ranker_empty_terms.cpp)
 
-add_executable(regression_20261014_18_ranker_unknown_term tests/regression_20261014_18_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_18_ranker_unknown_term tests/regression_20261014_18_ranker_unknown_term.cpp)
 
-add_executable(regression_20261014_19_ranker_positive_score tests/regression_20261014_19_ranker_positive_score.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_19_ranker_positive_score tests/regression_20261014_19_ranker_positive_score.cpp)
 
-add_executable(regression_20261014_20_ranker_frequency_boost tests/regression_20261014_20_ranker_frequency_boost.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_20_ranker_frequency_boost tests/regression_20261014_20_ranker_frequency_boost.cpp)
 
-add_executable(regression_20261014_21_ranker_repeated_query_term tests/regression_20261014_21_ranker_repeated_query_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_21_ranker_repeated_query_term tests/regression_20261014_21_ranker_repeated_query_term.cpp)
 
-add_executable(regression_20261014_22_ranker_tie_break_document_id tests/regression_20261014_22_ranker_tie_break_document_id.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_22_ranker_tie_break_document_id tests/regression_20261014_22_ranker_tie_break_document_id.cpp)
 
-add_executable(regression_20261014_23_ranker_multiple_terms tests/regression_20261014_23_ranker_multiple_terms.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_23_ranker_multiple_terms tests/regression_20261014_23_ranker_multiple_terms.cpp)
 
-add_executable(regression_20261014_24_ranker_missing_term_ignored tests/regression_20261014_24_ranker_missing_term_ignored.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_24_ranker_missing_term_ignored tests/regression_20261014_24_ranker_missing_term_ignored.cpp)
 
-add_executable(regression_20261014_25_ranker_rare_term_contributes tests/regression_20261014_25_ranker_rare_term_contributes.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_25_ranker_rare_term_contributes tests/regression_20261014_25_ranker_rare_term_contributes.cpp)
 
-add_executable(regression_20261014_26_stats_empty_index tests/regression_20261014_26_stats_empty_index.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_26_stats_empty_index tests/regression_20261014_26_stats_empty_index.cpp)
 
-add_executable(regression_20261014_27_stats_empty_document tests/regression_20261014_27_stats_empty_document.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_27_stats_empty_document tests/regression_20261014_27_stats_empty_document.cpp)
 
-add_executable(regression_20261014_28_stats_unique_terms tests/regression_20261014_28_stats_unique_terms.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_28_stats_unique_terms tests/regression_20261014_28_stats_unique_terms.cpp)
 
-add_executable(regression_20261014_29_stats_multiple_documents tests/regression_20261014_29_stats_multiple_documents.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_29_stats_multiple_documents tests/regression_20261014_29_stats_multiple_documents.cpp)
 
-add_executable(regression_20261014_30_stats_repeated_document_id tests/regression_20261014_30_stats_repeated_document_id.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_30_stats_repeated_document_id tests/regression_20261014_30_stats_repeated_document_id.cpp)
 
-add_executable(regression_20261014_31_index_document_frequency tests/regression_20261014_31_index_document_frequency.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_31_index_document_frequency tests/regression_20261014_31_index_document_frequency.cpp)
 
-add_executable(regression_20261014_32_index_missing_term_frequency tests/regression_20261014_32_index_missing_term_frequency.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_32_index_missing_term_frequency tests/regression_20261014_32_index_missing_term_frequency.cpp)
 
-add_executable(regression_20261014_33_index_missing_document_frequency tests/regression_20261014_33_index_missing_document_frequency.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_33_index_missing_document_frequency tests/regression_20261014_33_index_missing_document_frequency.cpp)
 
-add_executable(regression_20261014_34_index_repeated_tokens_single_posting tests/regression_20261014_34_index_repeated_tokens_single_posting.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_34_index_repeated_tokens_single_posting tests/regression_20261014_34_index_repeated_tokens_single_posting.cpp)
 
-add_executable(regression_20261014_35_index_duplicate_add_accumulates tests/regression_20261014_35_index_duplicate_add_accumulates.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_35_index_duplicate_add_accumulates tests/regression_20261014_35_index_duplicate_add_accumulates.cpp)
 
-add_executable(regression_20261014_36_index_only_empty_tokens tests/regression_20261014_36_index_only_empty_tokens.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_36_index_only_empty_tokens tests/regression_20261014_36_index_only_empty_tokens.cpp)
 
-add_executable(regression_20261014_37_index_negative_document_id tests/regression_20261014_37_index_negative_document_id.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_37_index_negative_document_id tests/regression_20261014_37_index_negative_document_id.cpp)
 
-add_executable(regression_20261014_38_index_zero_document_id tests/regression_20261014_38_index_zero_document_id.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_38_index_zero_document_id tests/regression_20261014_38_index_zero_document_id.cpp)
 
-add_executable(regression_20261014_39_index_case_sensitive_terms tests/regression_20261014_39_index_case_sensitive_terms.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_39_index_case_sensitive_terms tests/regression_20261014_39_index_case_sensitive_terms.cpp)
 
 # Regression coverage added on 2026-10-15.
 
-add_executable(regression_20261015_01_document_loader_empty_file tests/regression_20261015_01_document_loader_empty_file.cpp src/DocumentLoader.cpp src/Document.cpp)
+add_executable(regression_20261015_01_document_loader_empty_file tests/regression_20261015_01_document_loader_empty_file.cpp)
 
-add_executable(regression_20261015_02_document_loader_content tests/regression_20261015_02_document_loader_content.cpp src/DocumentLoader.cpp src/Document.cpp)
+add_executable(regression_20261015_02_document_loader_content tests/regression_20261015_02_document_loader_content.cpp)
 
-add_executable(regression_20261015_03_document_loader_newlines tests/regression_20261015_03_document_loader_newlines.cpp src/DocumentLoader.cpp src/Document.cpp)
+add_executable(regression_20261015_03_document_loader_newlines tests/regression_20261015_03_document_loader_newlines.cpp)
 
-add_executable(regression_20261015_04_document_loader_missing_throws tests/regression_20261015_04_document_loader_missing_throws.cpp src/DocumentLoader.cpp src/Document.cpp)
+add_executable(regression_20261015_04_document_loader_missing_throws tests/regression_20261015_04_document_loader_missing_throws.cpp)
 
-add_executable(regression_20261015_05_document_loader_preserves_path tests/regression_20261015_05_document_loader_preserves_path.cpp src/DocumentLoader.cpp src/Document.cpp)
+add_executable(regression_20261015_05_document_loader_preserves_path tests/regression_20261015_05_document_loader_preserves_path.cpp)
 
-add_executable(regression_20261015_06_topk_empty tests/regression_20261015_06_topk_empty.cpp src/TopK.cpp)
+add_executable(regression_20261015_06_topk_empty tests/regression_20261015_06_topk_empty.cpp)
 
-add_executable(regression_20261015_07_topk_equal_score_order tests/regression_20261015_07_topk_equal_score_order.cpp src/TopK.cpp)
+add_executable(regression_20261015_07_topk_equal_score_order tests/regression_20261015_07_topk_equal_score_order.cpp)
 
-add_executable(regression_20261015_08_topk_limit_zero tests/regression_20261015_08_topk_limit_zero.cpp src/TopK.cpp)
+add_executable(regression_20261015_08_topk_limit_zero tests/regression_20261015_08_topk_limit_zero.cpp)
 
-add_executable(regression_20261015_09_topk_preserves_negative tests/regression_20261015_09_topk_preserves_negative.cpp src/TopK.cpp)
+add_executable(regression_20261015_09_topk_preserves_negative tests/regression_20261015_09_topk_preserves_negative.cpp)
 
-add_executable(regression_20261015_10_topk_truncates tests/regression_20261015_10_topk_truncates.cpp src/TopK.cpp)
+add_executable(regression_20261015_10_topk_truncates tests/regression_20261015_10_topk_truncates.cpp)
 
-add_executable(regression_20261015_11_phrase_empty_tokens tests/regression_20261015_11_phrase_empty_tokens.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261015_11_phrase_empty_tokens tests/regression_20261015_11_phrase_empty_tokens.cpp)
 
-add_executable(regression_20261015_12_phrase_empty_phrase tests/regression_20261015_12_phrase_empty_phrase.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261015_12_phrase_empty_phrase tests/regression_20261015_12_phrase_empty_phrase.cpp)
 
-add_executable(regression_20261015_13_phrase_not_contiguous tests/regression_20261015_13_phrase_not_contiguous.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261015_13_phrase_not_contiguous tests/regression_20261015_13_phrase_not_contiguous.cpp)
 
-add_executable(regression_20261015_14_phrase_middle_match tests/regression_20261015_14_phrase_middle_match.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261015_14_phrase_middle_match tests/regression_20261015_14_phrase_middle_match.cpp)
 
-add_executable(regression_20261015_15_phrase_case_sensitive tests/regression_20261015_15_phrase_case_sensitive.cpp src/PhraseMatcher.cpp)
+add_executable(regression_20261015_15_phrase_case_sensitive tests/regression_20261015_15_phrase_case_sensitive.cpp)
 
-add_executable(regression_20261015_16_tokenizer_empty tests/regression_20261015_16_tokenizer_empty.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_16_tokenizer_empty tests/regression_20261015_16_tokenizer_empty.cpp)
 
-add_executable(regression_20261015_17_tokenizer_lowercase tests/regression_20261015_17_tokenizer_lowercase.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_17_tokenizer_lowercase tests/regression_20261015_17_tokenizer_lowercase.cpp)
 
-add_executable(regression_20261015_18_tokenizer_symbols tests/regression_20261015_18_tokenizer_symbols.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_18_tokenizer_symbols tests/regression_20261015_18_tokenizer_symbols.cpp)
 
-add_executable(regression_20261015_19_tokenizer_repeated_punctuation tests/regression_20261015_19_tokenizer_repeated_punctuation.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_19_tokenizer_repeated_punctuation tests/regression_20261015_19_tokenizer_repeated_punctuation.cpp)
 
-add_executable(regression_20261015_20_tokenizer_numeric tests/regression_20261015_20_tokenizer_numeric.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_20_tokenizer_numeric tests/regression_20261015_20_tokenizer_numeric.cpp)
 
-add_executable(regression_20261015_21_query_and_match tests/regression_20261015_21_query_and_match.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_21_query_and_match tests/regression_20261015_21_query_and_match.cpp)
 
-add_executable(regression_20261015_22_query_empty tests/regression_20261015_22_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_22_query_empty tests/regression_20261015_22_query_empty.cpp)
 
-add_executable(regression_20261015_23_query_case_insensitive tests/regression_20261015_23_query_case_insensitive.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_23_query_case_insensitive tests/regression_20261015_23_query_case_insensitive.cpp)
 
-add_executable(regression_20261015_24_query_punctuation tests/regression_20261015_24_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_24_query_punctuation tests/regression_20261015_24_query_punctuation.cpp)
 
-add_executable(regression_20261015_25_query_unknown_term tests/regression_20261015_25_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_25_query_unknown_term tests/regression_20261015_25_query_unknown_term.cpp)
 
-add_executable(regression_20261015_26_query_ordered_ids tests/regression_20261015_26_query_ordered_ids.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_26_query_ordered_ids tests/regression_20261015_26_query_ordered_ids.cpp)
 
-add_executable(regression_20261015_27_ranker_empty_terms tests/regression_20261015_27_ranker_empty_terms.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_27_ranker_empty_terms tests/regression_20261015_27_ranker_empty_terms.cpp)
 
-add_executable(regression_20261015_28_ranker_unknown_term tests/regression_20261015_28_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_28_ranker_unknown_term tests/regression_20261015_28_ranker_unknown_term.cpp)
 
-add_executable(regression_20261015_29_ranker_score_order tests/regression_20261015_29_ranker_score_order.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_29_ranker_score_order tests/regression_20261015_29_ranker_score_order.cpp)
 
-add_executable(regression_20261015_30_ranker_tie_order tests/regression_20261015_30_ranker_tie_order.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_30_ranker_tie_order tests/regression_20261015_30_ranker_tie_order.cpp)
 
-add_executable(regression_20261015_31_stats_empty tests/regression_20261015_31_stats_empty.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_31_stats_empty tests/regression_20261015_31_stats_empty.cpp)
 
-add_executable(regression_20261015_32_stats_unique_terms tests/regression_20261015_32_stats_unique_terms.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_32_stats_unique_terms tests/regression_20261015_32_stats_unique_terms.cpp)
 
-add_executable(regression_20261015_33_stats_documents tests/regression_20261015_33_stats_documents.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_33_stats_documents tests/regression_20261015_33_stats_documents.cpp)
 
-add_executable(regression_20261015_34_index_frequency tests/regression_20261015_34_index_frequency.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_34_index_frequency tests/regression_20261015_34_index_frequency.cpp)
 
-add_executable(regression_20261015_35_index_sorted_postings tests/regression_20261015_35_index_sorted_postings.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_35_index_sorted_postings tests/regression_20261015_35_index_sorted_postings.cpp)
 
-add_executable(regression_20261015_36_index_missing_frequency tests/regression_20261015_36_index_missing_frequency.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261015_36_index_missing_frequency tests/regression_20261015_36_index_missing_frequency.cpp)
 
-add_executable(regression_20261015_37_stopwords_article tests/regression_20261015_37_stopwords_article.cpp src/StopWords.cpp)
+add_executable(regression_20261015_37_stopwords_article tests/regression_20261015_37_stopwords_article.cpp)
 
-add_executable(regression_20261015_38_stopwords_unknown tests/regression_20261015_38_stopwords_unknown.cpp src/StopWords.cpp)
+add_executable(regression_20261015_38_stopwords_unknown tests/regression_20261015_38_stopwords_unknown.cpp)
 
-add_executable(regression_20261015_39_document_fields tests/regression_20261015_39_document_fields.cpp src/Document.cpp)
+add_executable(regression_20261015_39_document_fields tests/regression_20261015_39_document_fields.cpp)
 
-add_executable(regression_20261015_40_querytokenizer_punctuation tests/regression_20261015_40_querytokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261015_40_querytokenizer_punctuation tests/regression_20261015_40_querytokenizer_punctuation.cpp)
 
 # Additional regression coverage for 2026-10-14.
 
-add_executable(regression_20261014_more_01_tokenizer_tabs tests/regression_20261014_more_01_tokenizer_tabs.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_01_tokenizer_tabs tests/regression_20261014_more_01_tokenizer_tabs.cpp)
 
-add_executable(regression_20261014_more_02_tokenizer_newlines tests/regression_20261014_more_02_tokenizer_newlines.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_02_tokenizer_newlines tests/regression_20261014_more_02_tokenizer_newlines.cpp)
 
-add_executable(regression_20261014_more_03_tokenizer_leading_delimiters tests/regression_20261014_more_03_tokenizer_leading_delimiters.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_03_tokenizer_leading_delimiters tests/regression_20261014_more_03_tokenizer_leading_delimiters.cpp)
 
-add_executable(regression_20261014_more_04_tokenizer_trailing_delimiters tests/regression_20261014_more_04_tokenizer_trailing_delimiters.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_04_tokenizer_trailing_delimiters tests/regression_20261014_more_04_tokenizer_trailing_delimiters.cpp)
 
-add_executable(regression_20261014_more_05_tokenizer_mixed_digits tests/regression_20261014_more_05_tokenizer_mixed_digits.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_05_tokenizer_mixed_digits tests/regression_20261014_more_05_tokenizer_mixed_digits.cpp)
 
-add_executable(regression_20261014_more_06_tokenizer_long_text tests/regression_20261014_more_06_tokenizer_long_text.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_06_tokenizer_long_text tests/regression_20261014_more_06_tokenizer_long_text.cpp)
 
-add_executable(regression_20261014_more_07_tokenizer_repeated_spaces tests/regression_20261014_more_07_tokenizer_repeated_spaces.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_07_tokenizer_repeated_spaces tests/regression_20261014_more_07_tokenizer_repeated_spaces.cpp)
 
-add_executable(regression_20261014_more_08_tokenizer_apostrophe_split tests/regression_20261014_more_08_tokenizer_apostrophe_split.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_08_tokenizer_apostrophe_split tests/regression_20261014_more_08_tokenizer_apostrophe_split.cpp)
 
-add_executable(regression_20261014_more_09_tokenizer_unicode_bytes_safe tests/regression_20261014_more_09_tokenizer_unicode_bytes_safe.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_09_tokenizer_unicode_bytes_safe tests/regression_20261014_more_09_tokenizer_unicode_bytes_safe.cpp)
 
-add_executable(regression_20261014_more_10_tokenizer_single_digit tests/regression_20261014_more_10_tokenizer_single_digit.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_10_tokenizer_single_digit tests/regression_20261014_more_10_tokenizer_single_digit.cpp)
 
-add_executable(regression_20261014_more_11_index_contains_after_add tests/regression_20261014_more_11_index_contains_after_add.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_11_index_contains_after_add tests/regression_20261014_more_11_index_contains_after_add.cpp)
 
-add_executable(regression_20261014_more_12_index_contains_missing tests/regression_20261014_more_12_index_contains_missing.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_12_index_contains_missing tests/regression_20261014_more_12_index_contains_missing.cpp)
 
-add_executable(regression_20261014_more_13_index_term_count_growth tests/regression_20261014_more_13_index_term_count_growth.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_13_index_term_count_growth tests/regression_20261014_more_13_index_term_count_growth.cpp)
 
-add_executable(regression_20261014_more_14_index_empty_term_ignored tests/regression_20261014_more_14_index_empty_term_ignored.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_14_index_empty_term_ignored tests/regression_20261014_more_14_index_empty_term_ignored.cpp)
 
-add_executable(regression_20261014_more_15_index_search_empty tests/regression_20261014_more_15_index_search_empty.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_15_index_search_empty tests/regression_20261014_more_15_index_search_empty.cpp)
 
-add_executable(regression_20261014_more_16_index_frequency_distinct_docs tests/regression_20261014_more_16_index_frequency_distinct_docs.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_16_index_frequency_distinct_docs tests/regression_20261014_more_16_index_frequency_distinct_docs.cpp)
 
-add_executable(regression_20261014_more_17_index_same_doc_posting_once tests/regression_20261014_more_17_index_same_doc_posting_once.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_17_index_same_doc_posting_once tests/regression_20261014_more_17_index_same_doc_posting_once.cpp)
 
-add_executable(regression_20261014_more_18_index_document_count_empty_doc tests/regression_20261014_more_18_index_document_count_empty_doc.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_18_index_document_count_empty_doc tests/regression_20261014_more_18_index_document_count_empty_doc.cpp)
 
-add_executable(regression_20261014_more_19_index_document_count_duplicate tests/regression_20261014_more_19_index_document_count_duplicate.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_19_index_document_count_duplicate tests/regression_20261014_more_19_index_document_count_duplicate.cpp)
 
-add_executable(regression_20261014_more_20_index_postings_ascending tests/regression_20261014_more_20_index_postings_ascending.cpp src/InvertedIndex.cpp)
+add_executable(regression_20261014_more_20_index_postings_ascending tests/regression_20261014_more_20_index_postings_ascending.cpp)
 
-add_executable(regression_20261014_more_21_query_intersection tests/regression_20261014_more_21_query_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_21_query_intersection tests/regression_20261014_more_21_query_intersection.cpp)
 
-add_executable(regression_20261014_more_22_query_no_intersection tests/regression_20261014_more_22_query_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_22_query_no_intersection tests/regression_20261014_more_22_query_no_intersection.cpp)
 
-add_executable(regression_20261014_more_23_query_duplicate_term tests/regression_20261014_more_23_query_duplicate_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_23_query_duplicate_term tests/regression_20261014_more_23_query_duplicate_term.cpp)
 
-add_executable(regression_20261014_more_24_query_whitespace_only tests/regression_20261014_more_24_query_whitespace_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_24_query_whitespace_only tests/regression_20261014_more_24_query_whitespace_only.cpp)
 
-add_executable(regression_20261014_more_25_query_punctuation_only tests/regression_20261014_more_25_query_punctuation_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_25_query_punctuation_only tests/regression_20261014_more_25_query_punctuation_only.cpp)
 
-add_executable(regression_20261014_more_26_query_result_sorted tests/regression_20261014_more_26_query_result_sorted.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_26_query_result_sorted tests/regression_20261014_more_26_query_result_sorted.cpp)
 
-add_executable(regression_20261014_more_27_query_unknown_and_known tests/regression_20261014_more_27_query_unknown_and_known.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_27_query_unknown_and_known tests/regression_20261014_more_27_query_unknown_and_known.cpp)
 
-add_executable(regression_20261014_more_28_query_normalizes_case tests/regression_20261014_more_28_query_normalizes_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_28_query_normalizes_case tests/regression_20261014_more_28_query_normalizes_case.cpp)
 
-add_executable(regression_20261014_more_29_query_embedded_punctuation tests/regression_20261014_more_29_query_embedded_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_29_query_embedded_punctuation tests/regression_20261014_more_29_query_embedded_punctuation.cpp)
 
-add_executable(regression_20261014_more_30_query_numeric_term tests/regression_20261014_more_30_query_numeric_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_30_query_numeric_term tests/regression_20261014_more_30_query_numeric_term.cpp)
 
-add_executable(regression_20261014_more_31_document_empty_values tests/regression_20261014_more_31_document_empty_values.cpp src/Document.cpp)
+add_executable(regression_20261014_more_31_document_empty_values tests/regression_20261014_more_31_document_empty_values.cpp)
 
-add_executable(regression_20261014_more_32_document_multiline_content tests/regression_20261014_more_32_document_multiline_content.cpp src/Document.cpp)
+add_executable(regression_20261014_more_32_document_multiline_content tests/regression_20261014_more_32_document_multiline_content.cpp)
 
-add_executable(regression_20261014_more_33_document_path_spaces tests/regression_20261014_more_33_document_path_spaces.cpp src/Document.cpp)
+add_executable(regression_20261014_more_33_document_path_spaces tests/regression_20261014_more_33_document_path_spaces.cpp)
 
-add_executable(regression_20261014_more_34_stopwords_the tests/regression_20261014_more_34_stopwords_the.cpp src/StopWords.cpp)
+add_executable(regression_20261014_more_34_stopwords_the tests/regression_20261014_more_34_stopwords_the.cpp)
 
-add_executable(regression_20261014_more_35_stopwords_and tests/regression_20261014_more_35_stopwords_and.cpp src/StopWords.cpp)
+add_executable(regression_20261014_more_35_stopwords_and tests/regression_20261014_more_35_stopwords_and.cpp)
 
-add_executable(regression_20261014_more_36_stopwords_nonstop tests/regression_20261014_more_36_stopwords_nonstop.cpp src/StopWords.cpp)
+add_executable(regression_20261014_more_36_stopwords_nonstop tests/regression_20261014_more_36_stopwords_nonstop.cpp)
 
-add_executable(regression_20261014_more_37_querytokenizer_empty tests/regression_20261014_more_37_querytokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_37_querytokenizer_empty tests/regression_20261014_more_37_querytokenizer_empty.cpp)
 
-add_executable(regression_20261014_more_38_querytokenizer_whitespace tests/regression_20261014_more_38_querytokenizer_whitespace.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_38_querytokenizer_whitespace tests/regression_20261014_more_38_querytokenizer_whitespace.cpp)
 
-add_executable(regression_20261014_more_39_querytokenizer_preserves_repetition tests/regression_20261014_more_39_querytokenizer_preserves_repetition.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_39_querytokenizer_preserves_repetition tests/regression_20261014_more_39_querytokenizer_preserves_repetition.cpp)
 
-add_executable(regression_20261014_more_40_querytokenizer_normalizes_case tests/regression_20261014_more_40_querytokenizer_normalizes_case.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(regression_20261014_more_40_querytokenizer_normalizes_case tests/regression_20261014_more_40_querytokenizer_normalizes_case.cpp)
 
 # Autocomplete and bounded search-cache regression tests.
 
-add_executable(autocomplete_empty_index tests/autocomplete_empty_index.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_empty_index tests/autocomplete_empty_index.cpp)
 
-add_executable(autocomplete_insert_single tests/autocomplete_insert_single.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_insert_single tests/autocomplete_insert_single.cpp)
 
-add_executable(autocomplete_duplicate_insert tests/autocomplete_duplicate_insert.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_duplicate_insert tests/autocomplete_duplicate_insert.cpp)
 
-add_executable(autocomplete_empty_word tests/autocomplete_empty_word.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_empty_word tests/autocomplete_empty_word.cpp)
 
-add_executable(autocomplete_missing_prefix tests/autocomplete_missing_prefix.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_missing_prefix tests/autocomplete_missing_prefix.cpp)
 
-add_executable(autocomplete_prefix_exact_word tests/autocomplete_prefix_exact_word.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_prefix_exact_word tests/autocomplete_prefix_exact_word.cpp)
 
-add_executable(autocomplete_limit_zero tests/autocomplete_limit_zero.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_limit_zero tests/autocomplete_limit_zero.cpp)
 
-add_executable(autocomplete_limit_truncates tests/autocomplete_limit_truncates.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_limit_truncates tests/autocomplete_limit_truncates.cpp)
 
-add_executable(autocomplete_lexicographic_order tests/autocomplete_lexicographic_order.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_lexicographic_order tests/autocomplete_lexicographic_order.cpp)
 
-add_executable(autocomplete_unrelated_prefix tests/autocomplete_unrelated_prefix.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_unrelated_prefix tests/autocomplete_unrelated_prefix.cpp)
 
-add_executable(autocomplete_empty_prefix tests/autocomplete_empty_prefix.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_empty_prefix tests/autocomplete_empty_prefix.cpp)
 
-add_executable(autocomplete_shared_prefix tests/autocomplete_shared_prefix.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_shared_prefix tests/autocomplete_shared_prefix.cpp)
 
-add_executable(autocomplete_case_sensitive tests/autocomplete_case_sensitive.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_case_sensitive tests/autocomplete_case_sensitive.cpp)
 
-add_executable(autocomplete_size_after_many tests/autocomplete_size_after_many.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_size_after_many tests/autocomplete_size_after_many.cpp)
 
-add_executable(autocomplete_limit_larger_than_results tests/autocomplete_limit_larger_than_results.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_limit_larger_than_results tests/autocomplete_limit_larger_than_results.cpp)
 
-add_executable(autocomplete_long_word tests/autocomplete_long_word.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_long_word tests/autocomplete_long_word.cpp)
 
-add_executable(autocomplete_no_prefix_match tests/autocomplete_no_prefix_match.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_no_prefix_match tests/autocomplete_no_prefix_match.cpp)
 
-add_executable(autocomplete_insert_order_independent tests/autocomplete_insert_order_independent.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_insert_order_independent tests/autocomplete_insert_order_independent.cpp)
 
-add_executable(search_cache_empty tests/search_cache_empty.cpp src/SearchCache.cpp)
+add_executable(search_cache_empty tests/search_cache_empty.cpp)
 
-add_executable(search_cache_round_trip tests/search_cache_round_trip.cpp src/SearchCache.cpp)
+add_executable(search_cache_round_trip tests/search_cache_round_trip.cpp)
 
-add_executable(search_cache_miss_preserves_output tests/search_cache_miss_preserves_output.cpp src/SearchCache.cpp)
+add_executable(search_cache_miss_preserves_output tests/search_cache_miss_preserves_output.cpp)
 
-add_executable(search_cache_capacity_zero tests/search_cache_capacity_zero.cpp src/SearchCache.cpp)
+add_executable(search_cache_capacity_zero tests/search_cache_capacity_zero.cpp)
 
-add_executable(search_cache_evicts_lru tests/search_cache_evicts_lru.cpp src/SearchCache.cpp)
+add_executable(search_cache_evicts_lru tests/search_cache_evicts_lru.cpp)
 
-add_executable(search_cache_update_existing tests/search_cache_update_existing.cpp src/SearchCache.cpp)
+add_executable(search_cache_update_existing tests/search_cache_update_existing.cpp)
 
-add_executable(search_cache_empty_results tests/search_cache_empty_results.cpp src/SearchCache.cpp)
+add_executable(search_cache_empty_results tests/search_cache_empty_results.cpp)
 
-add_executable(search_cache_clear tests/search_cache_clear.cpp src/SearchCache.cpp)
+add_executable(search_cache_clear tests/search_cache_clear.cpp)
 
-add_executable(search_cache_capacity tests/search_cache_capacity.cpp src/SearchCache.cpp)
+add_executable(search_cache_capacity tests/search_cache_capacity.cpp)
 
-add_executable(search_cache_distinct_queries tests/search_cache_distinct_queries.cpp src/SearchCache.cpp)
+add_executable(search_cache_distinct_queries tests/search_cache_distinct_queries.cpp)
 
-add_executable(search_cache_lru_refresh tests/search_cache_lru_refresh.cpp src/SearchCache.cpp)
+add_executable(search_cache_lru_refresh tests/search_cache_lru_refresh.cpp)
 
-add_executable(search_cache_capacity_bound tests/search_cache_capacity_bound.cpp src/SearchCache.cpp)
+add_executable(search_cache_capacity_bound tests/search_cache_capacity_bound.cpp)
 
 # BM25 ranking, index-length statistics, and snippet regression tests.
 
-add_executable(bm25_empty_index tests/bm25_empty_index.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_empty_index tests/bm25_empty_index.cpp)
 
-add_executable(bm25_empty_query tests/bm25_empty_query.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_empty_query tests/bm25_empty_query.cpp)
 
-add_executable(bm25_unknown_term tests/bm25_unknown_term.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_unknown_term tests/bm25_unknown_term.cpp)
 
-add_executable(bm25_known_term_returns_document tests/bm25_known_term_returns_document.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_known_term_returns_document tests/bm25_known_term_returns_document.cpp)
 
-add_executable(bm25_scores_positive tests/bm25_scores_positive.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_scores_positive tests/bm25_scores_positive.cpp)
 
-add_executable(bm25_repeated_query_term_stable tests/bm25_repeated_query_term_stable.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_repeated_query_term_stable tests/bm25_repeated_query_term_stable.cpp)
 
-add_executable(bm25_rare_term_idf tests/bm25_rare_term_idf.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_rare_term_idf tests/bm25_rare_term_idf.cpp)
 
-add_executable(bm25_frequency_influences_score tests/bm25_frequency_influences_score.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_frequency_influences_score tests/bm25_frequency_influences_score.cpp)
 
-add_executable(bm25_invalid_negative_k1 tests/bm25_invalid_negative_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_invalid_negative_k1 tests/bm25_invalid_negative_k1.cpp)
 
-add_executable(bm25_invalid_negative_b tests/bm25_invalid_negative_b.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_invalid_negative_b tests/bm25_invalid_negative_b.cpp)
 
-add_executable(bm25_invalid_b_above_one tests/bm25_invalid_b_above_one.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_invalid_b_above_one tests/bm25_invalid_b_above_one.cpp)
 
-add_executable(bm25_zero_k1 tests/bm25_zero_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_zero_k1 tests/bm25_zero_k1.cpp)
 
-add_executable(bm25_zero_b tests/bm25_zero_b.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_zero_b tests/bm25_zero_b.cpp)
 
-add_executable(bm25_all_terms_unknown tests/bm25_all_terms_unknown.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_all_terms_unknown tests/bm25_all_terms_unknown.cpp)
 
-add_executable(bm25_union_of_matching_terms tests/bm25_union_of_matching_terms.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_union_of_matching_terms tests/bm25_union_of_matching_terms.cpp)
 
-add_executable(bm25_no_duplicate_results tests/bm25_no_duplicate_results.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_no_duplicate_results tests/bm25_no_duplicate_results.cpp)
 
-add_executable(bm25_tie_break_by_document_id tests/bm25_tie_break_by_document_id.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_tie_break_by_document_id tests/bm25_tie_break_by_document_id.cpp)
 
-add_executable(bm25_duplicate_query_terms_do_not_double_score tests/bm25_duplicate_query_terms_do_not_double_score.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_duplicate_query_terms_do_not_double_score tests/bm25_duplicate_query_terms_do_not_double_score.cpp)
 
-add_executable(bm25_empty_document_not_returned tests/bm25_empty_document_not_returned.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_empty_document_not_returned tests/bm25_empty_document_not_returned.cpp)
 
-add_executable(bm25_handles_zero_average_length tests/bm25_handles_zero_average_length.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_handles_zero_average_length tests/bm25_handles_zero_average_length.cpp)
 
-add_executable(bm25_length_normalization tests/bm25_length_normalization.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_length_normalization tests/bm25_length_normalization.cpp)
 
-add_executable(bm25_matches_multiple_query_terms tests/bm25_matches_multiple_query_terms.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_matches_multiple_query_terms tests/bm25_matches_multiple_query_terms.cpp)
 
-add_executable(bm25_default_parameters tests/bm25_default_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_default_parameters tests/bm25_default_parameters.cpp)
 
-add_executable(bm25_deterministic_order tests/bm25_deterministic_order.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_deterministic_order tests/bm25_deterministic_order.cpp)
 
-add_executable(index_length_empty_index tests/index_length_empty_index.cpp src/InvertedIndex.cpp)
+add_executable(index_length_empty_index tests/index_length_empty_index.cpp)
 
-add_executable(index_length_one_document tests/index_length_one_document.cpp src/InvertedIndex.cpp)
+add_executable(index_length_one_document tests/index_length_one_document.cpp)
 
-add_executable(index_length_unknown_document tests/index_length_unknown_document.cpp src/InvertedIndex.cpp)
+add_executable(index_length_unknown_document tests/index_length_unknown_document.cpp)
 
-add_executable(index_length_ignores_empty_tokens tests/index_length_ignores_empty_tokens.cpp src/InvertedIndex.cpp)
+add_executable(index_length_ignores_empty_tokens tests/index_length_ignores_empty_tokens.cpp)
 
-add_executable(index_length_multiple_documents tests/index_length_multiple_documents.cpp src/InvertedIndex.cpp)
+add_executable(index_length_multiple_documents tests/index_length_multiple_documents.cpp)
 
-add_executable(index_length_empty_document tests/index_length_empty_document.cpp src/InvertedIndex.cpp)
+add_executable(index_length_empty_document tests/index_length_empty_document.cpp)
 
-add_executable(index_length_duplicate_terms_counted tests/index_length_duplicate_terms_counted.cpp src/InvertedIndex.cpp)
+add_executable(index_length_duplicate_terms_counted tests/index_length_duplicate_terms_counted.cpp)
 
-add_executable(index_length_repeated_add_accumulates tests/index_length_repeated_add_accumulates.cpp src/InvertedIndex.cpp)
+add_executable(index_length_repeated_add_accumulates tests/index_length_repeated_add_accumulates.cpp)
 
-add_executable(index_length_total_after_repeated_add tests/index_length_total_after_repeated_add.cpp src/InvertedIndex.cpp)
+add_executable(index_length_total_after_repeated_add tests/index_length_total_after_repeated_add.cpp)
 
-add_executable(index_length_distinct_document_average tests/index_length_distinct_document_average.cpp src/InvertedIndex.cpp)
+add_executable(index_length_distinct_document_average tests/index_length_distinct_document_average.cpp)
 
-add_executable(snippet_empty_content tests/snippet_empty_content.cpp src/SnippetBuilder.cpp)
+add_executable(snippet_empty_content tests/snippet_empty_content.cpp)
 
-add_executable(snippet_zero_limit tests/snippet_zero_limit.cpp src/SnippetBuilder.cpp)
+add_executable(snippet_zero_limit tests/snippet_zero_limit.cpp)
 
-add_executable(snippet_short_content_unchanged tests/snippet_short_content_unchanged.cpp src/SnippetBuilder.cpp)
+add_executable(snippet_short_content_unchanged tests/snippet_short_content_unchanged.cpp)
 
-add_executable(snippet_respects_max_length tests/snippet_respects_max_length.cpp src/SnippetBuilder.cpp)
+add_executable(snippet_respects_max_length tests/snippet_respects_max_length.cpp)
 
-add_executable(snippet_no_terms_returns_prefix tests/snippet_no_terms_returns_prefix.cpp src/SnippetBuilder.cpp)
+add_executable(snippet_no_terms_returns_prefix tests/snippet_no_terms_returns_prefix.cpp)
 
-add_executable(snippet_ignores_empty_terms tests/snippet_ignores_empty_terms.cpp src/SnippetBuilder.cpp)
+add_executable(snippet_ignores_empty_terms tests/snippet_ignores_empty_terms.cpp)
 
-add_executable(snippet_adds_ellipsis_for_middle tests/snippet_adds_ellipsis_for_middle.cpp src/SnippetBuilder.cpp)
+add_executable(snippet_adds_ellipsis_for_middle tests/snippet_adds_ellipsis_for_middle.cpp)
 
-add_executable(snippet_small_limits tests/snippet_small_limits.cpp src/SnippetBuilder.cpp)
+add_executable(snippet_small_limits tests/snippet_small_limits.cpp)
 
-add_executable(daily_20261022_bm25_empty_index tests/daily_20261022_bm25_empty_index.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_bm25_empty_index tests/daily_20261022_bm25_empty_index.cpp)
 
-add_executable(daily_20261022_bm25_empty_query tests/daily_20261022_bm25_empty_query.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_bm25_empty_query tests/daily_20261022_bm25_empty_query.cpp)
 
-add_executable(daily_20261022_bm25_unknown_term tests/daily_20261022_bm25_unknown_term.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_bm25_unknown_term tests/daily_20261022_bm25_unknown_term.cpp)
 
-add_executable(daily_20261022_bm25_invalid_parameters tests/daily_20261022_bm25_invalid_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_bm25_invalid_parameters tests/daily_20261022_bm25_invalid_parameters.cpp)
 
-add_executable(daily_20261022_bm25_zero_k1 tests/daily_20261022_bm25_zero_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_bm25_zero_k1 tests/daily_20261022_bm25_zero_k1.cpp)
 
-add_executable(daily_20261022_bm25_deterministic_ties tests/daily_20261022_bm25_deterministic_ties.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_bm25_deterministic_ties tests/daily_20261022_bm25_deterministic_ties.cpp)
 
-add_executable(daily_20261022_bm25_duplicate_query_terms tests/daily_20261022_bm25_duplicate_query_terms.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_bm25_duplicate_query_terms tests/daily_20261022_bm25_duplicate_query_terms.cpp)
 
-add_executable(daily_20261022_bm25_length_accounting tests/daily_20261022_bm25_length_accounting.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_bm25_length_accounting tests/daily_20261022_bm25_length_accounting.cpp)
 
-add_executable(daily_20261022_snippet_empty_input tests/daily_20261022_snippet_empty_input.cpp src/SnippetBuilder.cpp)
+add_executable(daily_20261022_snippet_empty_input tests/daily_20261022_snippet_empty_input.cpp)
 
-add_executable(daily_20261022_snippet_zero_limit tests/daily_20261022_snippet_zero_limit.cpp src/SnippetBuilder.cpp)
+add_executable(daily_20261022_snippet_zero_limit tests/daily_20261022_snippet_zero_limit.cpp)
 
-add_executable(daily_20261022_snippet_short_content tests/daily_20261022_snippet_short_content.cpp src/SnippetBuilder.cpp)
+add_executable(daily_20261022_snippet_short_content tests/daily_20261022_snippet_short_content.cpp)
 
-add_executable(daily_20261022_snippet_limit_respected tests/daily_20261022_snippet_limit_respected.cpp src/SnippetBuilder.cpp)
+add_executable(daily_20261022_snippet_limit_respected tests/daily_20261022_snippet_limit_respected.cpp)
 
-add_executable(daily_20261022_snippet_case_insensitive tests/daily_20261022_snippet_case_insensitive.cpp src/SnippetBuilder.cpp)
+add_executable(daily_20261022_snippet_case_insensitive tests/daily_20261022_snippet_case_insensitive.cpp)
 
-add_executable(daily_20261022_snippet_no_matching_term tests/daily_20261022_snippet_no_matching_term.cpp src/SnippetBuilder.cpp)
+add_executable(daily_20261022_snippet_no_matching_term tests/daily_20261022_snippet_no_matching_term.cpp)
 
-add_executable(daily_20261022_snippet_tiny_limits tests/daily_20261022_snippet_tiny_limits.cpp src/SnippetBuilder.cpp)
+add_executable(daily_20261022_snippet_tiny_limits tests/daily_20261022_snippet_tiny_limits.cpp)
 
-add_executable(daily_20261022_autocomplete_empty_word tests/daily_20261022_autocomplete_empty_word.cpp src/AutocompleteIndex.cpp)
+add_executable(daily_20261022_autocomplete_empty_word tests/daily_20261022_autocomplete_empty_word.cpp)
 
-add_executable(daily_20261022_autocomplete_duplicate_word tests/daily_20261022_autocomplete_duplicate_word.cpp src/AutocompleteIndex.cpp)
+add_executable(daily_20261022_autocomplete_duplicate_word tests/daily_20261022_autocomplete_duplicate_word.cpp)
 
-add_executable(daily_20261022_autocomplete_zero_limit tests/daily_20261022_autocomplete_zero_limit.cpp src/AutocompleteIndex.cpp)
+add_executable(daily_20261022_autocomplete_zero_limit tests/daily_20261022_autocomplete_zero_limit.cpp)
 
-add_executable(daily_20261022_autocomplete_unknown_prefix tests/daily_20261022_autocomplete_unknown_prefix.cpp src/AutocompleteIndex.cpp)
+add_executable(daily_20261022_autocomplete_unknown_prefix tests/daily_20261022_autocomplete_unknown_prefix.cpp)
 
-add_executable(daily_20261022_autocomplete_sorted_order tests/daily_20261022_autocomplete_sorted_order.cpp src/AutocompleteIndex.cpp)
+add_executable(daily_20261022_autocomplete_sorted_order tests/daily_20261022_autocomplete_sorted_order.cpp)
 
-add_executable(daily_20261022_autocomplete_prefix_word tests/daily_20261022_autocomplete_prefix_word.cpp src/AutocompleteIndex.cpp)
+add_executable(daily_20261022_autocomplete_prefix_word tests/daily_20261022_autocomplete_prefix_word.cpp)
 
-add_executable(daily_20261022_autocomplete_case_sensitive tests/daily_20261022_autocomplete_case_sensitive.cpp src/AutocompleteIndex.cpp)
+add_executable(daily_20261022_autocomplete_case_sensitive tests/daily_20261022_autocomplete_case_sensitive.cpp)
 
-add_executable(daily_20261022_autocomplete_limit tests/daily_20261022_autocomplete_limit.cpp src/AutocompleteIndex.cpp)
+add_executable(daily_20261022_autocomplete_limit tests/daily_20261022_autocomplete_limit.cpp)
 
-add_executable(daily_20261022_cache_zero_capacity tests/daily_20261022_cache_zero_capacity.cpp src/SearchCache.cpp)
+add_executable(daily_20261022_cache_zero_capacity tests/daily_20261022_cache_zero_capacity.cpp)
 
-add_executable(daily_20261022_cache_miss tests/daily_20261022_cache_miss.cpp src/SearchCache.cpp)
+add_executable(daily_20261022_cache_miss tests/daily_20261022_cache_miss.cpp)
 
-add_executable(daily_20261022_cache_hit tests/daily_20261022_cache_hit.cpp src/SearchCache.cpp)
+add_executable(daily_20261022_cache_hit tests/daily_20261022_cache_hit.cpp)
 
-add_executable(daily_20261022_cache_update_existing tests/daily_20261022_cache_update_existing.cpp src/SearchCache.cpp)
+add_executable(daily_20261022_cache_update_existing tests/daily_20261022_cache_update_existing.cpp)
 
-add_executable(daily_20261022_cache_lru_eviction tests/daily_20261022_cache_lru_eviction.cpp src/SearchCache.cpp)
+add_executable(daily_20261022_cache_lru_eviction tests/daily_20261022_cache_lru_eviction.cpp)
 
-add_executable(daily_20261022_cache_clear tests/daily_20261022_cache_clear.cpp src/SearchCache.cpp)
+add_executable(daily_20261022_cache_clear tests/daily_20261022_cache_clear.cpp)
 
-add_executable(daily_20261022_cache_empty_results tests/daily_20261022_cache_empty_results.cpp src/SearchCache.cpp)
+add_executable(daily_20261022_cache_empty_results tests/daily_20261022_cache_empty_results.cpp)
 
-add_executable(daily_20261022_cache_capacity tests/daily_20261022_cache_capacity.cpp src/SearchCache.cpp)
+add_executable(daily_20261022_cache_capacity tests/daily_20261022_cache_capacity.cpp)
 
-add_executable(daily_20261022_index_document_lengths tests/daily_20261022_index_document_lengths.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_index_document_lengths tests/daily_20261022_index_document_lengths.cpp)
 
-add_executable(daily_20261022_index_total_tokens tests/daily_20261022_index_total_tokens.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_index_total_tokens tests/daily_20261022_index_total_tokens.cpp)
 
-add_executable(daily_20261022_index_average_length tests/daily_20261022_index_average_length.cpp src/InvertedIndex.cpp)
+add_executable(daily_20261022_index_average_length tests/daily_20261022_index_average_length.cpp)
 
-add_executable(daily_20261022_search_engine_bm25 tests/daily_20261022_search_engine_bm25.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(daily_20261022_search_engine_bm25 tests/daily_20261022_search_engine_bm25.cpp)
 
 # Final regression suite for query normalization, ranking, and top-k selection.
-add_executable(final_query_tokenizer_punctuation tests/final_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-add_executable(final_query_tokenizer_case tests/final_query_tokenizer_case.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_punctuation tests/final_query_tokenizer_punctuation.cpp)
+add_executable(final_query_tokenizer_case tests/final_query_tokenizer_case.cpp)
 
-add_executable(final_query_tokenizer_whitespace tests/final_query_tokenizer_whitespace.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_whitespace tests/final_query_tokenizer_whitespace.cpp)
 
-add_executable(final_query_tokenizer_empty tests/final_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-add_executable(final_query_tokenizer_symbols tests/final_query_tokenizer_symbols.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_empty tests/final_query_tokenizer_empty.cpp)
+add_executable(final_query_tokenizer_symbols tests/final_query_tokenizer_symbols.cpp)
 
-add_executable(final_query_tokenizer_digits tests/final_query_tokenizer_digits.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_digits tests/final_query_tokenizer_digits.cpp)
 
-add_executable(final_query_tokenizer_repeated tests/final_query_tokenizer_repeated.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_repeated tests/final_query_tokenizer_repeated.cpp)
 
-add_executable(final_query_tokenizer_apostrophe tests/final_query_tokenizer_apostrophe.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_apostrophe tests/final_query_tokenizer_apostrophe.cpp)
 
-add_executable(final_query_tokenizer_slashes tests/final_query_tokenizer_slashes.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_slashes tests/final_query_tokenizer_slashes.cpp)
 
-add_executable(final_query_tokenizer_utf8_safe tests/final_query_tokenizer_utf8_safe.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_utf8_safe tests/final_query_tokenizer_utf8_safe.cpp)
 
-add_executable(final_search_engine_punctuation_equivalence tests/final_search_engine_punctuation_equivalence.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_punctuation_equivalence tests/final_search_engine_punctuation_equivalence.cpp)
 
-add_executable(final_search_engine_case_insensitive tests/final_search_engine_case_insensitive.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_case_insensitive tests/final_search_engine_case_insensitive.cpp)
 
-add_executable(final_search_engine_empty_query tests/final_search_engine_empty_query.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_empty_query tests/final_search_engine_empty_query.cpp)
 
-add_executable(final_search_engine_unknown_query tests/final_search_engine_unknown_query.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_unknown_query tests/final_search_engine_unknown_query.cpp)
 
-add_executable(final_search_engine_multi_term tests/final_search_engine_multi_term.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_multi_term tests/final_search_engine_multi_term.cpp)
 
-add_executable(final_search_engine_repeated_query_term tests/final_search_engine_repeated_query_term.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_repeated_query_term tests/final_search_engine_repeated_query_term.cpp)
 
-add_executable(final_search_engine_numeric_query tests/final_search_engine_numeric_query.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_numeric_query tests/final_search_engine_numeric_query.cpp)
 
-add_executable(final_search_engine_symbol_only_query tests/final_search_engine_symbol_only_query.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_symbol_only_query tests/final_search_engine_symbol_only_query.cpp)
 
-add_executable(final_search_engine_bm25_punctuation tests/final_search_engine_bm25_punctuation.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_bm25_punctuation tests/final_search_engine_bm25_punctuation.cpp)
 
-add_executable(final_search_engine_deterministic_repeat tests/final_search_engine_deterministic_repeat.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_search_engine_deterministic_repeat tests/final_search_engine_deterministic_repeat.cpp)
 
-add_executable(final_topk_zero_limit tests/final_topk_zero_limit.cpp src/TopK.cpp)
+add_executable(final_topk_zero_limit tests/final_topk_zero_limit.cpp)
 
-add_executable(final_topk_empty_input tests/final_topk_empty_input.cpp src/TopK.cpp)
+add_executable(final_topk_empty_input tests/final_topk_empty_input.cpp)
 
-add_executable(final_topk_limit_exceeds_size tests/final_topk_limit_exceeds_size.cpp src/TopK.cpp)
+add_executable(final_topk_limit_exceeds_size tests/final_topk_limit_exceeds_size.cpp)
 
-add_executable(final_topk_exact_limit tests/final_topk_exact_limit.cpp src/TopK.cpp)
+add_executable(final_topk_exact_limit tests/final_topk_exact_limit.cpp)
 
-add_executable(final_topk_orders_descending_score tests/final_topk_orders_descending_score.cpp src/TopK.cpp)
+add_executable(final_topk_orders_descending_score tests/final_topk_orders_descending_score.cpp)
 
-add_executable(final_topk_tie_breaks_by_document_id tests/final_topk_tie_breaks_by_document_id.cpp src/TopK.cpp)
+add_executable(final_topk_tie_breaks_by_document_id tests/final_topk_tie_breaks_by_document_id.cpp)
 
-add_executable(final_topk_keeps_best_subset tests/final_topk_keeps_best_subset.cpp src/TopK.cpp)
+add_executable(final_topk_keeps_best_subset tests/final_topk_keeps_best_subset.cpp)
 
-add_executable(final_topk_negative_scores tests/final_topk_negative_scores.cpp src/TopK.cpp)
+add_executable(final_topk_negative_scores tests/final_topk_negative_scores.cpp)
 
-add_executable(final_topk_single_result tests/final_topk_single_result.cpp src/TopK.cpp)
+add_executable(final_topk_single_result tests/final_topk_single_result.cpp)
 
-add_executable(final_topk_does_not_mutate_caller_copy tests/final_topk_does_not_mutate_caller_copy.cpp src/TopK.cpp)
+add_executable(final_topk_does_not_mutate_caller_copy tests/final_topk_does_not_mutate_caller_copy.cpp)
 
-add_executable(final_ranker_empty_query tests/final_ranker_empty_query.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_empty_query tests/final_ranker_empty_query.cpp)
 
-add_executable(final_ranker_empty_index tests/final_ranker_empty_index.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_empty_index tests/final_ranker_empty_index.cpp)
 
-add_executable(final_ranker_unknown_term tests/final_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_unknown_term tests/final_ranker_unknown_term.cpp)
 
-add_executable(final_ranker_duplicate_terms_do_not_inflate tests/final_ranker_duplicate_terms_do_not_inflate.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_duplicate_terms_do_not_inflate tests/final_ranker_duplicate_terms_do_not_inflate.cpp)
 
-add_executable(final_ranker_tie_order_is_stable tests/final_ranker_tie_order_is_stable.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_tie_order_is_stable tests/final_ranker_tie_order_is_stable.cpp)
 
-add_executable(final_ranker_repeated_terms_keep_tf tests/final_ranker_repeated_terms_keep_tf.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_repeated_terms_keep_tf tests/final_ranker_repeated_terms_keep_tf.cpp)
 
-add_executable(final_ranker_ignores_unknown_alongside_known tests/final_ranker_ignores_unknown_alongside_known.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_ignores_unknown_alongside_known tests/final_ranker_ignores_unknown_alongside_known.cpp)
 
-add_executable(final_ranker_query_order_does_not_change_score tests/final_ranker_query_order_does_not_change_score.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_query_order_does_not_change_score tests/final_ranker_query_order_does_not_change_score.cpp)
 
-add_executable(final_ranker_results_are_unique_per_document tests/final_ranker_results_are_unique_per_document.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_results_are_unique_per_document tests/final_ranker_results_are_unique_per_document.cpp)
 
-add_executable(final_ranker_prefers_higher_term_frequency tests/final_ranker_prefers_higher_term_frequency.cpp src/Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final_ranker_prefers_higher_term_frequency tests/final_ranker_prefers_higher_term_frequency.cpp)
 
 # Final code-quality regression tests.
-add_executable(final2_index_empty_initial_state tests/final2_index_empty_initial_state.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_empty_initial_state tests/final2_index_empty_initial_state.cpp)
 
-add_executable(final2_index_empty_document_counted tests/final2_index_empty_document_counted.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_empty_document_counted tests/final2_index_empty_document_counted.cpp)
 
-add_executable(final2_index_empty_tokens_ignored tests/final2_index_empty_tokens_ignored.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_empty_tokens_ignored tests/final2_index_empty_tokens_ignored.cpp)
 
-add_executable(final2_index_duplicate_terms_frequency tests/final2_index_duplicate_terms_frequency.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_duplicate_terms_frequency tests/final2_index_duplicate_terms_frequency.cpp)
 
-add_executable(final2_index_missing_term_frequency_zero tests/final2_index_missing_term_frequency_zero.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_missing_term_frequency_zero tests/final2_index_missing_term_frequency_zero.cpp)
 
-add_executable(final2_index_missing_document_frequency_zero tests/final2_index_missing_document_frequency_zero.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_missing_document_frequency_zero tests/final2_index_missing_document_frequency_zero.cpp)
 
-add_executable(final2_index_postings_sorted tests/final2_index_postings_sorted.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_postings_sorted tests/final2_index_postings_sorted.cpp)
 
-add_executable(final2_index_postings_unique_after_readd tests/final2_index_postings_unique_after_readd.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_postings_unique_after_readd tests/final2_index_postings_unique_after_readd.cpp)
 
-add_executable(final2_index_document_frequency tests/final2_index_document_frequency.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_document_frequency tests/final2_index_document_frequency.cpp)
 
-add_executable(final2_index_unknown_document_length tests/final2_index_unknown_document_length.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_unknown_document_length tests/final2_index_unknown_document_length.cpp)
 
-add_executable(final2_index_contains_known_term tests/final2_index_contains_known_term.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_contains_known_term tests/final2_index_contains_known_term.cpp)
 
-add_executable(final2_index_total_tokens_across_documents tests/final2_index_total_tokens_across_documents.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_total_tokens_across_documents tests/final2_index_total_tokens_across_documents.cpp)
 
-add_executable(final2_index_average_document_length tests/final2_index_average_document_length.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_average_document_length tests/final2_index_average_document_length.cpp)
 
-add_executable(final2_index_average_includes_empty_document tests/final2_index_average_includes_empty_document.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_average_includes_empty_document tests/final2_index_average_includes_empty_document.cpp)
 
-add_executable(final2_index_term_count_distinct tests/final2_index_term_count_distinct.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_term_count_distinct tests/final2_index_term_count_distinct.cpp)
 
-add_executable(final2_index_missing_search_returns_empty tests/final2_index_missing_search_returns_empty.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_missing_search_returns_empty tests/final2_index_missing_search_returns_empty.cpp)
 
-add_executable(final2_index_negative_document_id tests/final2_index_negative_document_id.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_negative_document_id tests/final2_index_negative_document_id.cpp)
 
-add_executable(final2_index_stats_match_index tests/final2_index_stats_match_index.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(final2_index_stats_match_index tests/final2_index_stats_match_index.cpp)
 
-add_executable(final2_bm25_empty_query tests/final2_bm25_empty_query.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_empty_query tests/final2_bm25_empty_query.cpp)
 
-add_executable(final2_bm25_empty_index tests/final2_bm25_empty_index.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_empty_index tests/final2_bm25_empty_index.cpp)
 
-add_executable(final2_bm25_unknown_query_term tests/final2_bm25_unknown_query_term.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_unknown_query_term tests/final2_bm25_unknown_query_term.cpp)
 
-add_executable(final2_bm25_duplicate_terms_same_score tests/final2_bm25_duplicate_terms_same_score.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_duplicate_terms_same_score tests/final2_bm25_duplicate_terms_same_score.cpp)
 
-add_executable(final2_bm25_rejects_nan_k1 tests/final2_bm25_rejects_nan_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_rejects_nan_k1 tests/final2_bm25_rejects_nan_k1.cpp)
 
-add_executable(final2_bm25_rejects_infinite_b tests/final2_bm25_rejects_infinite_b.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_rejects_infinite_b tests/final2_bm25_rejects_infinite_b.cpp)
 
-add_executable(final2_bm25_rejects_negative_k1 tests/final2_bm25_rejects_negative_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_rejects_negative_k1 tests/final2_bm25_rejects_negative_k1.cpp)
 
-add_executable(final2_bm25_rejects_b_above_one tests/final2_bm25_rejects_b_above_one.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_rejects_b_above_one tests/final2_bm25_rejects_b_above_one.cpp)
 
-add_executable(final2_bm25_scores_are_positive tests/final2_bm25_scores_are_positive.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_scores_are_positive tests/final2_bm25_scores_are_positive.cpp)
 
-add_executable(final2_bm25_ties_break_by_id tests/final2_bm25_ties_break_by_id.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(final2_bm25_ties_break_by_id tests/final2_bm25_ties_break_by_id.cpp)
 
-add_executable(final2_phrase_empty_phrase_false tests/final2_phrase_empty_phrase_false.cpp src/PhraseMatcher.cpp)
+add_executable(final2_phrase_empty_phrase_false tests/final2_phrase_empty_phrase_false.cpp)
 
-add_executable(final2_phrase_longer_than_tokens_false tests/final2_phrase_longer_than_tokens_false.cpp src/PhraseMatcher.cpp)
+add_executable(final2_phrase_longer_than_tokens_false tests/final2_phrase_longer_than_tokens_false.cpp)
 
-add_executable(final2_phrase_exact_sequence_true tests/final2_phrase_exact_sequence_true.cpp src/PhraseMatcher.cpp)
+add_executable(final2_phrase_exact_sequence_true tests/final2_phrase_exact_sequence_true.cpp)
 
-add_executable(final2_phrase_noncontiguous_false tests/final2_phrase_noncontiguous_false.cpp src/PhraseMatcher.cpp)
+add_executable(final2_phrase_noncontiguous_false tests/final2_phrase_noncontiguous_false.cpp)
 
-add_executable(final2_phrase_middle_sequence_true tests/final2_phrase_middle_sequence_true.cpp src/PhraseMatcher.cpp)
+add_executable(final2_phrase_middle_sequence_true tests/final2_phrase_middle_sequence_true.cpp)
 
-add_executable(final2_cache_stores_empty_result tests/final2_cache_stores_empty_result.cpp src/SearchCache.cpp)
+add_executable(final2_cache_stores_empty_result tests/final2_cache_stores_empty_result.cpp)
 
-add_executable(final2_cache_preserves_query_key_case tests/final2_cache_preserves_query_key_case.cpp src/SearchCache.cpp)
+add_executable(final2_cache_preserves_query_key_case tests/final2_cache_preserves_query_key_case.cpp)
 
-add_executable(final2_cache_update_does_not_grow tests/final2_cache_update_does_not_grow.cpp src/SearchCache.cpp)
+add_executable(final2_cache_update_does_not_grow tests/final2_cache_update_does_not_grow.cpp)
 
-add_executable(final2_cache_clear_resets_size tests/final2_cache_clear_resets_size.cpp src/SearchCache.cpp)
+add_executable(final2_cache_clear_resets_size tests/final2_cache_clear_resets_size.cpp)
 
-add_executable(final2_cache_capacity_stays_fixed tests/final2_cache_capacity_stays_fixed.cpp src/SearchCache.cpp)
+add_executable(final2_cache_capacity_stays_fixed tests/final2_cache_capacity_stays_fixed.cpp)
 
 # Regression coverage added during the 2026-10-26 status pass.
-add_executable(status_autocomplete_empty tests/status_autocomplete_empty.cpp src/AutocompleteIndex.cpp)
+add_executable(status_autocomplete_empty tests/status_autocomplete_empty.cpp)
 
-add_executable(status_autocomplete_insert_size tests/status_autocomplete_insert_size.cpp src/AutocompleteIndex.cpp)
+add_executable(status_autocomplete_insert_size tests/status_autocomplete_insert_size.cpp)
 
-add_executable(status_autocomplete_duplicate_insert tests/status_autocomplete_duplicate_insert.cpp src/AutocompleteIndex.cpp)
+add_executable(status_autocomplete_duplicate_insert tests/status_autocomplete_duplicate_insert.cpp)
 
-add_executable(status_autocomplete_empty_insert tests/status_autocomplete_empty_insert.cpp src/AutocompleteIndex.cpp)
+add_executable(status_autocomplete_empty_insert tests/status_autocomplete_empty_insert.cpp)
 
-add_executable(status_autocomplete_prefix_filter tests/status_autocomplete_prefix_filter.cpp src/AutocompleteIndex.cpp)
+add_executable(status_autocomplete_prefix_filter tests/status_autocomplete_prefix_filter.cpp)
 
-add_executable(status_autocomplete_unknown_prefix tests/status_autocomplete_unknown_prefix.cpp src/AutocompleteIndex.cpp)
+add_executable(status_autocomplete_unknown_prefix tests/status_autocomplete_unknown_prefix.cpp)
 
-add_executable(status_autocomplete_zero_limit tests/status_autocomplete_zero_limit.cpp src/AutocompleteIndex.cpp)
+add_executable(status_autocomplete_zero_limit tests/status_autocomplete_zero_limit.cpp)
 
-add_executable(status_autocomplete_limit tests/status_autocomplete_limit.cpp src/AutocompleteIndex.cpp)
+add_executable(status_autocomplete_limit tests/status_autocomplete_limit.cpp)
 
-add_executable(status_cache_miss tests/status_cache_miss.cpp src/SearchCache.cpp)
+add_executable(status_cache_miss tests/status_cache_miss.cpp)
 
-add_executable(status_cache_put_get tests/status_cache_put_get.cpp src/SearchCache.cpp)
+add_executable(status_cache_put_get tests/status_cache_put_get.cpp)
 
-add_executable(status_cache_update tests/status_cache_update.cpp src/SearchCache.cpp)
+add_executable(status_cache_update tests/status_cache_update.cpp)
 
-add_executable(status_cache_capacity_zero tests/status_cache_capacity_zero.cpp src/SearchCache.cpp)
+add_executable(status_cache_capacity_zero tests/status_cache_capacity_zero.cpp)
 
-add_executable(status_cache_eviction tests/status_cache_eviction.cpp src/SearchCache.cpp)
+add_executable(status_cache_eviction tests/status_cache_eviction.cpp)
 
-add_executable(status_cache_lru_promotion tests/status_cache_lru_promotion.cpp src/SearchCache.cpp)
+add_executable(status_cache_lru_promotion tests/status_cache_lru_promotion.cpp)
 
-add_executable(status_cache_clear tests/status_cache_clear.cpp src/SearchCache.cpp)
+add_executable(status_cache_clear tests/status_cache_clear.cpp)
 
-add_executable(status_cache_case_sensitive tests/status_cache_case_sensitive.cpp src/SearchCache.cpp)
+add_executable(status_cache_case_sensitive tests/status_cache_case_sensitive.cpp)
 
-add_executable(status_phrase_empty_phrase tests/status_phrase_empty_phrase.cpp src/PhraseMatcher.cpp)
+add_executable(status_phrase_empty_phrase tests/status_phrase_empty_phrase.cpp)
 
-add_executable(status_phrase_longer_than_text tests/status_phrase_longer_than_text.cpp src/PhraseMatcher.cpp)
+add_executable(status_phrase_longer_than_text tests/status_phrase_longer_than_text.cpp)
 
-add_executable(status_phrase_exact_match tests/status_phrase_exact_match.cpp src/PhraseMatcher.cpp)
+add_executable(status_phrase_exact_match tests/status_phrase_exact_match.cpp)
 
-add_executable(status_phrase_not_contiguous tests/status_phrase_not_contiguous.cpp src/PhraseMatcher.cpp)
+add_executable(status_phrase_not_contiguous tests/status_phrase_not_contiguous.cpp)
 
-add_executable(status_phrase_middle_match tests/status_phrase_middle_match.cpp src/PhraseMatcher.cpp)
+add_executable(status_phrase_middle_match tests/status_phrase_middle_match.cpp)
 
-add_executable(status_tokenizer_empty tests/status_tokenizer_empty.cpp src/Tokenizer.cpp)
+add_executable(status_tokenizer_empty tests/status_tokenizer_empty.cpp)
 
-add_executable(status_tokenizer_lowercase tests/status_tokenizer_lowercase.cpp src/Tokenizer.cpp)
+add_executable(status_tokenizer_lowercase tests/status_tokenizer_lowercase.cpp)
 
-add_executable(status_tokenizer_punctuation tests/status_tokenizer_punctuation.cpp src/Tokenizer.cpp)
+add_executable(status_tokenizer_punctuation tests/status_tokenizer_punctuation.cpp)
 
-add_executable(status_tokenizer_whitespace tests/status_tokenizer_whitespace.cpp src/Tokenizer.cpp)
+add_executable(status_tokenizer_whitespace tests/status_tokenizer_whitespace.cpp)
 
-add_executable(status_tokenizer_numbers tests/status_tokenizer_numbers.cpp src/Tokenizer.cpp)
+add_executable(status_tokenizer_numbers tests/status_tokenizer_numbers.cpp)
 
-add_executable(status_tokenizer_repeated_delimiters tests/status_tokenizer_repeated_delimiters.cpp src/Tokenizer.cpp)
+add_executable(status_tokenizer_repeated_delimiters tests/status_tokenizer_repeated_delimiters.cpp)
 
-add_executable(status_tokenizer_single_token tests/status_tokenizer_single_token.cpp src/Tokenizer.cpp)
+add_executable(status_tokenizer_single_token tests/status_tokenizer_single_token.cpp)
 
-add_executable(status_tokenizer_only_punctuation tests/status_tokenizer_only_punctuation.cpp src/Tokenizer.cpp)
+add_executable(status_tokenizer_only_punctuation tests/status_tokenizer_only_punctuation.cpp)
 
-add_executable(status_query_empty tests/status_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(status_query_empty tests/status_query_empty.cpp)
 
-add_executable(status_query_case_normalization tests/status_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(status_query_case_normalization tests/status_query_case_normalization.cpp)
 
-add_executable(status_query_and_semantics tests/status_query_and_semantics.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(status_query_and_semantics tests/status_query_and_semantics.cpp)
 
-add_executable(status_query_punctuation tests/status_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(status_query_punctuation tests/status_query_punctuation.cpp)
 
-add_executable(status_query_duplicate_terms tests/status_query_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(status_query_duplicate_terms tests/status_query_duplicate_terms.cpp)
 
-add_executable(status_topk_zero_limit tests/status_topk_zero_limit.cpp src/TopK.cpp)
+add_executable(status_topk_zero_limit tests/status_topk_zero_limit.cpp)
 
-add_executable(status_topk_empty_input tests/status_topk_empty_input.cpp src/TopK.cpp)
+add_executable(status_topk_empty_input tests/status_topk_empty_input.cpp)
 
-add_executable(status_topk_score_order tests/status_topk_score_order.cpp src/TopK.cpp)
+add_executable(status_topk_score_order tests/status_topk_score_order.cpp)
 
-add_executable(status_topk_tie_break tests/status_topk_tie_break.cpp src/TopK.cpp)
+add_executable(status_topk_tie_break tests/status_topk_tie_break.cpp)
 
-add_executable(status_topk_truncates tests/status_topk_truncates.cpp src/TopK.cpp)
+add_executable(status_topk_truncates tests/status_topk_truncates.cpp)
 
-add_executable(final_bm25_empty_terms tests/final_20261027_bm25_empty_terms.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_empty_terms tests/final_20261027_bm25_empty_terms.cpp)
 
-add_executable(final_bm25_empty_index tests/final_20261027_bm25_empty_index.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_empty_index tests/final_20261027_bm25_empty_index.cpp)
 
-add_executable(final_bm25_unknown_term tests/final_20261027_bm25_unknown_term.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_unknown_term tests/final_20261027_bm25_unknown_term.cpp)
 
-add_executable(final_bm25_positive_score tests/final_20261027_bm25_positive_score.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_positive_score tests/final_20261027_bm25_positive_score.cpp)
 
-add_executable(final_bm25_duplicate_query_terms tests/final_20261027_bm25_duplicate_query_terms.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_duplicate_query_terms tests/final_20261027_bm25_duplicate_query_terms.cpp)
 
-add_executable(final_bm25_nan_k1 tests/final_20261027_bm25_nan_k1.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_nan_k1 tests/final_20261027_bm25_nan_k1.cpp)
 
-add_executable(final_bm25_infinite_b tests/final_20261027_bm25_infinite_b.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_infinite_b tests/final_20261027_bm25_infinite_b.cpp)
 
-add_executable(final_bm25_negative_k1 tests/final_20261027_bm25_negative_k1.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_negative_k1 tests/final_20261027_bm25_negative_k1.cpp)
 
-add_executable(final_bm25_b_below_zero tests/final_20261027_bm25_b_below_zero.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_b_below_zero tests/final_20261027_bm25_b_below_zero.cpp)
 
-add_executable(final_bm25_b_above_one tests/final_20261027_bm25_b_above_one.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_b_above_one tests/final_20261027_bm25_b_above_one.cpp)
 
-add_executable(final_bm25_tie_break_document_id tests/final_20261027_bm25_tie_break_document_id.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_tie_break_document_id tests/final_20261027_bm25_tie_break_document_id.cpp)
 
-add_executable(final_bm25_unknown_and_known_terms tests/final_20261027_bm25_unknown_and_known_terms.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_unknown_and_known_terms tests/final_20261027_bm25_unknown_and_known_terms.cpp)
 
-add_executable(final_bm25_k1_zero tests/final_20261027_bm25_k1_zero.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_k1_zero tests/final_20261027_bm25_k1_zero.cpp)
 
-add_executable(final_bm25_b_zero tests/final_20261027_bm25_b_zero.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
+add_executable(final_bm25_b_zero tests/final_20261027_bm25_b_zero.cpp)
 
-add_executable(final_tfidf_empty_index tests/final_20261027_tfidf_empty_index.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_empty_index tests/final_20261027_tfidf_empty_index.cpp)
 
-add_executable(final_tfidf_empty_terms tests/final_20261027_tfidf_empty_terms.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_empty_terms tests/final_20261027_tfidf_empty_terms.cpp)
 
-add_executable(final_tfidf_unknown_term tests/final_20261027_tfidf_unknown_term.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_unknown_term tests/final_20261027_tfidf_unknown_term.cpp)
 
-add_executable(final_tfidf_positive_score tests/final_20261027_tfidf_positive_score.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_positive_score tests/final_20261027_tfidf_positive_score.cpp)
 
-add_executable(final_tfidf_duplicate_query_terms tests/final_20261027_tfidf_duplicate_query_terms.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_duplicate_query_terms tests/final_20261027_tfidf_duplicate_query_terms.cpp)
 
-add_executable(final_tfidf_frequency_increases_score tests/final_20261027_tfidf_frequency_increases_score.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_frequency_increases_score tests/final_20261027_tfidf_frequency_increases_score.cpp)
 
-add_executable(final_tfidf_tie_break_document_id tests/final_20261027_tfidf_tie_break_document_id.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_tie_break_document_id tests/final_20261027_tfidf_tie_break_document_id.cpp)
 
-add_executable(final_tfidf_unknown_plus_known tests/final_20261027_tfidf_unknown_plus_known.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_unknown_plus_known tests/final_20261027_tfidf_unknown_plus_known.cpp)
 
-add_executable(final_tfidf_union_of_terms tests/final_20261027_tfidf_union_of_terms.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_union_of_terms tests/final_20261027_tfidf_union_of_terms.cpp)
 
-add_executable(final_tfidf_no_match_document_excluded tests/final_20261027_tfidf_no_match_document_excluded.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_no_match_document_excluded tests/final_20261027_tfidf_no_match_document_excluded.cpp)
 
-add_executable(final_tfidf_empty_document_safe tests/final_20261027_tfidf_empty_document_safe.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_empty_document_safe tests/final_20261027_tfidf_empty_document_safe.cpp)
 
-add_executable(final_tfidf_many_query_terms tests/final_20261027_tfidf_many_query_terms.cpp src/InvertedIndex.cpp src/Ranker.cpp)
+add_executable(final_tfidf_many_query_terms tests/final_20261027_tfidf_many_query_terms.cpp)
 
-add_executable(final_snippet_empty_content tests/final_20261027_snippet_empty_content.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_empty_content tests/final_20261027_snippet_empty_content.cpp)
 
-add_executable(final_snippet_zero_limit tests/final_20261027_snippet_zero_limit.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_zero_limit tests/final_20261027_snippet_zero_limit.cpp)
 
-add_executable(final_snippet_short_content_unchanged tests/final_20261027_snippet_short_content_unchanged.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_short_content_unchanged tests/final_20261027_snippet_short_content_unchanged.cpp)
 
-add_executable(final_snippet_exact_limit_unchanged tests/final_20261027_snippet_exact_limit_unchanged.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_exact_limit_unchanged tests/final_20261027_snippet_exact_limit_unchanged.cpp)
 
-add_executable(final_snippet_max_three tests/final_20261027_snippet_max_three.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_max_three tests/final_20261027_snippet_max_three.cpp)
 
-add_executable(final_snippet_max_five_length tests/final_20261027_snippet_max_five_length.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_max_five_length tests/final_20261027_snippet_max_five_length.cpp)
 
-add_executable(final_snippet_case_insensitive_match tests/final_20261027_snippet_case_insensitive_match.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_case_insensitive_match tests/final_20261027_snippet_case_insensitive_match.cpp)
 
-add_executable(final_snippet_empty_terms tests/final_20261027_snippet_empty_terms.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_empty_terms tests/final_20261027_snippet_empty_terms.cpp)
 
-add_executable(final_snippet_ignores_empty_term tests/final_20261027_snippet_ignores_empty_term.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_ignores_empty_term tests/final_20261027_snippet_ignores_empty_term.cpp)
 
-add_executable(final_snippet_match_near_end tests/final_20261027_snippet_match_near_end.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_match_near_end tests/final_20261027_snippet_match_near_end.cpp)
 
-add_executable(final_snippet_long_content_bounded tests/final_20261027_snippet_long_content_bounded.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_long_content_bounded tests/final_20261027_snippet_long_content_bounded.cpp)
 
-add_executable(final_snippet_max_seven tests/final_20261027_snippet_max_seven.cpp src/SnippetBuilder.cpp)
+add_executable(final_snippet_max_seven tests/final_20261027_snippet_max_seven.cpp)
 
-add_executable(final_20261027_query_tokenizer_empty tests/final_20261027_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_20261027_query_tokenizer_empty tests/final_20261027_query_tokenizer_empty.cpp)
 
 
-add_executable(final_query_tokenizer_lowercase tests/final_20261027_query_tokenizer_lowercase.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_lowercase tests/final_20261027_query_tokenizer_lowercase.cpp)
 
-add_executable(final_20261027_query_tokenizer_punctuation tests/final_20261027_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_20261027_query_tokenizer_punctuation tests/final_20261027_query_tokenizer_punctuation.cpp)
 
 
-add_executable(final_query_tokenizer_numbers tests/final_20261027_query_tokenizer_numbers.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_numbers tests/final_20261027_query_tokenizer_numbers.cpp)
 
-add_executable(final_query_tokenizer_order tests/final_20261027_query_tokenizer_order.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_order tests/final_20261027_query_tokenizer_order.cpp)
 
-add_executable(final_query_tokenizer_repeated_delimiters tests/final_20261027_query_tokenizer_repeated_delimiters.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_repeated_delimiters tests/final_20261027_query_tokenizer_repeated_delimiters.cpp)
 
-add_executable(final_query_tokenizer_mixed_case tests/final_20261027_query_tokenizer_mixed_case.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_mixed_case tests/final_20261027_query_tokenizer_mixed_case.cpp)
 
-add_executable(final_query_tokenizer_only_symbols tests/final_20261027_query_tokenizer_only_symbols.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
+add_executable(final_query_tokenizer_only_symbols tests/final_20261027_query_tokenizer_only_symbols.cpp)
 
-add_executable(final_autocomplete_lexicographic_order tests/final_20261027_autocomplete_lexicographic_order.cpp src/AutocompleteIndex.cpp)
+add_executable(final_autocomplete_lexicographic_order tests/final_20261027_autocomplete_lexicographic_order.cpp)
 
-add_executable(final_autocomplete_exact_prefix_first tests/final_20261027_autocomplete_exact_prefix_first.cpp src/AutocompleteIndex.cpp)
+add_executable(final_autocomplete_exact_prefix_first tests/final_20261027_autocomplete_exact_prefix_first.cpp)
 
-add_executable(indexing_search_regression
-    tests/indexing_search_regression.cpp
-    src/InvertedIndex.cpp
-    src/QueryProcessor.cpp
-    src/Tokenizer.cpp
-    src/QueryTokenizer.cpp
-    src/Ranker.cpp
-    src/BM25Ranker.cpp
-    src/SearchEngine.cpp
-    src/AutocompleteIndex.cpp
-)
+add_executable(indexing_search_regression tests/indexing_search_regression.cpp)
 
-add_executable(autocomplete_regression tests/autocomplete_regression.cpp src/AutocompleteIndex.cpp)
+add_executable(autocomplete_regression tests/autocomplete_regression.cpp)
 
-add_executable(search_engine_bm25_regression
-    tests/search_engine_bm25_regression.cpp
-    src/SearchEngine.cpp
-    src/BM25Ranker.cpp
-    src/Ranker.cpp
-    src/QueryTokenizer.cpp
-    src/Tokenizer.cpp
-    src/InvertedIndex.cpp
-)
+add_executable(search_engine_bm25_regression tests/search_engine_bm25_regression.cpp)
 
-add_executable(bm25_non_finite_parameters tests/bm25_non_finite_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_non_finite_parameters tests/bm25_non_finite_parameters.cpp)
 
-add_executable(bm25_large_parameter_stability tests/bm25_large_parameter_stability.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_large_parameter_stability tests/bm25_large_parameter_stability.cpp)
 
-add_executable(phrase_matcher_regression tests/phrase_matcher_regression.cpp src/PhraseMatcher.cpp)
+add_executable(phrase_matcher_regression tests/phrase_matcher_regression.cpp)
 
-add_executable(index_stats_regression tests/index_stats_regression.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
+add_executable(index_stats_regression tests/index_stats_regression.cpp)
 
-add_executable(bm25_parameter_boundaries tests/bm25_parameter_boundaries.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
+add_executable(bm25_parameter_boundaries tests/bm25_parameter_boundaries.cpp)
 
 # Register every regression executable through one shared test helper.
 add_search_test(tokenizer_smoke)
