@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.15)
 project(minisearchengine LANGUAGES CXX)
 enable_testing()
+function(add_search_test target)
+    if(NOT TARGET "${target}")
+        message(FATAL_ERROR "Cannot register test for missing target: ${target}")
+    endif()
+    target_include_directories("${target}" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    add_test(NAME "${target}" COMMAND "${target}")
+endfunction()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -27,3094 +35,1676 @@ add_executable(search_engine
 target_include_directories(search_engine PRIVATE include)
 
 add_executable(search_cache_regression tests/search_cache_regression.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_regression PRIVATE include)
 add_executable(top_k_regression tests/top_k_regression.cpp src/TopK.cpp)
-target_include_directories(top_k_regression PRIVATE include)
 add_executable(bm25_ranker_regression tests/bm25_ranker_regression.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_ranker_regression PRIVATE include)
 target_compile_options(search_engine PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
 
 add_executable(tokenizer_smoke tests/tokenizer_smoke.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_smoke PRIVATE include)
 add_executable(tokenizer_edge_cases tests/tokenizer_edge_cases.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_edge_cases PRIVATE include)
 add_executable(tokenizer_numbers tests/tokenizer_numbers.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_numbers PRIVATE include)
 add_executable(tokenizer_mixed_punctuation tests/tokenizer_mixed_punctuation.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_mixed_punctuation PRIVATE include)
 add_executable(tokenizer_whitespace tests/tokenizer_whitespace.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_whitespace PRIVATE include)
 add_executable(tokenizer_single_token tests/tokenizer_single_token.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_single_token PRIVATE include)
 add_executable(tokenizer_empty_input tests/tokenizer_empty_input.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_empty_input PRIVATE include)
 add_executable(inverted_index_smoke tests/inverted_index_smoke.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_smoke PRIVATE include)
 add_executable(inverted_index_duplicate_terms tests/inverted_index_duplicate_terms.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_duplicate_terms PRIVATE include)
 add_executable(inverted_index_empty_tokens tests/inverted_index_empty_tokens.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_empty_tokens PRIVATE include)
 add_executable(inverted_index_multiple_documents tests/inverted_index_multiple_documents.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_multiple_documents PRIVATE include)
 add_executable(inverted_index_missing_term tests/inverted_index_missing_term.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_missing_term PRIVATE include)
 add_executable(inverted_index_zero_id tests/inverted_index_zero_id.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_zero_id PRIVATE include)
 add_executable(inverted_index_empty_document tests/inverted_index_empty_document.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_empty_document PRIVATE include)
 add_executable(inverted_index_document_count tests/inverted_index_document_count.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_document_count PRIVATE include)
 add_executable(document_smoke tests/document_smoke.cpp src/Document.cpp)
-target_include_directories(document_smoke PRIVATE include)
 add_executable(document_getters tests/document_getters.cpp src/Document.cpp)
-target_include_directories(document_getters PRIVATE include)
 add_executable(document_loader_failure tests/document_loader_failure.cpp src/DocumentLoader.cpp src/Document.cpp)
-target_include_directories(document_loader_failure PRIVATE include)
 add_executable(search_pipeline_smoke tests/search_pipeline_smoke.cpp src/Document.cpp src/DocumentLoader.cpp src/Tokenizer.cpp src/InvertedIndex.cpp src/QueryProcessor.cpp)
-target_include_directories(search_pipeline_smoke PRIVATE include)
 target_compile_options(search_pipeline_smoke PRIVATE $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic> $<$<CXX_COMPILER_ID:MSVC>:/W4>)
-add_executable(query_processor_smoke tests/query_processor_smoke.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_processor_smoke PRIVATE include)
+add_executable(query_processor_smoke tests/query_processor_smoke.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_test(NAME tokenizer_smoke COMMAND tokenizer_smoke)
-add_test(NAME search_cache_regression COMMAND search_cache_regression)
-add_test(NAME top_k_regression COMMAND top_k_regression)
-add_test(NAME bm25_ranker_regression COMMAND bm25_ranker_regression)
-add_test(NAME tokenizer_edge_cases COMMAND tokenizer_edge_cases)
-add_test(NAME tokenizer_numbers COMMAND tokenizer_numbers)
-add_test(NAME tokenizer_mixed_punctuation COMMAND tokenizer_mixed_punctuation)
-add_test(NAME tokenizer_whitespace COMMAND tokenizer_whitespace)
-add_test(NAME tokenizer_single_token COMMAND tokenizer_single_token)
-add_test(NAME tokenizer_empty_input COMMAND tokenizer_empty_input)
-add_test(NAME inverted_index_smoke COMMAND inverted_index_smoke)
-add_test(NAME inverted_index_total_token_count COMMAND inverted_index_total_token_count)
-add_test(NAME inverted_index_duplicate_terms COMMAND inverted_index_duplicate_terms)
-add_test(NAME inverted_index_empty_tokens COMMAND inverted_index_empty_tokens)
-add_test(NAME inverted_index_multiple_documents COMMAND inverted_index_multiple_documents)
-add_test(NAME inverted_index_missing_term COMMAND inverted_index_missing_term)
-add_test(NAME inverted_index_zero_id COMMAND inverted_index_zero_id)
-add_test(NAME inverted_index_empty_document COMMAND inverted_index_empty_document)
-add_test(NAME inverted_index_document_count COMMAND inverted_index_document_count)
-add_test(NAME document_smoke COMMAND document_smoke)
-add_test(NAME document_getters COMMAND document_getters)
-add_test(NAME document_loader_failure COMMAND document_loader_failure)
-add_test(NAME search_pipeline_smoke COMMAND search_pipeline_smoke)
-add_test(NAME query_processor_smoke COMMAND query_processor_smoke)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 add_executable(inverted_index_total_token_count tests/inverted_index_total_token_count.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_total_token_count PRIVATE include)
 add_executable(inverted_index_term_frequency tests/inverted_index_term_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_term_frequency PRIVATE include)
 add_executable(inverted_index_sorted_postings tests/inverted_index_sorted_postings.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_sorted_postings PRIVATE include)
 add_executable(inverted_index_duplicate_document tests/inverted_index_duplicate_document.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_duplicate_document PRIVATE include)
-add_executable(query_processor_duplicate_terms tests/query_processor_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_processor_duplicate_terms PRIVATE include)
-add_executable(query_processor_deterministic_results tests/query_processor_deterministic_results.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_processor_deterministic_results PRIVATE include)
+add_executable(query_processor_duplicate_terms tests/query_processor_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+add_executable(query_processor_deterministic_results tests/query_processor_deterministic_results.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 add_executable(inverted_index_unknown_frequency tests/inverted_index_unknown_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_unknown_frequency PRIVATE include)
 add_executable(inverted_index_frequency_documents tests/inverted_index_frequency_documents.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_frequency_documents PRIVATE include)
 add_executable(inverted_index_out_of_order_documents tests/inverted_index_out_of_order_documents.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_out_of_order_documents PRIVATE include)
 add_executable(inverted_index_repeated_document_add tests/inverted_index_repeated_document_add.cpp src/InvertedIndex.cpp)
-target_include_directories(inverted_index_repeated_document_add PRIVATE include)
-add_executable(query_processor_case_normalization tests/query_processor_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_processor_case_normalization PRIVATE include)
+add_executable(query_processor_case_normalization tests/query_processor_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_test(NAME inverted_index_term_frequency COMMAND inverted_index_term_frequency)
-add_test(NAME inverted_index_sorted_postings COMMAND inverted_index_sorted_postings)
-add_test(NAME inverted_index_duplicate_document COMMAND inverted_index_duplicate_document)
-add_test(NAME query_processor_duplicate_terms COMMAND query_processor_duplicate_terms)
-add_test(NAME query_processor_deterministic_results COMMAND query_processor_deterministic_results)
-add_test(NAME inverted_index_unknown_frequency COMMAND inverted_index_unknown_frequency)
-add_test(NAME inverted_index_frequency_documents COMMAND inverted_index_frequency_documents)
-add_test(NAME inverted_index_out_of_order_documents COMMAND inverted_index_out_of_order_documents)
-add_test(NAME inverted_index_repeated_document_add COMMAND inverted_index_repeated_document_add)
-add_test(NAME query_processor_case_normalization COMMAND query_processor_case_normalization)
+
+
+
+
+
+
+
+
 
 # Regression coverage added during the 2026-09-29 validation pass.
 add_executable(tokenizer_case_regression tests/tokenizer_case_regression.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_case_regression PRIVATE include)
-add_test(NAME tokenizer_case_regression COMMAND tokenizer_case_regression)
+
 add_executable(tokenizer_punctuation_regression tests/tokenizer_punctuation_regression.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_punctuation_regression PRIVATE include)
-add_test(NAME tokenizer_punctuation_regression COMMAND tokenizer_punctuation_regression)
+
 add_executable(tokenizer_numeric_regression tests/tokenizer_numeric_regression.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_numeric_regression PRIVATE include)
-add_test(NAME tokenizer_numeric_regression COMMAND tokenizer_numeric_regression)
+
 add_executable(tokenizer_whitespace_regression tests/tokenizer_whitespace_regression.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_whitespace_regression PRIVATE include)
-add_test(NAME tokenizer_whitespace_regression COMMAND tokenizer_whitespace_regression)
+
 add_executable(tokenizer_empty_regression tests/tokenizer_empty_regression.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_empty_regression PRIVATE include)
-add_test(NAME tokenizer_empty_regression COMMAND tokenizer_empty_regression)
+
 add_executable(tokenizer_boundary_regression tests/tokenizer_boundary_regression.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_boundary_regression PRIVATE include)
-add_test(NAME tokenizer_boundary_regression COMMAND tokenizer_boundary_regression)
+
 add_executable(tokenizer_repeated_separator tests/tokenizer_repeated_separator.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_repeated_separator PRIVATE include)
-add_test(NAME tokenizer_repeated_separator COMMAND tokenizer_repeated_separator)
+
 add_executable(tokenizer_single_character tests/tokenizer_single_character.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_single_character PRIVATE include)
-add_test(NAME tokenizer_single_character COMMAND tokenizer_single_character)
+
 add_executable(tokenizer_mixed_case tests/tokenizer_mixed_case.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_mixed_case PRIVATE include)
-add_test(NAME tokenizer_mixed_case COMMAND tokenizer_mixed_case)
+
 add_executable(tokenizer_long_token tests/tokenizer_long_token.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_long_token PRIVATE include)
-add_test(NAME tokenizer_long_token COMMAND tokenizer_long_token)
+
 add_executable(index_document_count_regression tests/index_document_count_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_document_count_regression PRIVATE include)
-add_test(NAME index_document_count_regression COMMAND index_document_count_regression)
+
 add_executable(index_term_count_regression tests/index_term_count_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_term_count_regression PRIVATE include)
-add_test(NAME index_term_count_regression COMMAND index_term_count_regression)
+
 add_executable(index_duplicate_document_regression tests/index_duplicate_document_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_duplicate_document_regression PRIVATE include)
-add_test(NAME index_duplicate_document_regression COMMAND index_duplicate_document_regression)
+
 add_executable(index_sorted_postings_regression tests/index_sorted_postings_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_sorted_postings_regression PRIVATE include)
-add_test(NAME index_sorted_postings_regression COMMAND index_sorted_postings_regression)
+
 add_executable(index_frequency_regression tests/index_frequency_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_frequency_regression PRIVATE include)
-add_test(NAME index_frequency_regression COMMAND index_frequency_regression)
+
 add_executable(index_missing_term_regression tests/index_missing_term_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_missing_term_regression PRIVATE include)
-add_test(NAME index_missing_term_regression COMMAND index_missing_term_regression)
+
 add_executable(index_empty_tokens_regression tests/index_empty_tokens_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_empty_tokens_regression PRIVATE include)
-add_test(NAME index_empty_tokens_regression COMMAND index_empty_tokens_regression)
+
 add_executable(index_negative_id_regression tests/index_negative_id_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_negative_id_regression PRIVATE include)
-add_test(NAME index_negative_id_regression COMMAND index_negative_id_regression)
+
 add_executable(index_zero_id_regression tests/index_zero_id_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_zero_id_regression PRIVATE include)
-add_test(NAME index_zero_id_regression COMMAND index_zero_id_regression)
+
 add_executable(index_empty_document_regression tests/index_empty_document_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_empty_document_regression PRIVATE include)
-add_test(NAME index_empty_document_regression COMMAND index_empty_document_regression)
+
 add_executable(index_out_of_order_regression tests/index_out_of_order_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_out_of_order_regression PRIVATE include)
-add_test(NAME index_out_of_order_regression COMMAND index_out_of_order_regression)
+
 add_executable(index_isolation_regression tests/index_isolation_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_isolation_regression PRIVATE include)
-add_test(NAME index_isolation_regression COMMAND index_isolation_regression)
+
 add_executable(index_large_frequency_regression tests/index_large_frequency_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_large_frequency_regression PRIVATE include)
-add_test(NAME index_large_frequency_regression COMMAND index_large_frequency_regression)
+
 add_executable(index_repeated_document_add_regression tests/index_repeated_document_add_regression.cpp src/InvertedIndex.cpp)
-target_include_directories(index_repeated_document_add_regression PRIVATE include)
-add_test(NAME index_repeated_document_add_regression COMMAND index_repeated_document_add_regression)
-add_executable(query_and_regression tests/query_and_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_and_regression PRIVATE include)
-add_test(NAME query_and_regression COMMAND query_and_regression)
-add_executable(query_case_regression tests/query_case_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_case_regression PRIVATE include)
-add_test(NAME query_case_regression COMMAND query_case_regression)
-add_executable(query_punctuation_regression tests/query_punctuation_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_punctuation_regression PRIVATE include)
-add_test(NAME query_punctuation_regression COMMAND query_punctuation_regression)
-add_executable(query_duplicate_terms_regression tests/query_duplicate_terms_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_duplicate_terms_regression PRIVATE include)
-add_test(NAME query_duplicate_terms_regression COMMAND query_duplicate_terms_regression)
-add_executable(query_empty_regression tests/query_empty_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_empty_regression PRIVATE include)
-add_test(NAME query_empty_regression COMMAND query_empty_regression)
-add_executable(query_missing_regression tests/query_missing_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_missing_regression PRIVATE include)
-add_test(NAME query_missing_regression COMMAND query_missing_regression)
-add_executable(query_numeric_regression tests/query_numeric_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_numeric_regression PRIVATE include)
-add_test(NAME query_numeric_regression COMMAND query_numeric_regression)
-add_executable(query_whitespace_regression tests/query_whitespace_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_whitespace_regression PRIVATE include)
-add_test(NAME query_whitespace_regression COMMAND query_whitespace_regression)
-add_executable(query_result_order_regression tests/query_result_order_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_result_order_regression PRIVATE include)
-add_test(NAME query_result_order_regression COMMAND query_result_order_regression)
-add_executable(query_three_terms_regression tests/query_three_terms_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_three_terms_regression PRIVATE include)
-add_test(NAME query_three_terms_regression COMMAND query_three_terms_regression)
-add_executable(query_no_side_effect_regression tests/query_no_side_effect_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_no_side_effect_regression PRIVATE include)
-add_test(NAME query_no_side_effect_regression COMMAND query_no_side_effect_regression)
+
+add_executable(query_and_regression tests/query_and_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_case_regression tests/query_case_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_punctuation_regression tests/query_punctuation_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_duplicate_terms_regression tests/query_duplicate_terms_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_empty_regression tests/query_empty_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_missing_regression tests/query_missing_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_numeric_regression tests/query_numeric_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_whitespace_regression tests/query_whitespace_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_result_order_regression tests/query_result_order_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_three_terms_regression tests/query_three_terms_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_no_side_effect_regression tests/query_no_side_effect_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
 add_executable(document_getters_regression tests/document_getters_regression.cpp src/Document.cpp)
-target_include_directories(document_getters_regression PRIVATE include)
-add_test(NAME document_getters_regression COMMAND document_getters_regression)
+
 add_executable(document_loader_regression tests/document_loader_regression.cpp src/DocumentLoader.cpp src/Document.cpp)
-target_include_directories(document_loader_regression PRIVATE include)
-add_test(NAME document_loader_regression COMMAND document_loader_regression)
+
 add_executable(document_loader_missing_regression tests/document_loader_missing_regression.cpp src/DocumentLoader.cpp src/Document.cpp)
-target_include_directories(document_loader_missing_regression PRIVATE include)
-add_test(NAME document_loader_missing_regression COMMAND document_loader_missing_regression)
-add_executable(query_repeated_spaces_regression tests/query_repeated_spaces_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_repeated_spaces_regression PRIVATE include)
-add_test(NAME query_repeated_spaces_regression COMMAND query_repeated_spaces_regression)
-add_executable(query_hyphen_normalization_regression tests/query_hyphen_normalization_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_hyphen_normalization_regression PRIVATE include)
-add_test(NAME query_hyphen_normalization_regression COMMAND query_hyphen_normalization_regression)
+
+add_executable(query_repeated_spaces_regression tests/query_repeated_spaces_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_hyphen_normalization_regression tests/query_hyphen_normalization_regression.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 # Additional normalization regression coverage.
-add_executable(query_punctuation_only_v2 tests/query_punctuation_only_v2.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_punctuation_only_v2 PRIVATE include)
-add_test(NAME query_punctuation_only_v2 COMMAND query_punctuation_only_v2)
-add_executable(query_duplicate_spacing_v2 tests/query_duplicate_spacing_v2.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_duplicate_spacing_v2 PRIVATE include)
-add_test(NAME query_duplicate_spacing_v2 COMMAND query_duplicate_spacing_v2)
+add_executable(query_punctuation_only_v2 tests/query_punctuation_only_v2.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_duplicate_spacing_v2 tests/query_duplicate_spacing_v2.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
 add_executable(tokenizer_tabs_v2 tests/tokenizer_tabs_v2.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_tabs_v2 PRIVATE include)
-add_test(NAME tokenizer_tabs_v2 COMMAND tokenizer_tabs_v2)
+
 add_executable(tokenizer_newlines_v2 tests/tokenizer_newlines_v2.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_newlines_v2 PRIVATE include)
-add_test(NAME tokenizer_newlines_v2 COMMAND tokenizer_newlines_v2)
+
 add_executable(tokenizer_digits_v2 tests/tokenizer_digits_v2.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_digits_v2 PRIVATE include)
-add_test(NAME tokenizer_digits_v2 COMMAND tokenizer_digits_v2)
 
 # Focused regression coverage.
 add_executable(tokenizer_apostrophe_v3 tests/tokenizer_apostrophe_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_apostrophe_v3 PRIVATE include)
-add_test(NAME tokenizer_apostrophe_v3 COMMAND tokenizer_apostrophe_v3)
+
 add_executable(tokenizer_slash_v3 tests/tokenizer_slash_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_slash_v3 PRIVATE include)
-add_test(NAME tokenizer_slash_v3 COMMAND tokenizer_slash_v3)
+
 add_executable(tokenizer_leading_punctuation_v3 tests/tokenizer_leading_punctuation_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_leading_punctuation_v3 PRIVATE include)
-add_test(NAME tokenizer_leading_punctuation_v3 COMMAND tokenizer_leading_punctuation_v3)
+
 add_executable(tokenizer_trailing_punctuation_v3 tests/tokenizer_trailing_punctuation_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_trailing_punctuation_v3 PRIVATE include)
-add_test(NAME tokenizer_trailing_punctuation_v3 COMMAND tokenizer_trailing_punctuation_v3)
+
 add_executable(tokenizer_repeated_punctuation_v3 tests/tokenizer_repeated_punctuation_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_repeated_punctuation_v3 PRIVATE include)
-add_test(NAME tokenizer_repeated_punctuation_v3 COMMAND tokenizer_repeated_punctuation_v3)
+
 add_executable(tokenizer_uppercase_digits_v3 tests/tokenizer_uppercase_digits_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_uppercase_digits_v3 PRIVATE include)
-add_test(NAME tokenizer_uppercase_digits_v3 COMMAND tokenizer_uppercase_digits_v3)
+
 add_executable(tokenizer_long_token_v3 tests/tokenizer_long_token_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_long_token_v3 PRIVATE include)
-add_test(NAME tokenizer_long_token_v3 COMMAND tokenizer_long_token_v3)
+
 add_executable(tokenizer_carriage_return_v3 tests/tokenizer_carriage_return_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_carriage_return_v3 PRIVATE include)
-add_test(NAME tokenizer_carriage_return_v3 COMMAND tokenizer_carriage_return_v3)
+
 add_executable(tokenizer_numeric_token_v3 tests/tokenizer_numeric_token_v3.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_numeric_token_v3 PRIVATE include)
-add_test(NAME tokenizer_numeric_token_v3 COMMAND tokenizer_numeric_token_v3)
+
 add_executable(index_term_count_growth_v3 tests/index_term_count_growth_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_term_count_growth_v3 PRIVATE include)
-add_test(NAME index_term_count_growth_v3 COMMAND index_term_count_growth_v3)
+
 add_executable(index_document_frequency_v3 tests/index_document_frequency_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_document_frequency_v3 PRIVATE include)
-add_test(NAME index_document_frequency_v3 COMMAND index_document_frequency_v3)
+
 add_executable(index_term_frequency_v3 tests/index_term_frequency_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_term_frequency_v3 PRIVATE include)
-add_test(NAME index_term_frequency_v3 COMMAND index_term_frequency_v3)
+
 add_executable(index_posting_uniqueness_v3 tests/index_posting_uniqueness_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_posting_uniqueness_v3 PRIVATE include)
-add_test(NAME index_posting_uniqueness_v3 COMMAND index_posting_uniqueness_v3)
+
 add_executable(index_posting_order_v3 tests/index_posting_order_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_posting_order_v3 PRIVATE include)
-add_test(NAME index_posting_order_v3 COMMAND index_posting_order_v3)
+
 add_executable(index_empty_term_v3 tests/index_empty_term_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_empty_term_v3 PRIVATE include)
-add_test(NAME index_empty_term_v3 COMMAND index_empty_term_v3)
+
 add_executable(index_negative_document_v3 tests/index_negative_document_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_negative_document_v3 PRIVATE include)
-add_test(NAME index_negative_document_v3 COMMAND index_negative_document_v3)
+
 add_executable(index_large_document_v3 tests/index_large_document_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_large_document_v3 PRIVATE include)
-add_test(NAME index_large_document_v3 COMMAND index_large_document_v3)
+
 add_executable(index_document_isolation_v3 tests/index_document_isolation_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_document_isolation_v3 PRIVATE include)
-add_test(NAME index_document_isolation_v3 COMMAND index_document_isolation_v3)
+
 add_executable(index_unknown_document_frequency_v3 tests/index_unknown_document_frequency_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_unknown_document_frequency_v3 PRIVATE include)
-add_test(NAME index_unknown_document_frequency_v3 COMMAND index_unknown_document_frequency_v3)
+
 add_executable(index_repeated_document_terms_v3 tests/index_repeated_document_terms_v3.cpp src/InvertedIndex.cpp)
-target_include_directories(index_repeated_document_terms_v3 PRIVATE include)
-add_test(NAME index_repeated_document_terms_v3 COMMAND index_repeated_document_terms_v3)
+
 add_executable(tokenizer_apostrophe_v4 tests/tokenizer_apostrophe_v4.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_apostrophe_v4 PRIVATE include)
-add_test(NAME tokenizer_apostrophe_v4 COMMAND tokenizer_apostrophe_v4)
+
 add_executable(tokenizer_slash_v4 tests/tokenizer_slash_v4.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_slash_v4 PRIVATE include)
-add_test(NAME tokenizer_slash_v4 COMMAND tokenizer_slash_v4)
+
 add_executable(tokenizer_leading_v4 tests/tokenizer_leading_v4.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_leading_v4 PRIVATE include)
-add_test(NAME tokenizer_leading_v4 COMMAND tokenizer_leading_v4)
+
 add_executable(tokenizer_trailing_v4 tests/tokenizer_trailing_v4.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_trailing_v4 PRIVATE include)
-add_test(NAME tokenizer_trailing_v4 COMMAND tokenizer_trailing_v4)
+
 add_executable(tokenizer_repeatsep_v4 tests/tokenizer_repeatsep_v4.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_repeatsep_v4 PRIVATE include)
-add_test(NAME tokenizer_repeatsep_v4 COMMAND tokenizer_repeatsep_v4)
+
 add_executable(tokenizer_alnum_v4 tests/tokenizer_alnum_v4.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_alnum_v4 PRIVATE include)
-add_test(NAME tokenizer_alnum_v4 COMMAND tokenizer_alnum_v4)
+
 add_executable(tokenizer_long_v4 tests/tokenizer_long_v4.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_long_v4 PRIVATE include)
-add_test(NAME tokenizer_long_v4 COMMAND tokenizer_long_v4)
+
 add_executable(index_count_v4 tests/index_count_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_count_v4 PRIVATE include)
-add_test(NAME index_count_v4 COMMAND index_count_v4)
+
 add_executable(index_frequency_v4 tests/index_frequency_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_frequency_v4 PRIVATE include)
-add_test(NAME index_frequency_v4 COMMAND index_frequency_v4)
+
 add_executable(index_order_v4 tests/index_order_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_order_v4 PRIVATE include)
-add_test(NAME index_order_v4 COMMAND index_order_v4)
+
 add_executable(index_unique_v4 tests/index_unique_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_unique_v4 PRIVATE include)
-add_test(NAME index_unique_v4 COMMAND index_unique_v4)
+
 add_executable(index_missing_v4 tests/index_missing_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_missing_v4 PRIVATE include)
-add_test(NAME index_missing_v4 COMMAND index_missing_v4)
+
 add_executable(index_negative_v4 tests/index_negative_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_negative_v4 PRIVATE include)
-add_test(NAME index_negative_v4 COMMAND index_negative_v4)
+
 add_executable(index_large_v4 tests/index_large_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_large_v4 PRIVATE include)
-add_test(NAME index_large_v4 COMMAND index_large_v4)
+
 add_executable(index_empty_v4 tests/index_empty_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_empty_v4 PRIVATE include)
-add_test(NAME index_empty_v4 COMMAND index_empty_v4)
+
 add_executable(index_isolation_v4 tests/index_isolation_v4.cpp src/InvertedIndex.cpp)
-target_include_directories(index_isolation_v4 PRIVATE include)
-add_test(NAME index_isolation_v4 COMMAND index_isolation_v4)
-add_executable(query_single_v4 tests/query_single_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_single_v4 PRIVATE include)
-add_test(NAME query_single_v4 COMMAND query_single_v4)
-add_executable(query_case_v4 tests/query_case_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_case_v4 PRIVATE include)
-add_test(NAME query_case_v4 COMMAND query_case_v4)
-add_executable(query_punct_v4 tests/query_punct_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_punct_v4 PRIVATE include)
-add_test(NAME query_punct_v4 COMMAND query_punct_v4)
+
+add_executable(query_single_v4 tests/query_single_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_case_v4 tests/query_case_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_punct_v4 tests/query_punct_v4.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 # 2026-10-07 focused regression expansion.
 add_executable(tokenizer_uppercase_word_v5 tests/tokenizer_uppercase_word_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_uppercase_word_v5 PRIVATE include)
-add_test(NAME tokenizer_uppercase_word_v5 COMMAND tokenizer_uppercase_word_v5)
+
 add_executable(tokenizer_lowercase_word_v5 tests/tokenizer_lowercase_word_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_lowercase_word_v5 PRIVATE include)
-add_test(NAME tokenizer_lowercase_word_v5 COMMAND tokenizer_lowercase_word_v5)
+
 add_executable(tokenizer_mixed_word_v5 tests/tokenizer_mixed_word_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_mixed_word_v5 PRIVATE include)
-add_test(NAME tokenizer_mixed_word_v5 COMMAND tokenizer_mixed_word_v5)
+
 add_executable(tokenizer_alpha_digits_v5 tests/tokenizer_alpha_digits_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_alpha_digits_v5 PRIVATE include)
-add_test(NAME tokenizer_alpha_digits_v5 COMMAND tokenizer_alpha_digits_v5)
+
 add_executable(tokenizer_digits_v5 tests/tokenizer_digits_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_digits_v5 PRIVATE include)
-add_test(NAME tokenizer_digits_v5 COMMAND tokenizer_digits_v5)
+
 add_executable(tokenizer_spaces_v5 tests/tokenizer_spaces_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_spaces_v5 PRIVATE include)
-add_test(NAME tokenizer_spaces_v5 COMMAND tokenizer_spaces_v5)
+
 add_executable(tokenizer_tabs_v5 tests/tokenizer_tabs_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_tabs_v5 PRIVATE include)
-add_test(NAME tokenizer_tabs_v5 COMMAND tokenizer_tabs_v5)
+
 add_executable(tokenizer_newlines_v5 tests/tokenizer_newlines_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_newlines_v5 PRIVATE include)
-add_test(NAME tokenizer_newlines_v5 COMMAND tokenizer_newlines_v5)
+
 add_executable(tokenizer_symbols_v5 tests/tokenizer_symbols_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_symbols_v5 PRIVATE include)
-add_test(NAME tokenizer_symbols_v5 COMMAND tokenizer_symbols_v5)
+
 add_executable(tokenizer_periods_v5 tests/tokenizer_periods_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_periods_v5 PRIVATE include)
-add_test(NAME tokenizer_periods_v5 COMMAND tokenizer_periods_v5)
+
 add_executable(tokenizer_commas_v5 tests/tokenizer_commas_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_commas_v5 PRIVATE include)
-add_test(NAME tokenizer_commas_v5 COMMAND tokenizer_commas_v5)
+
 add_executable(tokenizer_colons_v5 tests/tokenizer_colons_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_colons_v5 PRIVATE include)
-add_test(NAME tokenizer_colons_v5 COMMAND tokenizer_colons_v5)
+
 add_executable(tokenizer_semicolons_v5 tests/tokenizer_semicolons_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_semicolons_v5 PRIVATE include)
-add_test(NAME tokenizer_semicolons_v5 COMMAND tokenizer_semicolons_v5)
+
 add_executable(tokenizer_parentheses_v5 tests/tokenizer_parentheses_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_parentheses_v5 PRIVATE include)
-add_test(NAME tokenizer_parentheses_v5 COMMAND tokenizer_parentheses_v5)
+
 add_executable(tokenizer_braces_v5 tests/tokenizer_braces_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_braces_v5 PRIVATE include)
-add_test(NAME tokenizer_braces_v5 COMMAND tokenizer_braces_v5)
+
 add_executable(tokenizer_quotes_v5 tests/tokenizer_quotes_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_quotes_v5 PRIVATE include)
-add_test(NAME tokenizer_quotes_v5 COMMAND tokenizer_quotes_v5)
+
 add_executable(tokenizer_ampersand_v5 tests/tokenizer_ampersand_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_ampersand_v5 PRIVATE include)
-add_test(NAME tokenizer_ampersand_v5 COMMAND tokenizer_ampersand_v5)
+
 add_executable(tokenizer_plus_v5 tests/tokenizer_plus_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_plus_v5 PRIVATE include)
-add_test(NAME tokenizer_plus_v5 COMMAND tokenizer_plus_v5)
+
 add_executable(tokenizer_equals_v5 tests/tokenizer_equals_v5.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_equals_v5 PRIVATE include)
-add_test(NAME tokenizer_equals_v5 COMMAND tokenizer_equals_v5)
+
 add_executable(tokenizer_v5_uppercase tests/tokenizer_v5_uppercase.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_uppercase PRIVATE include)
-add_test(NAME tokenizer_v5_uppercase COMMAND tokenizer_v5_uppercase)
+
 add_executable(tokenizer_v5_mixedcase tests/tokenizer_v5_mixedcase.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_mixedcase PRIVATE include)
-add_test(NAME tokenizer_v5_mixedcase COMMAND tokenizer_v5_mixedcase)
+
 add_executable(tokenizer_v5_digits tests/tokenizer_v5_digits.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_digits PRIVATE include)
-add_test(NAME tokenizer_v5_digits COMMAND tokenizer_v5_digits)
+
 add_executable(tokenizer_v5_alnum tests/tokenizer_v5_alnum.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_alnum PRIVATE include)
-add_test(NAME tokenizer_v5_alnum COMMAND tokenizer_v5_alnum)
+
 add_executable(tokenizer_v5_space tests/tokenizer_v5_space.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_space PRIVATE include)
-add_test(NAME tokenizer_v5_space COMMAND tokenizer_v5_space)
+
 add_executable(tokenizer_v5_tab tests/tokenizer_v5_tab.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_tab PRIVATE include)
-add_test(NAME tokenizer_v5_tab COMMAND tokenizer_v5_tab)
+
 add_executable(tokenizer_v5_newline tests/tokenizer_v5_newline.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_newline PRIVATE include)
-add_test(NAME tokenizer_v5_newline COMMAND tokenizer_v5_newline)
+
 add_executable(tokenizer_v5_symbols tests/tokenizer_v5_symbols.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_symbols PRIVATE include)
-add_test(NAME tokenizer_v5_symbols COMMAND tokenizer_v5_symbols)
+
 add_executable(tokenizer_v5_period tests/tokenizer_v5_period.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_period PRIVATE include)
-add_test(NAME tokenizer_v5_period COMMAND tokenizer_v5_period)
+
 add_executable(tokenizer_v5_comma tests/tokenizer_v5_comma.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_comma PRIVATE include)
-add_test(NAME tokenizer_v5_comma COMMAND tokenizer_v5_comma)
+
 add_executable(tokenizer_v5_colon tests/tokenizer_v5_colon.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_colon PRIVATE include)
-add_test(NAME tokenizer_v5_colon COMMAND tokenizer_v5_colon)
+
 add_executable(tokenizer_v5_semicolon tests/tokenizer_v5_semicolon.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_semicolon PRIVATE include)
-add_test(NAME tokenizer_v5_semicolon COMMAND tokenizer_v5_semicolon)
+
 add_executable(tokenizer_v5_parentheses tests/tokenizer_v5_parentheses.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_parentheses PRIVATE include)
-add_test(NAME tokenizer_v5_parentheses COMMAND tokenizer_v5_parentheses)
+
 add_executable(tokenizer_v5_brackets tests/tokenizer_v5_brackets.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_brackets PRIVATE include)
-add_test(NAME tokenizer_v5_brackets COMMAND tokenizer_v5_brackets)
+
 add_executable(tokenizer_v5_braces tests/tokenizer_v5_braces.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_braces PRIVATE include)
-add_test(NAME tokenizer_v5_braces COMMAND tokenizer_v5_braces)
+
 add_executable(tokenizer_v5_quotes tests/tokenizer_v5_quotes.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_quotes PRIVATE include)
-add_test(NAME tokenizer_v5_quotes COMMAND tokenizer_v5_quotes)
+
 add_executable(tokenizer_v5_slash tests/tokenizer_v5_slash.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_slash PRIVATE include)
-add_test(NAME tokenizer_v5_slash COMMAND tokenizer_v5_slash)
+
 add_executable(tokenizer_v5_hyphen tests/tokenizer_v5_hyphen.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_hyphen PRIVATE include)
-add_test(NAME tokenizer_v5_hyphen COMMAND tokenizer_v5_hyphen)
+
 add_executable(tokenizer_v5_underscore tests/tokenizer_v5_underscore.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_underscore PRIVATE include)
-add_test(NAME tokenizer_v5_underscore COMMAND tokenizer_v5_underscore)
+
 add_executable(tokenizer_v5_repeated tests/tokenizer_v5_repeated.cpp src/Tokenizer.cpp)
-target_include_directories(tokenizer_v5_repeated PRIVATE include)
-add_test(NAME tokenizer_v5_repeated COMMAND tokenizer_v5_repeated)
+
 add_executable(index_v5_single tests/index_v5_single.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_single PRIVATE include)
-add_test(NAME index_v5_single COMMAND index_v5_single)
+
 add_executable(index_v5_multi tests/index_v5_multi.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_multi PRIVATE include)
-add_test(NAME index_v5_multi COMMAND index_v5_multi)
+
 add_executable(index_v5_sorted tests/index_v5_sorted.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_sorted PRIVATE include)
-add_test(NAME index_v5_sorted COMMAND index_v5_sorted)
+
 add_executable(index_v5_unique tests/index_v5_unique.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_unique PRIVATE include)
-add_test(NAME index_v5_unique COMMAND index_v5_unique)
+
 add_executable(index_v5_frequency tests/index_v5_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_frequency PRIVATE include)
-add_test(NAME index_v5_frequency COMMAND index_v5_frequency)
+
 add_executable(index_v5_docfreq tests/index_v5_docfreq.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_docfreq PRIVATE include)
-add_test(NAME index_v5_docfreq COMMAND index_v5_docfreq)
+
 add_executable(index_v5_termcount tests/index_v5_termcount.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_termcount PRIVATE include)
-add_test(NAME index_v5_termcount COMMAND index_v5_termcount)
+
 add_executable(index_v5_doccount tests/index_v5_doccount.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_doccount PRIVATE include)
-add_test(NAME index_v5_doccount COMMAND index_v5_doccount)
+
 add_executable(index_v5_missing tests/index_v5_missing.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_missing PRIVATE include)
-add_test(NAME index_v5_missing COMMAND index_v5_missing)
+
 add_executable(index_v5_empty tests/index_v5_empty.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_empty PRIVATE include)
-add_test(NAME index_v5_empty COMMAND index_v5_empty)
+
 add_executable(index_v5_negative tests/index_v5_negative.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_negative PRIVATE include)
-add_test(NAME index_v5_negative COMMAND index_v5_negative)
+
 add_executable(index_v5_zero tests/index_v5_zero.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_zero PRIVATE include)
-add_test(NAME index_v5_zero COMMAND index_v5_zero)
+
 add_executable(index_v5_largeid tests/index_v5_largeid.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_largeid PRIVATE include)
-add_test(NAME index_v5_largeid COMMAND index_v5_largeid)
+
 add_executable(index_v5_outoforder tests/index_v5_outoforder.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_outoforder PRIVATE include)
-add_test(NAME index_v5_outoforder COMMAND index_v5_outoforder)
+
 add_executable(index_v5_isolation tests/index_v5_isolation.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_isolation PRIVATE include)
-add_test(NAME index_v5_isolation COMMAND index_v5_isolation)
+
 add_executable(index_v5_repeateddoc tests/index_v5_repeateddoc.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_repeateddoc PRIVATE include)
-add_test(NAME index_v5_repeateddoc COMMAND index_v5_repeateddoc)
+
 add_executable(index_v5_emptytoken tests/index_v5_emptytoken.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_emptytoken PRIVATE include)
-add_test(NAME index_v5_emptytoken COMMAND index_v5_emptytoken)
+
 add_executable(index_v5_unknownfreq tests/index_v5_unknownfreq.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_unknownfreq PRIVATE include)
-add_test(NAME index_v5_unknownfreq COMMAND index_v5_unknownfreq)
+
 add_executable(index_v5_unknowntermfreq tests/index_v5_unknowntermfreq.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_unknowntermfreq PRIVATE include)
-add_test(NAME index_v5_unknowntermfreq COMMAND index_v5_unknowntermfreq)
+
 add_executable(index_v5_unknownterm tests/index_v5_unknownterm.cpp src/InvertedIndex.cpp)
-target_include_directories(index_v5_unknownterm PRIVATE include)
-add_test(NAME index_v5_unknownterm COMMAND index_v5_unknownterm)
-add_executable(query_v5_single tests/query_v5_single.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_single PRIVATE include)
-add_test(NAME query_v5_single COMMAND query_v5_single)
-add_executable(query_v5_case tests/query_v5_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_case PRIVATE include)
-add_test(NAME query_v5_case COMMAND query_v5_case)
-add_executable(query_v5_spaces tests/query_v5_spaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_spaces PRIVATE include)
-add_test(NAME query_v5_spaces COMMAND query_v5_spaces)
-add_executable(query_v5_duplicate tests/query_v5_duplicate.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_duplicate PRIVATE include)
-add_test(NAME query_v5_duplicate COMMAND query_v5_duplicate)
-add_executable(query_v5_missing tests/query_v5_missing.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_missing PRIVATE include)
-add_test(NAME query_v5_missing COMMAND query_v5_missing)
-add_executable(query_v5_empty tests/query_v5_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_empty PRIVATE include)
-add_test(NAME query_v5_empty COMMAND query_v5_empty)
-add_executable(query_v5_punct tests/query_v5_punct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_punct PRIVATE include)
-add_test(NAME query_v5_punct COMMAND query_v5_punct)
-add_executable(query_v5_numeric tests/query_v5_numeric.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_numeric PRIVATE include)
-add_test(NAME query_v5_numeric COMMAND query_v5_numeric)
-add_executable(query_v5_and tests/query_v5_and.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_and PRIVATE include)
-add_test(NAME query_v5_and COMMAND query_v5_and)
-add_executable(query_v5_three tests/query_v5_three.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_three PRIVATE include)
-add_test(NAME query_v5_three COMMAND query_v5_three)
-add_executable(query_v5_hyphen tests/query_v5_hyphen.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_hyphen PRIVATE include)
-add_test(NAME query_v5_hyphen COMMAND query_v5_hyphen)
-add_executable(query_v5_slash tests/query_v5_slash.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_slash PRIVATE include)
-add_test(NAME query_v5_slash COMMAND query_v5_slash)
-add_executable(query_v5_punctonly tests/query_v5_punctonly.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_punctonly PRIVATE include)
-add_test(NAME query_v5_punctonly COMMAND query_v5_punctonly)
-add_executable(query_v5_repeatspaces tests/query_v5_repeatspaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_repeatspaces PRIVATE include)
-add_test(NAME query_v5_repeatspaces COMMAND query_v5_repeatspaces)
-add_executable(query_v5_resultorder tests/query_v5_resultorder.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_resultorder PRIVATE include)
-add_test(NAME query_v5_resultorder COMMAND query_v5_resultorder)
-add_executable(query_v5_disjoint tests/query_v5_disjoint.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_disjoint PRIVATE include)
-add_test(NAME query_v5_disjoint COMMAND query_v5_disjoint)
-add_executable(query_v5_isolation tests/query_v5_isolation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_isolation PRIVATE include)
-add_test(NAME query_v5_isolation COMMAND query_v5_isolation)
-add_executable(query_v5_numericcase tests/query_v5_numericcase.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_numericcase PRIVATE include)
-add_test(NAME query_v5_numericcase COMMAND query_v5_numericcase)
-add_executable(query_v5_mixedpunct tests/query_v5_mixedpunct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_mixedpunct PRIVATE include)
-add_test(NAME query_v5_mixedpunct COMMAND query_v5_mixedpunct)
-add_executable(query_v5_no_sideeffect tests/query_v5_no_sideeffect.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_no_sideeffect PRIVATE include)
-add_test(NAME query_v5_no_sideeffect COMMAND query_v5_no_sideeffect)
-add_executable(query_v5_fourspaces tests/query_v5_fourspaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_fourspaces PRIVATE include)
-add_test(NAME query_v5_fourspaces COMMAND query_v5_fourspaces)
-add_executable(query_v5_casefold tests/query_v5_casefold.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_casefold PRIVATE include)
-add_test(NAME query_v5_casefold COMMAND query_v5_casefold)
-add_executable(query_v5_duplicatecase tests/query_v5_duplicatecase.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_duplicatecase PRIVATE include)
-add_test(NAME query_v5_duplicatecase COMMAND query_v5_duplicatecase)
-add_executable(query_v5_emptytoken tests/query_v5_emptytoken.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_emptytoken PRIVATE include)
-add_test(NAME query_v5_emptytoken COMMAND query_v5_emptytoken)
-add_executable(query_v5_unknownmixed tests/query_v5_unknownmixed.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_unknownmixed PRIVATE include)
-add_test(NAME query_v5_unknownmixed COMMAND query_v5_unknownmixed)
-add_executable(query_v5_threepartial tests/query_v5_threepartial.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_threepartial PRIVATE include)
-add_test(NAME query_v5_threepartial COMMAND query_v5_threepartial)
-add_executable(query_v5_singlepunct tests/query_v5_singlepunct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_singlepunct PRIVATE include)
-add_test(NAME query_v5_singlepunct COMMAND query_v5_singlepunct)
-add_executable(query_v5_numericand tests/query_v5_numericand.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(query_v5_numericand PRIVATE include)
-add_test(NAME query_v5_numericand COMMAND query_v5_numericand)
+
+add_executable(query_v5_single tests/query_v5_single.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_case tests/query_v5_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_spaces tests/query_v5_spaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_duplicate tests/query_v5_duplicate.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_missing tests/query_v5_missing.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_empty tests/query_v5_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_punct tests/query_v5_punct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_numeric tests/query_v5_numeric.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_and tests/query_v5_and.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_three tests/query_v5_three.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_hyphen tests/query_v5_hyphen.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_slash tests/query_v5_slash.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_punctonly tests/query_v5_punctonly.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_repeatspaces tests/query_v5_repeatspaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_resultorder tests/query_v5_resultorder.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_disjoint tests/query_v5_disjoint.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_isolation tests/query_v5_isolation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_numericcase tests/query_v5_numericcase.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_mixedpunct tests/query_v5_mixedpunct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_no_sideeffect tests/query_v5_no_sideeffect.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_fourspaces tests/query_v5_fourspaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_casefold tests/query_v5_casefold.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_duplicatecase tests/query_v5_duplicatecase.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_emptytoken tests/query_v5_emptytoken.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_unknownmixed tests/query_v5_unknownmixed.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_threepartial tests/query_v5_threepartial.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_singlepunct tests/query_v5_singlepunct.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(query_v5_numericand tests/query_v5_numericand.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
 add_executable(document_v5_id tests/document_v5_id.cpp src/Document.cpp)
-target_include_directories(document_v5_id PRIVATE include)
-add_test(NAME document_v5_id COMMAND document_v5_id)
+
 add_executable(document_v5_path tests/document_v5_path.cpp src/Document.cpp)
-target_include_directories(document_v5_path PRIVATE include)
-add_test(NAME document_v5_path COMMAND document_v5_path)
+
 add_executable(document_v5_content tests/document_v5_content.cpp src/Document.cpp)
-target_include_directories(document_v5_content PRIVATE include)
-add_test(NAME document_v5_content COMMAND document_v5_content)
+
 add_executable(document_v5_negative tests/document_v5_negative.cpp src/Document.cpp)
-target_include_directories(document_v5_negative PRIVATE include)
-add_test(NAME document_v5_negative COMMAND document_v5_negative)
+
 add_executable(document_v5_emptycontent tests/document_v5_emptycontent.cpp src/Document.cpp)
-target_include_directories(document_v5_emptycontent PRIVATE include)
-add_test(NAME document_v5_emptycontent COMMAND document_v5_emptycontent)
+
 add_executable(document_v5_empty_path tests/document_v5_empty_path.cpp src/Document.cpp)
-target_include_directories(document_v5_empty_path PRIVATE include)
-add_test(NAME document_v5_empty_path COMMAND document_v5_empty_path)
+
 add_executable(document_v5_spaces_path tests/document_v5_spaces_path.cpp src/Document.cpp)
-target_include_directories(document_v5_spaces_path PRIVATE include)
-add_test(NAME document_v5_spaces_path COMMAND document_v5_spaces_path)
+
 add_executable(document_v5_newline tests/document_v5_newline.cpp src/Document.cpp)
-target_include_directories(document_v5_newline PRIVATE include)
-add_test(NAME document_v5_newline COMMAND document_v5_newline)
+
 add_executable(document_v5_largeid tests/document_v5_largeid.cpp src/Document.cpp)
-target_include_directories(document_v5_largeid PRIVATE include)
-add_test(NAME document_v5_largeid COMMAND document_v5_largeid)
 
 add_executable(topk_empty tests/topk_empty.cpp src/TopK.cpp)
-target_include_directories(topk_empty PRIVATE include)
-add_test(NAME topk_empty COMMAND topk_empty)
 
 add_executable(topk_limit tests/topk_limit.cpp src/TopK.cpp)
-target_include_directories(topk_limit PRIVATE include)
-add_test(NAME topk_limit COMMAND topk_limit)
 
 add_executable(topk_zero tests/topk_zero.cpp src/TopK.cpp)
-target_include_directories(topk_zero PRIVATE include)
-add_test(NAME topk_zero COMMAND topk_zero)
 
 add_executable(topk_large tests/topk_large.cpp src/TopK.cpp)
-target_include_directories(topk_large PRIVATE include)
-add_test(NAME topk_large COMMAND topk_large)
 
 add_executable(topk_tie tests/topk_tie.cpp src/TopK.cpp)
-target_include_directories(topk_tie PRIVATE include)
-add_test(NAME topk_tie COMMAND topk_tie)
 
 add_executable(topk_sorted tests/topk_sorted.cpp src/TopK.cpp)
-target_include_directories(topk_sorted PRIVATE include)
-add_test(NAME topk_sorted COMMAND topk_sorted)
 
 add_executable(topk_one tests/topk_one.cpp src/TopK.cpp)
-target_include_directories(topk_one PRIVATE include)
-add_test(NAME topk_one COMMAND topk_one)
 
 add_executable(phrase_match tests/phrase_match.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_match PRIVATE include)
-add_test(NAME phrase_match COMMAND phrase_match)
 
 add_executable(phrase_mismatch tests/phrase_mismatch.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_mismatch PRIVATE include)
-add_test(NAME phrase_mismatch COMMAND phrase_mismatch)
 
 add_executable(phrase_empty tests/phrase_empty.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_empty PRIVATE include)
-add_test(NAME phrase_empty COMMAND phrase_empty)
 
 add_executable(phrase_long tests/phrase_long.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_long PRIVATE include)
-add_test(NAME phrase_long COMMAND phrase_long)
 
 add_executable(phrase_at_start tests/phrase_at_start.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_at_start PRIVATE include)
-add_test(NAME phrase_at_start COMMAND phrase_at_start)
 
 add_executable(phrase_at_end tests/phrase_at_end.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_at_end PRIVATE include)
-add_test(NAME phrase_at_end COMMAND phrase_at_end)
 
 add_executable(phrase_single tests/phrase_single.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_single PRIVATE include)
-add_test(NAME phrase_single COMMAND phrase_single)
 
 add_executable(phrase_no_match tests/phrase_no_match.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_no_match PRIVATE include)
-add_test(NAME phrase_no_match COMMAND phrase_no_match)
 
 add_executable(phrase_repeated_tokens tests/phrase_repeated_tokens.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_repeated_tokens PRIVATE include)
-add_test(NAME phrase_repeated_tokens COMMAND phrase_repeated_tokens)
 
 add_executable(phrase_reversed tests/phrase_reversed.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_reversed PRIVATE include)
-add_test(NAME phrase_reversed COMMAND phrase_reversed)
 
 add_executable(index_stats tests/index_stats.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(index_stats PRIVATE include)
-add_test(NAME index_stats COMMAND index_stats)
 
 add_executable(index_stats_empty tests/index_stats_empty.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(index_stats_empty PRIVATE include)
-add_test(NAME index_stats_empty COMMAND index_stats_empty)
 
 add_executable(index_stats_documents tests/index_stats_documents.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(index_stats_documents PRIVATE include)
-add_test(NAME index_stats_documents COMMAND index_stats_documents)
 
 add_executable(index_stats_duplicate_terms tests/index_stats_duplicate_terms.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(index_stats_duplicate_terms PRIVATE include)
-add_test(NAME index_stats_duplicate_terms COMMAND index_stats_duplicate_terms)
 
 add_executable(regression_20261009_01_query_tokenizer_empty tests/regression_20261009_01_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261009_01_query_tokenizer_empty PRIVATE include)
-add_test(NAME regression_20261009_01_query_tokenizer_empty COMMAND regression_20261009_01_query_tokenizer_empty)
 
 add_executable(regression_20261009_02_query_tokenizer_punctuation tests/regression_20261009_02_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261009_02_query_tokenizer_punctuation PRIVATE include)
-add_test(NAME regression_20261009_02_query_tokenizer_punctuation COMMAND regression_20261009_02_query_tokenizer_punctuation)
 
 add_executable(regression_20261009_03_query_tokenizer_lowercase tests/regression_20261009_03_query_tokenizer_lowercase.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261009_03_query_tokenizer_lowercase PRIVATE include)
-add_test(NAME regression_20261009_03_query_tokenizer_lowercase COMMAND regression_20261009_03_query_tokenizer_lowercase)
 
 add_executable(regression_20261009_04_query_tokenizer_whitespace tests/regression_20261009_04_query_tokenizer_whitespace.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261009_04_query_tokenizer_whitespace PRIVATE include)
-add_test(NAME regression_20261009_04_query_tokenizer_whitespace COMMAND regression_20261009_04_query_tokenizer_whitespace)
 
 add_executable(regression_20261009_05_stopwords_known tests/regression_20261009_05_stopwords_known.cpp src/StopWords.cpp)
-target_include_directories(regression_20261009_05_stopwords_known PRIVATE include)
-add_test(NAME regression_20261009_05_stopwords_known COMMAND regression_20261009_05_stopwords_known)
 
 add_executable(regression_20261009_06_stopwords_unknown tests/regression_20261009_06_stopwords_unknown.cpp src/StopWords.cpp)
-target_include_directories(regression_20261009_06_stopwords_unknown PRIVATE include)
-add_test(NAME regression_20261009_06_stopwords_unknown COMMAND regression_20261009_06_stopwords_unknown)
 
 add_executable(regression_20261009_07_stopwords_case tests/regression_20261009_07_stopwords_case.cpp src/StopWords.cpp)
-target_include_directories(regression_20261009_07_stopwords_case PRIVATE include)
-add_test(NAME regression_20261009_07_stopwords_case COMMAND regression_20261009_07_stopwords_case)
 
 add_executable(regression_20261009_08_ranker_empty tests/regression_20261009_08_ranker_empty.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_08_ranker_empty PRIVATE include)
-add_test(NAME regression_20261009_08_ranker_empty COMMAND regression_20261009_08_ranker_empty)
 
 add_executable(regression_20261009_09_ranker_unknown_term tests/regression_20261009_09_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_09_ranker_unknown_term PRIVATE include)
-add_test(NAME regression_20261009_09_ranker_unknown_term COMMAND regression_20261009_09_ranker_unknown_term)
 
 add_executable(regression_20261009_10_ranker_frequency_order tests/regression_20261009_10_ranker_frequency_order.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_10_ranker_frequency_order PRIVATE include)
-add_test(NAME regression_20261009_10_ranker_frequency_order COMMAND regression_20261009_10_ranker_frequency_order)
 
 add_executable(regression_20261009_11_ranker_tie_order tests/regression_20261009_11_ranker_tie_order.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_11_ranker_tie_order PRIVATE include)
-add_test(NAME regression_20261009_11_ranker_tie_order COMMAND regression_20261009_11_ranker_tie_order)
 
 add_executable(regression_20261009_12_search_engine_empty tests/regression_20261009_12_search_engine_empty.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
-target_include_directories(regression_20261009_12_search_engine_empty PRIVATE include)
-add_test(NAME regression_20261009_12_search_engine_empty COMMAND regression_20261009_12_search_engine_empty)
 
 add_executable(regression_20261009_13_search_engine_basic tests/regression_20261009_13_search_engine_basic.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
-target_include_directories(regression_20261009_13_search_engine_basic PRIVATE include)
-add_test(NAME regression_20261009_13_search_engine_basic COMMAND regression_20261009_13_search_engine_basic)
 
 add_executable(regression_20261009_14_search_engine_no_results tests/regression_20261009_14_search_engine_no_results.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
-target_include_directories(regression_20261009_14_search_engine_no_results PRIVATE include)
-add_test(NAME regression_20261009_14_search_engine_no_results COMMAND regression_20261009_14_search_engine_no_results)
 
 add_executable(regression_20261009_15_search_engine_ranked tests/regression_20261009_15_search_engine_ranked.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
-target_include_directories(regression_20261009_15_search_engine_ranked PRIVATE include)
-add_test(NAME regression_20261009_15_search_engine_ranked COMMAND regression_20261009_15_search_engine_ranked)
 
 add_executable(regression_20261009_16_search_engine_index_stats tests/regression_20261009_16_search_engine_index_stats.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
-target_include_directories(regression_20261009_16_search_engine_index_stats PRIVATE include)
-add_test(NAME regression_20261009_16_search_engine_index_stats COMMAND regression_20261009_16_search_engine_index_stats)
 
-add_executable(regression_20261009_17_query_processor_empty tests/regression_20261009_17_query_processor_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_17_query_processor_empty PRIVATE include)
-add_test(NAME regression_20261009_17_query_processor_empty COMMAND regression_20261009_17_query_processor_empty)
+add_executable(regression_20261009_17_query_processor_empty tests/regression_20261009_17_query_processor_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261009_18_query_processor_punctuation tests/regression_20261009_18_query_processor_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_18_query_processor_punctuation PRIVATE include)
-add_test(NAME regression_20261009_18_query_processor_punctuation COMMAND regression_20261009_18_query_processor_punctuation)
+add_executable(regression_20261009_18_query_processor_punctuation tests/regression_20261009_18_query_processor_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261009_19_query_processor_no_intersection tests/regression_20261009_19_query_processor_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_19_query_processor_no_intersection PRIVATE include)
-add_test(NAME regression_20261009_19_query_processor_no_intersection COMMAND regression_20261009_19_query_processor_no_intersection)
+add_executable(regression_20261009_19_query_processor_no_intersection tests/regression_20261009_19_query_processor_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261009_20_query_processor_case tests/regression_20261009_20_query_processor_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_20_query_processor_case PRIVATE include)
-add_test(NAME regression_20261009_20_query_processor_case COMMAND regression_20261009_20_query_processor_case)
-
-
-
-
-
-
-
+add_executable(regression_20261009_20_query_processor_case tests/regression_20261009_20_query_processor_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 add_executable(regression_20261009_28_ranker_repeated_query_term tests/regression_20261009_28_ranker_repeated_query_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261009_28_ranker_repeated_query_term PRIVATE include)
-add_test(NAME regression_20261009_28_ranker_repeated_query_term COMMAND regression_20261009_28_ranker_repeated_query_term)
-
 
 add_executable(regression_20261010_index_empty_search tests/regression_20261010_index_empty_search.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_index_empty_search PRIVATE include)
-add_test(NAME regression_20261010_index_empty_search COMMAND regression_20261010_index_empty_search)
 
 add_executable(regression_20261010_index_postings_sorted tests/regression_20261010_index_postings_sorted.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_index_postings_sorted PRIVATE include)
-add_test(NAME regression_20261010_index_postings_sorted COMMAND regression_20261010_index_postings_sorted)
 
 add_executable(regression_20261010_index_frequency_unknown_doc tests/regression_20261010_index_frequency_unknown_doc.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_index_frequency_unknown_doc PRIVATE include)
-add_test(NAME regression_20261010_index_frequency_unknown_doc COMMAND regression_20261010_index_frequency_unknown_doc)
 
-add_executable(regression_20261010_query_processor_duplicate_terms tests/regression_20261010_query_processor_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_query_processor_duplicate_terms PRIVATE include)
-add_test(NAME regression_20261010_query_processor_duplicate_terms COMMAND regression_20261010_query_processor_duplicate_terms)
+add_executable(regression_20261010_query_processor_duplicate_terms tests/regression_20261010_query_processor_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261010_query_processor_order tests/regression_20261010_query_processor_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_query_processor_order PRIVATE include)
-add_test(NAME regression_20261010_query_processor_order COMMAND regression_20261010_query_processor_order)
+add_executable(regression_20261010_query_processor_order tests/regression_20261010_query_processor_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 add_executable(regression_20261010_topk_empty_limit tests/regression_20261010_topk_empty_limit.cpp src/TopK.cpp)
-target_include_directories(regression_20261010_topk_empty_limit PRIVATE include)
-add_test(NAME regression_20261010_topk_empty_limit COMMAND regression_20261010_topk_empty_limit)
 
 add_executable(regression_20261010_phrase_exact tests/regression_20261010_phrase_exact.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261010_phrase_exact PRIVATE include)
-add_test(NAME regression_20261010_phrase_exact COMMAND regression_20261010_phrase_exact)
 
 add_executable(regression_20261010_index_stats_consistency tests/regression_20261010_index_stats_consistency.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_index_stats_consistency PRIVATE include)
-add_test(NAME regression_20261010_index_stats_consistency COMMAND regression_20261010_index_stats_consistency)
 
 add_executable(regression_20261010_query_tokenizer_join_punctuation tests/regression_20261010_query_tokenizer_join_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261010_query_tokenizer_join_punctuation PRIVATE include)
-add_test(NAME regression_20261010_query_tokenizer_join_punctuation COMMAND regression_20261010_query_tokenizer_join_punctuation)
 
 add_executable(regression_20261010_query_tokenizer_numeric tests/regression_20261010_query_tokenizer_numeric.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261010_query_tokenizer_numeric PRIVATE include)
-add_test(NAME regression_20261010_query_tokenizer_numeric COMMAND regression_20261010_query_tokenizer_numeric)
 
 add_executable(regression_20261010_ranker_unknown_and_known tests/regression_20261010_ranker_unknown_and_known.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_ranker_unknown_and_known PRIVATE include)
-add_test(NAME regression_20261010_ranker_unknown_and_known COMMAND regression_20261010_ranker_unknown_and_known)
 
 add_executable(regression_20261010_ranker_multiple_terms tests/regression_20261010_ranker_multiple_terms.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_ranker_multiple_terms PRIVATE include)
-add_test(NAME regression_20261010_ranker_multiple_terms COMMAND regression_20261010_ranker_multiple_terms)
 
 add_executable(regression_20261010_search_engine_query_normalization tests/regression_20261010_search_engine_query_normalization.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
-target_include_directories(regression_20261010_search_engine_query_normalization PRIVATE include)
-add_test(NAME regression_20261010_search_engine_query_normalization COMMAND regression_20261010_search_engine_query_normalization)
 
 add_executable(regression_20261010_search_engine_multiple_terms tests/regression_20261010_search_engine_multiple_terms.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
-target_include_directories(regression_20261010_search_engine_multiple_terms PRIVATE include)
-add_test(NAME regression_20261010_search_engine_multiple_terms COMMAND regression_20261010_search_engine_multiple_terms)
 
 add_executable(regression_20261010_search_engine_index_reference tests/regression_20261010_search_engine_index_reference.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp src/BM25Ranker.cpp)
-target_include_directories(regression_20261010_search_engine_index_reference PRIVATE include)
-add_test(NAME regression_20261010_search_engine_index_reference COMMAND regression_20261010_search_engine_index_reference)
 
 add_executable(regression_20261010_stopwords_empty tests/regression_20261010_stopwords_empty.cpp src/StopWords.cpp)
-target_include_directories(regression_20261010_stopwords_empty PRIVATE include)
-add_test(NAME regression_20261010_stopwords_empty COMMAND regression_20261010_stopwords_empty)
 
 add_executable(regression_20261010_phrase_middle tests/regression_20261010_phrase_middle.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261010_phrase_middle PRIVATE include)
-add_test(NAME regression_20261010_phrase_middle COMMAND regression_20261010_phrase_middle)
 
 add_executable(regression_20261010_phrase_noncontiguous tests/regression_20261010_phrase_noncontiguous.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261010_phrase_noncontiguous PRIVATE include)
-add_test(NAME regression_20261010_phrase_noncontiguous COMMAND regression_20261010_phrase_noncontiguous)
 
 add_executable(regression_20261010_phrase_empty_document tests/regression_20261010_phrase_empty_document.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261010_phrase_empty_document PRIVATE include)
-add_test(NAME regression_20261010_phrase_empty_document COMMAND regression_20261010_phrase_empty_document)
 
 add_executable(regression_20261010_topk_preserves_tie_order tests/regression_20261010_topk_preserves_tie_order.cpp src/TopK.cpp)
-target_include_directories(regression_20261010_topk_preserves_tie_order PRIVATE include)
-add_test(NAME regression_20261010_topk_preserves_tie_order COMMAND regression_20261010_topk_preserves_tie_order)
 
 add_executable(regression_20261010_topk_all_results tests/regression_20261010_topk_all_results.cpp src/TopK.cpp)
-target_include_directories(regression_20261010_topk_all_results PRIVATE include)
-add_test(NAME regression_20261010_topk_all_results COMMAND regression_20261010_topk_all_results)
 
 add_executable(regression_20261010_index_duplicate_postings tests/regression_20261010_index_duplicate_postings.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_index_duplicate_postings PRIVATE include)
-add_test(NAME regression_20261010_index_duplicate_postings COMMAND regression_20261010_index_duplicate_postings)
 
 add_executable(regression_20261010_index_empty_term tests/regression_20261010_index_empty_term.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_index_empty_term PRIVATE include)
-add_test(NAME regression_20261010_index_empty_term COMMAND regression_20261010_index_empty_term)
 
 add_executable(regression_20261010_index_document_frequency tests/regression_20261010_index_document_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_index_document_frequency PRIVATE include)
-add_test(NAME regression_20261010_index_document_frequency COMMAND regression_20261010_index_document_frequency)
 
-add_executable(regression_20261010_query_processor_missing_term tests/regression_20261010_query_processor_missing_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_query_processor_missing_term PRIVATE include)
-add_test(NAME regression_20261010_query_processor_missing_term COMMAND regression_20261010_query_processor_missing_term)
+add_executable(regression_20261010_query_processor_missing_term tests/regression_20261010_query_processor_missing_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261010_query_processor_duplicate_order tests/regression_20261010_query_processor_duplicate_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_query_processor_duplicate_order PRIVATE include)
-add_test(NAME regression_20261010_query_processor_duplicate_order COMMAND regression_20261010_query_processor_duplicate_order)
+add_executable(regression_20261010_query_processor_duplicate_order tests/regression_20261010_query_processor_duplicate_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 add_executable(regression_20261010_index_stats_after_updates tests/regression_20261010_index_stats_after_updates.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_index_stats_after_updates PRIVATE include)
-add_test(NAME regression_20261010_index_stats_after_updates COMMAND regression_20261010_index_stats_after_updates)
 
 add_executable(regression_20261010_ranker_empty_query tests/regression_20261010_ranker_empty_query.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261010_ranker_empty_query PRIVATE include)
-add_test(NAME regression_20261010_ranker_empty_query COMMAND regression_20261010_ranker_empty_query)
-
 
 # Regression coverage added on 2026-10-11
 
 add_executable(daily_01_tokenizer_empty_string tests/daily_20261011_01_tokenizer_empty_string.cpp src/Tokenizer.cpp)
-target_include_directories(daily_01_tokenizer_empty_string PRIVATE include)
-add_test(NAME daily_01_tokenizer_empty_string COMMAND daily_01_tokenizer_empty_string)
 
 add_executable(daily_02_tokenizer_whitespace_only tests/daily_20261011_02_tokenizer_whitespace_only.cpp src/Tokenizer.cpp)
-target_include_directories(daily_02_tokenizer_whitespace_only PRIVATE include)
-add_test(NAME daily_02_tokenizer_whitespace_only COMMAND daily_02_tokenizer_whitespace_only)
 
 add_executable(daily_03_tokenizer_uppercase tests/daily_20261011_03_tokenizer_uppercase.cpp src/Tokenizer.cpp)
-target_include_directories(daily_03_tokenizer_uppercase PRIVATE include)
-add_test(NAME daily_03_tokenizer_uppercase COMMAND daily_03_tokenizer_uppercase)
 
 add_executable(daily_04_tokenizer_digits tests/daily_20261011_04_tokenizer_digits.cpp src/Tokenizer.cpp)
-target_include_directories(daily_04_tokenizer_digits PRIVATE include)
-add_test(NAME daily_04_tokenizer_digits COMMAND daily_04_tokenizer_digits)
 
 add_executable(daily_05_tokenizer_mixed_case tests/daily_20261011_05_tokenizer_mixed_case.cpp src/Tokenizer.cpp)
-target_include_directories(daily_05_tokenizer_mixed_case PRIVATE include)
-add_test(NAME daily_05_tokenizer_mixed_case COMMAND daily_05_tokenizer_mixed_case)
 
 add_executable(daily_06_tokenizer_repeated_terms tests/daily_20261011_06_tokenizer_repeated_terms.cpp src/Tokenizer.cpp)
-target_include_directories(daily_06_tokenizer_repeated_terms PRIVATE include)
-add_test(NAME daily_06_tokenizer_repeated_terms COMMAND daily_06_tokenizer_repeated_terms)
 
 add_executable(daily_07_tokenizer_punctuation_boundaries tests/daily_20261011_07_tokenizer_punctuation_boundaries.cpp src/Tokenizer.cpp)
-target_include_directories(daily_07_tokenizer_punctuation_boundaries PRIVATE include)
-add_test(NAME daily_07_tokenizer_punctuation_boundaries COMMAND daily_07_tokenizer_punctuation_boundaries)
 
 add_executable(daily_08_tokenizer_newlines tests/daily_20261011_08_tokenizer_newlines.cpp src/Tokenizer.cpp)
-target_include_directories(daily_08_tokenizer_newlines PRIVATE include)
-add_test(NAME daily_08_tokenizer_newlines COMMAND daily_08_tokenizer_newlines)
 
 add_executable(daily_09_tokenizer_tabs tests/daily_20261011_09_tokenizer_tabs.cpp src/Tokenizer.cpp)
-target_include_directories(daily_09_tokenizer_tabs PRIVATE include)
-add_test(NAME daily_09_tokenizer_tabs COMMAND daily_09_tokenizer_tabs)
 
 add_executable(daily_10_tokenizer_leading_trailing_punctuation tests/daily_20261011_10_tokenizer_leading_trailing_punctuation.cpp src/Tokenizer.cpp)
-target_include_directories(daily_10_tokenizer_leading_trailing_punctuation PRIVATE include)
-add_test(NAME daily_10_tokenizer_leading_trailing_punctuation COMMAND daily_10_tokenizer_leading_trailing_punctuation)
 
 add_executable(daily_11_tokenizer_single_character tests/daily_20261011_11_tokenizer_single_character.cpp src/Tokenizer.cpp)
-target_include_directories(daily_11_tokenizer_single_character PRIVATE include)
-add_test(NAME daily_11_tokenizer_single_character COMMAND daily_11_tokenizer_single_character)
 
 add_executable(daily_12_tokenizer_long_token tests/daily_20261011_12_tokenizer_long_token.cpp src/Tokenizer.cpp)
-target_include_directories(daily_12_tokenizer_long_token PRIVATE include)
-add_test(NAME daily_12_tokenizer_long_token COMMAND daily_12_tokenizer_long_token)
 
 add_executable(daily_13_tokenizer_unicode_bytes_are_delimiters tests/daily_20261011_13_tokenizer_unicode_bytes_are_delimiters.cpp src/Tokenizer.cpp)
-target_include_directories(daily_13_tokenizer_unicode_bytes_are_delimiters PRIVATE include)
-add_test(NAME daily_13_tokenizer_unicode_bytes_are_delimiters COMMAND daily_13_tokenizer_unicode_bytes_are_delimiters)
 
 add_executable(daily_14_index_empty_document tests/daily_20261011_14_index_empty_document.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_14_index_empty_document PRIVATE include)
-add_test(NAME daily_14_index_empty_document COMMAND daily_14_index_empty_document)
 
 add_executable(daily_15_index_empty_token_ignored tests/daily_20261011_15_index_empty_token_ignored.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_15_index_empty_token_ignored PRIVATE include)
-add_test(NAME daily_15_index_empty_token_ignored COMMAND daily_15_index_empty_token_ignored)
 
 add_executable(daily_16_index_frequency_repeats tests/daily_20261011_16_index_frequency_repeats.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_16_index_frequency_repeats PRIVATE include)
-add_test(NAME daily_16_index_frequency_repeats COMMAND daily_16_index_frequency_repeats)
 
 add_executable(daily_17_index_missing_term_frequency tests/daily_20261011_17_index_missing_term_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_17_index_missing_term_frequency PRIVATE include)
-add_test(NAME daily_17_index_missing_term_frequency COMMAND daily_17_index_missing_term_frequency)
 
 add_executable(daily_18_index_missing_document_frequency tests/daily_20261011_18_index_missing_document_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_18_index_missing_document_frequency PRIVATE include)
-add_test(NAME daily_18_index_missing_document_frequency COMMAND daily_18_index_missing_document_frequency)
 
 add_executable(daily_19_index_postings_sorted tests/daily_20261011_19_index_postings_sorted.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_19_index_postings_sorted PRIVATE include)
-add_test(NAME daily_19_index_postings_sorted COMMAND daily_19_index_postings_sorted)
 
 add_executable(daily_20_index_duplicate_document_id tests/daily_20261011_20_index_duplicate_document_id.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20_index_duplicate_document_id PRIVATE include)
-add_test(NAME daily_20_index_duplicate_document_id COMMAND daily_20_index_duplicate_document_id)
 
 add_executable(daily_21_index_document_isolation tests/daily_20261011_21_index_document_isolation.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_21_index_document_isolation PRIVATE include)
-add_test(NAME daily_21_index_document_isolation COMMAND daily_21_index_document_isolation)
 
 add_executable(daily_22_index_many_terms tests/daily_20261011_22_index_many_terms.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_22_index_many_terms PRIVATE include)
-add_test(NAME daily_22_index_many_terms COMMAND daily_22_index_many_terms)
 
 add_executable(daily_23_index_same_term_many_documents tests/daily_20261011_23_index_same_term_many_documents.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_23_index_same_term_many_documents PRIVATE include)
-add_test(NAME daily_23_index_same_term_many_documents COMMAND daily_23_index_same_term_many_documents)
 
 add_executable(daily_24_index_negative_id_supported tests/daily_20261011_24_index_negative_id_supported.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_24_index_negative_id_supported PRIVATE include)
-add_test(NAME daily_24_index_negative_id_supported COMMAND daily_24_index_negative_id_supported)
 
 add_executable(daily_25_index_zero_id_supported tests/daily_20261011_25_index_zero_id_supported.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_25_index_zero_id_supported PRIVATE include)
-add_test(NAME daily_25_index_zero_id_supported COMMAND daily_25_index_zero_id_supported)
 
 add_executable(daily_26_index_unknown_search_empty tests/daily_20261011_26_index_unknown_search_empty.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_26_index_unknown_search_empty PRIVATE include)
-add_test(NAME daily_26_index_unknown_search_empty COMMAND daily_26_index_unknown_search_empty)
 
 add_executable(daily_27_index_term_count_growth tests/daily_20261011_27_index_term_count_growth.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_27_index_term_count_growth PRIVATE include)
-add_test(NAME daily_27_index_term_count_growth COMMAND daily_27_index_term_count_growth)
 
 add_executable(daily_28_index_duplicate_tokens_keep_one_posting tests/daily_20261011_28_index_duplicate_tokens_keep_one_posting.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_28_index_duplicate_tokens_keep_one_posting PRIVATE include)
-add_test(NAME daily_28_index_duplicate_tokens_keep_one_posting COMMAND daily_28_index_duplicate_tokens_keep_one_posting)
 
 add_executable(daily_29_index_document_count_unique_ids tests/daily_20261011_29_index_document_count_unique_ids.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_29_index_document_count_unique_ids PRIVATE include)
-add_test(NAME daily_29_index_document_count_unique_ids COMMAND daily_29_index_document_count_unique_ids)
 
 add_executable(daily_30_index_empty_term_query tests/daily_20261011_30_index_empty_term_query.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_30_index_empty_term_query PRIVATE include)
-add_test(NAME daily_30_index_empty_term_query COMMAND daily_30_index_empty_term_query)
 
-add_executable(daily_31_query_empty_string tests/daily_20261011_31_query_empty_string.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_31_query_empty_string PRIVATE include)
-add_test(NAME daily_31_query_empty_string COMMAND daily_31_query_empty_string)
+add_executable(daily_31_query_empty_string tests/daily_20261011_31_query_empty_string.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_32_query_whitespace_only tests/daily_20261011_32_query_whitespace_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_32_query_whitespace_only PRIVATE include)
-add_test(NAME daily_32_query_whitespace_only COMMAND daily_32_query_whitespace_only)
+add_executable(daily_32_query_whitespace_only tests/daily_20261011_32_query_whitespace_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_33_query_case_normalization tests/daily_20261011_33_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_33_query_case_normalization PRIVATE include)
-add_test(NAME daily_33_query_case_normalization COMMAND daily_33_query_case_normalization)
+add_executable(daily_33_query_case_normalization tests/daily_20261011_33_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_34_query_and_semantics tests/daily_20261011_34_query_and_semantics.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_34_query_and_semantics PRIVATE include)
-add_test(NAME daily_34_query_and_semantics COMMAND daily_34_query_and_semantics)
+add_executable(daily_34_query_and_semantics tests/daily_20261011_34_query_and_semantics.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_35_query_unknown_term tests/daily_20261011_35_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_35_query_unknown_term PRIVATE include)
-add_test(NAME daily_35_query_unknown_term COMMAND daily_35_query_unknown_term)
+add_executable(daily_35_query_unknown_term tests/daily_20261011_35_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_36_query_repeated_term_deduplicated tests/daily_20261011_36_query_repeated_term_deduplicated.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_36_query_repeated_term_deduplicated PRIVATE include)
-add_test(NAME daily_36_query_repeated_term_deduplicated COMMAND daily_36_query_repeated_term_deduplicated)
+add_executable(daily_36_query_repeated_term_deduplicated tests/daily_20261011_36_query_repeated_term_deduplicated.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_37_query_punctuation_normalization tests/daily_20261011_37_query_punctuation_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_37_query_punctuation_normalization PRIVATE include)
-add_test(NAME daily_37_query_punctuation_normalization COMMAND daily_37_query_punctuation_normalization)
+add_executable(daily_37_query_punctuation_normalization tests/daily_20261011_37_query_punctuation_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_38_query_result_order tests/daily_20261011_38_query_result_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_38_query_result_order PRIVATE include)
-add_test(NAME daily_38_query_result_order COMMAND daily_38_query_result_order)
+add_executable(daily_38_query_result_order tests/daily_20261011_38_query_result_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_39_query_multiple_terms_intersection tests/daily_20261011_39_query_multiple_terms_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_39_query_multiple_terms_intersection PRIVATE include)
-add_test(NAME daily_39_query_multiple_terms_intersection COMMAND daily_39_query_multiple_terms_intersection)
+add_executable(daily_39_query_multiple_terms_intersection tests/daily_20261011_39_query_multiple_terms_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_40_query_no_partial_match tests/daily_20261011_40_query_no_partial_match.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_40_query_no_partial_match PRIVATE include)
-add_test(NAME daily_40_query_no_partial_match COMMAND daily_40_query_no_partial_match)
+add_executable(daily_40_query_no_partial_match tests/daily_20261011_40_query_no_partial_match.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_41_query_tabs_between_terms tests/daily_20261011_41_query_tabs_between_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_41_query_tabs_between_terms PRIVATE include)
-add_test(NAME daily_41_query_tabs_between_terms COMMAND daily_41_query_tabs_between_terms)
+add_executable(daily_41_query_tabs_between_terms tests/daily_20261011_41_query_tabs_between_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_42_query_newlines_between_terms tests/daily_20261011_42_query_newlines_between_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_42_query_newlines_between_terms PRIVATE include)
-add_test(NAME daily_42_query_newlines_between_terms COMMAND daily_42_query_newlines_between_terms)
+add_executable(daily_42_query_newlines_between_terms tests/daily_20261011_42_query_newlines_between_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_43_query_sorted_term_order_independent tests/daily_20261011_43_query_sorted_term_order_independent.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_43_query_sorted_term_order_independent PRIVATE include)
-add_test(NAME daily_43_query_sorted_term_order_independent COMMAND daily_43_query_sorted_term_order_independent)
+add_executable(daily_43_query_sorted_term_order_independent tests/daily_20261011_43_query_sorted_term_order_independent.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_44_query_leading_trailing_spaces tests/daily_20261011_44_query_leading_trailing_spaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_44_query_leading_trailing_spaces PRIVATE include)
-add_test(NAME daily_44_query_leading_trailing_spaces COMMAND daily_44_query_leading_trailing_spaces)
+add_executable(daily_44_query_leading_trailing_spaces tests/daily_20261011_44_query_leading_trailing_spaces.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_45_query_many_documents tests/daily_20261011_45_query_many_documents.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_45_query_many_documents PRIVATE include)
-add_test(NAME daily_45_query_many_documents COMMAND daily_45_query_many_documents)
+add_executable(daily_45_query_many_documents tests/daily_20261011_45_query_many_documents.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(daily_46_query_empty_normalized_token tests/daily_20261011_46_query_empty_normalized_token.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_46_query_empty_normalized_token PRIVATE include)
-add_test(NAME daily_46_query_empty_normalized_token COMMAND daily_46_query_empty_normalized_token)
+add_executable(daily_46_query_empty_normalized_token tests/daily_20261011_46_query_empty_normalized_token.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 add_executable(daily_47_index_frequency_per_document tests/daily_20261011_47_index_frequency_per_document.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_47_index_frequency_per_document PRIVATE include)
-add_test(NAME daily_47_index_frequency_per_document COMMAND daily_47_index_frequency_per_document)
 
 add_executable(daily_48_index_document_frequency_distinct tests/daily_20261011_48_index_document_frequency_distinct.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_48_index_document_frequency_distinct PRIVATE include)
-add_test(NAME daily_48_index_document_frequency_distinct COMMAND daily_48_index_document_frequency_distinct)
 
 add_executable(daily_49_tokenizer_adjacent_delimiters tests/daily_20261011_49_tokenizer_adjacent_delimiters.cpp src/Tokenizer.cpp)
-target_include_directories(daily_49_tokenizer_adjacent_delimiters PRIVATE include)
-add_test(NAME daily_49_tokenizer_adjacent_delimiters COMMAND daily_49_tokenizer_adjacent_delimiters)
 
 # Additional component regression tests added on 2026-10-13.
 
 add_executable(batch_01_phrase_exact_match tests/batch_20261013_01_phrase_exact_match.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_01_phrase_exact_match PRIVATE include)
-add_test(NAME batch_01_phrase_exact_match COMMAND batch_01_phrase_exact_match)
 
 add_executable(batch_02_phrase_middle_match tests/batch_20261013_02_phrase_middle_match.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_02_phrase_middle_match PRIVATE include)
-add_test(NAME batch_02_phrase_middle_match COMMAND batch_02_phrase_middle_match)
 
 add_executable(batch_03_phrase_missing_token tests/batch_20261013_03_phrase_missing_token.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_03_phrase_missing_token PRIVATE include)
-add_test(NAME batch_03_phrase_missing_token COMMAND batch_03_phrase_missing_token)
 
 add_executable(batch_04_phrase_empty_phrase tests/batch_20261013_04_phrase_empty_phrase.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_04_phrase_empty_phrase PRIVATE include)
-add_test(NAME batch_04_phrase_empty_phrase COMMAND batch_04_phrase_empty_phrase)
 
 add_executable(batch_05_phrase_longer_than_tokens tests/batch_20261013_05_phrase_longer_than_tokens.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_05_phrase_longer_than_tokens PRIVATE include)
-add_test(NAME batch_05_phrase_longer_than_tokens COMMAND batch_05_phrase_longer_than_tokens)
 
 add_executable(batch_06_phrase_single_token tests/batch_20261013_06_phrase_single_token.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_06_phrase_single_token PRIVATE include)
-add_test(NAME batch_06_phrase_single_token COMMAND batch_06_phrase_single_token)
 
 add_executable(batch_07_phrase_duplicate_tokens tests/batch_20261013_07_phrase_duplicate_tokens.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_07_phrase_duplicate_tokens PRIVATE include)
-add_test(NAME batch_07_phrase_duplicate_tokens COMMAND batch_07_phrase_duplicate_tokens)
 
 add_executable(batch_08_phrase_order_matters tests/batch_20261013_08_phrase_order_matters.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_08_phrase_order_matters PRIVATE include)
-add_test(NAME batch_08_phrase_order_matters COMMAND batch_08_phrase_order_matters)
 
 add_executable(batch_09_phrase_repeated_sequence tests/batch_20261013_09_phrase_repeated_sequence.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_09_phrase_repeated_sequence PRIVATE include)
-add_test(NAME batch_09_phrase_repeated_sequence COMMAND batch_09_phrase_repeated_sequence)
 
 add_executable(batch_10_phrase_full_document tests/batch_20261013_10_phrase_full_document.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_10_phrase_full_document PRIVATE include)
-add_test(NAME batch_10_phrase_full_document COMMAND batch_10_phrase_full_document)
 
 add_executable(batch_11_query_tokenizer_empty tests/batch_20261013_11_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_11_query_tokenizer_empty PRIVATE include)
-add_test(NAME batch_11_query_tokenizer_empty COMMAND batch_11_query_tokenizer_empty)
 
 add_executable(batch_12_query_tokenizer_whitespace tests/batch_20261013_12_query_tokenizer_whitespace.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_12_query_tokenizer_whitespace PRIVATE include)
-add_test(NAME batch_12_query_tokenizer_whitespace COMMAND batch_12_query_tokenizer_whitespace)
 
 add_executable(batch_13_query_tokenizer_lowercase tests/batch_20261013_13_query_tokenizer_lowercase.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_13_query_tokenizer_lowercase PRIVATE include)
-add_test(NAME batch_13_query_tokenizer_lowercase COMMAND batch_13_query_tokenizer_lowercase)
 
 add_executable(batch_14_query_tokenizer_punctuation tests/batch_20261013_14_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_14_query_tokenizer_punctuation PRIVATE include)
-add_test(NAME batch_14_query_tokenizer_punctuation COMMAND batch_14_query_tokenizer_punctuation)
 
 add_executable(batch_15_query_tokenizer_numbers tests/batch_20261013_15_query_tokenizer_numbers.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_15_query_tokenizer_numbers PRIVATE include)
-add_test(NAME batch_15_query_tokenizer_numbers COMMAND batch_15_query_tokenizer_numbers)
 
 add_executable(batch_16_query_tokenizer_duplicate_terms tests/batch_20261013_16_query_tokenizer_duplicate_terms.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_16_query_tokenizer_duplicate_terms PRIVATE include)
-add_test(NAME batch_16_query_tokenizer_duplicate_terms COMMAND batch_16_query_tokenizer_duplicate_terms)
 
 add_executable(batch_17_query_tokenizer_tabs tests/batch_20261013_17_query_tokenizer_tabs.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_17_query_tokenizer_tabs PRIVATE include)
-add_test(NAME batch_17_query_tokenizer_tabs COMMAND batch_17_query_tokenizer_tabs)
 
 add_executable(batch_18_query_tokenizer_newlines tests/batch_20261013_18_query_tokenizer_newlines.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_18_query_tokenizer_newlines PRIVATE include)
-add_test(NAME batch_18_query_tokenizer_newlines COMMAND batch_18_query_tokenizer_newlines)
 
 add_executable(batch_19_query_tokenizer_symbol_only tests/batch_20261013_19_query_tokenizer_symbol_only.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_19_query_tokenizer_symbol_only PRIVATE include)
-add_test(NAME batch_19_query_tokenizer_symbol_only COMMAND batch_19_query_tokenizer_symbol_only)
 
 add_executable(batch_20_query_tokenizer_mixed_alphanumeric tests/batch_20261013_20_query_tokenizer_mixed_alphanumeric.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20_query_tokenizer_mixed_alphanumeric PRIVATE include)
-add_test(NAME batch_20_query_tokenizer_mixed_alphanumeric COMMAND batch_20_query_tokenizer_mixed_alphanumeric)
 
 add_executable(batch_21_topk_empty_input tests/batch_20261013_21_topk_empty_input.cpp src/TopK.cpp)
-target_include_directories(batch_21_topk_empty_input PRIVATE include)
-add_test(NAME batch_21_topk_empty_input COMMAND batch_21_topk_empty_input)
 
 add_executable(batch_22_topk_zero_limit tests/batch_20261013_22_topk_zero_limit.cpp src/TopK.cpp)
-target_include_directories(batch_22_topk_zero_limit PRIVATE include)
-add_test(NAME batch_22_topk_zero_limit COMMAND batch_22_topk_zero_limit)
 
 add_executable(batch_23_topk_limit_one tests/batch_20261013_23_topk_limit_one.cpp src/TopK.cpp)
-target_include_directories(batch_23_topk_limit_one PRIVATE include)
-add_test(NAME batch_23_topk_limit_one COMMAND batch_23_topk_limit_one)
 
 add_executable(batch_24_topk_sorted_scores tests/batch_20261013_24_topk_sorted_scores.cpp src/TopK.cpp)
-target_include_directories(batch_24_topk_sorted_scores PRIVATE include)
-add_test(NAME batch_24_topk_sorted_scores COMMAND batch_24_topk_sorted_scores)
 
 add_executable(batch_25_topk_tie_break_document_id tests/batch_20261013_25_topk_tie_break_document_id.cpp src/TopK.cpp)
-target_include_directories(batch_25_topk_tie_break_document_id PRIVATE include)
-add_test(NAME batch_25_topk_tie_break_document_id COMMAND batch_25_topk_tie_break_document_id)
 
 add_executable(batch_26_topk_truncate_results tests/batch_20261013_26_topk_truncate_results.cpp src/TopK.cpp)
-target_include_directories(batch_26_topk_truncate_results PRIVATE include)
-add_test(NAME batch_26_topk_truncate_results COMMAND batch_26_topk_truncate_results)
 
 add_executable(batch_27_topk_limit_above_size tests/batch_20261013_27_topk_limit_above_size.cpp src/TopK.cpp)
-target_include_directories(batch_27_topk_limit_above_size PRIVATE include)
-add_test(NAME batch_27_topk_limit_above_size COMMAND batch_27_topk_limit_above_size)
 
 add_executable(batch_28_topk_negative_scores tests/batch_20261013_28_topk_negative_scores.cpp src/TopK.cpp)
-target_include_directories(batch_28_topk_negative_scores PRIVATE include)
-add_test(NAME batch_28_topk_negative_scores COMMAND batch_28_topk_negative_scores)
 
 add_executable(batch_29_topk_preserves_zero_score_tie_order tests/batch_20261013_29_topk_preserves_zero_score_tie_order.cpp src/TopK.cpp)
-target_include_directories(batch_29_topk_preserves_zero_score_tie_order PRIVATE include)
-add_test(NAME batch_29_topk_preserves_zero_score_tie_order COMMAND batch_29_topk_preserves_zero_score_tie_order)
 
 add_executable(batch_30_topk_duplicate_ids_allowed tests/batch_20261013_30_topk_duplicate_ids_allowed.cpp src/TopK.cpp)
-target_include_directories(batch_30_topk_duplicate_ids_allowed PRIVATE include)
-add_test(NAME batch_30_topk_duplicate_ids_allowed COMMAND batch_30_topk_duplicate_ids_allowed)
 
 add_executable(batch_31_stopwords_common_article tests/batch_20261013_31_stopwords_common_article.cpp src/StopWords.cpp)
-target_include_directories(batch_31_stopwords_common_article PRIVATE include)
-add_test(NAME batch_31_stopwords_common_article COMMAND batch_31_stopwords_common_article)
 
 add_executable(batch_32_stopwords_common_preposition tests/batch_20261013_32_stopwords_common_preposition.cpp src/StopWords.cpp)
-target_include_directories(batch_32_stopwords_common_preposition PRIVATE include)
-add_test(NAME batch_32_stopwords_common_preposition COMMAND batch_32_stopwords_common_preposition)
 
 add_executable(batch_33_stopwords_conjunction tests/batch_20261013_33_stopwords_conjunction.cpp src/StopWords.cpp)
-target_include_directories(batch_33_stopwords_conjunction PRIVATE include)
-add_test(NAME batch_33_stopwords_conjunction COMMAND batch_33_stopwords_conjunction)
 
 add_executable(batch_34_stopwords_unknown_word tests/batch_20261013_34_stopwords_unknown_word.cpp src/StopWords.cpp)
-target_include_directories(batch_34_stopwords_unknown_word PRIVATE include)
-add_test(NAME batch_34_stopwords_unknown_word COMMAND batch_34_stopwords_unknown_word)
 
 add_executable(batch_35_stopwords_case_sensitive_contract tests/batch_20261013_35_stopwords_case_sensitive_contract.cpp src/StopWords.cpp)
-target_include_directories(batch_35_stopwords_case_sensitive_contract PRIVATE include)
-add_test(NAME batch_35_stopwords_case_sensitive_contract COMMAND batch_35_stopwords_case_sensitive_contract)
 
 add_executable(batch_36_document_id tests/batch_20261013_36_document_id.cpp src/Document.cpp)
-target_include_directories(batch_36_document_id PRIVATE include)
-add_test(NAME batch_36_document_id COMMAND batch_36_document_id)
 
 add_executable(batch_37_document_path tests/batch_20261013_37_document_path.cpp src/Document.cpp)
-target_include_directories(batch_37_document_path PRIVATE include)
-add_test(NAME batch_37_document_path COMMAND batch_37_document_path)
 
 add_executable(batch_38_document_content tests/batch_20261013_38_document_content.cpp src/Document.cpp)
-target_include_directories(batch_38_document_content PRIVATE include)
-add_test(NAME batch_38_document_content COMMAND batch_38_document_content)
 
 add_executable(batch_39_document_empty_content tests/batch_20261013_39_document_empty_content.cpp src/Document.cpp)
-target_include_directories(batch_39_document_empty_content PRIVATE include)
-add_test(NAME batch_39_document_empty_content COMMAND batch_39_document_empty_content)
 
 add_executable(batch_40_document_empty_path tests/batch_20261013_40_document_empty_path.cpp src/Document.cpp)
-target_include_directories(batch_40_document_empty_path PRIVATE include)
-add_test(NAME batch_40_document_empty_path COMMAND batch_40_document_empty_path)
 
 add_executable(batch_41_index_stats_empty tests/batch_20261013_41_index_stats_empty.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_41_index_stats_empty PRIVATE include)
-add_test(NAME batch_41_index_stats_empty COMMAND batch_41_index_stats_empty)
 
 add_executable(batch_42_index_stats_document_count tests/batch_20261013_42_index_stats_document_count.cpp src/Document.cpp)
-target_include_directories(batch_42_index_stats_document_count PRIVATE include)
-add_test(NAME batch_42_index_stats_document_count COMMAND batch_42_index_stats_document_count)
 
 add_executable(batch_43_index_stats_term_count tests/batch_20261013_43_index_stats_term_count.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_43_index_stats_term_count PRIVATE include)
-add_test(NAME batch_43_index_stats_term_count COMMAND batch_43_index_stats_term_count)
 
 add_executable(batch_44_index_stats_empty_document tests/batch_20261013_44_index_stats_empty_document.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_44_index_stats_empty_document PRIVATE include)
-add_test(NAME batch_44_index_stats_empty_document COMMAND batch_44_index_stats_empty_document)
 
 add_executable(batch_45_index_stats_after_growth tests/batch_20261013_45_index_stats_after_growth.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_45_index_stats_after_growth PRIVATE include)
-add_test(NAME batch_45_index_stats_after_growth COMMAND batch_45_index_stats_after_growth)
 
 add_executable(batch_46_ranker_empty_index tests/batch_20261013_46_ranker_empty_index.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_46_ranker_empty_index PRIVATE include)
-add_test(NAME batch_46_ranker_empty_index COMMAND batch_46_ranker_empty_index)
 
 add_executable(batch_47_ranker_unknown_term tests/batch_20261013_47_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_47_ranker_unknown_term PRIVATE include)
-add_test(NAME batch_47_ranker_unknown_term COMMAND batch_47_ranker_unknown_term)
 
 add_executable(batch_48_ranker_single_match tests/batch_20261013_48_ranker_single_match.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_48_ranker_single_match PRIVATE include)
-add_test(NAME batch_48_ranker_single_match COMMAND batch_48_ranker_single_match)
 
 add_executable(batch_49_ranker_frequency_increases_score tests/batch_20261013_49_ranker_frequency_increases_score.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_49_ranker_frequency_increases_score PRIVATE include)
-add_test(NAME batch_49_ranker_frequency_increases_score COMMAND batch_49_ranker_frequency_increases_score)
 
 add_executable(batch_50_ranker_deterministic_tie_break tests/batch_20261013_50_ranker_deterministic_tie_break.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_50_ranker_deterministic_tie_break PRIVATE include)
-add_test(NAME batch_50_ranker_deterministic_tie_break COMMAND batch_50_ranker_deterministic_tie_break)
-
 
 # Additional component regression coverage added on 2026-10-13.
 
 add_executable(batch_20261013_51_phrase_empty_tokens tests/batch_20261013_51_phrase_empty_tokens.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_51_phrase_empty_tokens PRIVATE include)
-add_test(NAME batch_20261013_51_phrase_empty_tokens COMMAND batch_20261013_51_phrase_empty_tokens)
 
 add_executable(batch_20261013_52_phrase_empty_phrase tests/batch_20261013_52_phrase_empty_phrase.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_52_phrase_empty_phrase PRIVATE include)
-add_test(NAME batch_20261013_52_phrase_empty_phrase COMMAND batch_20261013_52_phrase_empty_phrase)
 
 add_executable(batch_20261013_53_phrase_phrase_longer_than_tokens tests/batch_20261013_53_phrase_phrase_longer_than_tokens.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_53_phrase_phrase_longer_than_tokens PRIVATE include)
-add_test(NAME batch_20261013_53_phrase_phrase_longer_than_tokens COMMAND batch_20261013_53_phrase_phrase_longer_than_tokens)
 
 add_executable(batch_20261013_54_phrase_single_token_match tests/batch_20261013_54_phrase_single_token_match.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_54_phrase_single_token_match PRIVATE include)
-add_test(NAME batch_20261013_54_phrase_single_token_match COMMAND batch_20261013_54_phrase_single_token_match)
 
 add_executable(batch_20261013_55_phrase_absent_phrase tests/batch_20261013_55_phrase_absent_phrase.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_55_phrase_absent_phrase PRIVATE include)
-add_test(NAME batch_20261013_55_phrase_absent_phrase COMMAND batch_20261013_55_phrase_absent_phrase)
 
 add_executable(batch_20261013_56_phrase_middle_phrase tests/batch_20261013_56_phrase_middle_phrase.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_56_phrase_middle_phrase PRIVATE include)
-add_test(NAME batch_20261013_56_phrase_middle_phrase COMMAND batch_20261013_56_phrase_middle_phrase)
 
 add_executable(batch_20261013_57_phrase_end_phrase tests/batch_20261013_57_phrase_end_phrase.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_57_phrase_end_phrase PRIVATE include)
-add_test(NAME batch_20261013_57_phrase_end_phrase COMMAND batch_20261013_57_phrase_end_phrase)
 
 add_executable(batch_20261013_58_phrase_case_sensitive tests/batch_20261013_58_phrase_case_sensitive.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_58_phrase_case_sensitive PRIVATE include)
-add_test(NAME batch_20261013_58_phrase_case_sensitive COMMAND batch_20261013_58_phrase_case_sensitive)
 
 add_executable(batch_20261013_59_phrase_overlapping_tokens tests/batch_20261013_59_phrase_overlapping_tokens.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_59_phrase_overlapping_tokens PRIVATE include)
-add_test(NAME batch_20261013_59_phrase_overlapping_tokens COMMAND batch_20261013_59_phrase_overlapping_tokens)
 
 add_executable(batch_20261013_60_phrase_exact_sequence tests/batch_20261013_60_phrase_exact_sequence.cpp src/PhraseMatcher.cpp)
-target_include_directories(batch_20261013_60_phrase_exact_sequence PRIVATE include)
-add_test(NAME batch_20261013_60_phrase_exact_sequence COMMAND batch_20261013_60_phrase_exact_sequence)
 
 add_executable(batch_20261013_61_topk_sort_descending tests/batch_20261013_61_topk_sort_descending.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_61_topk_sort_descending PRIVATE include)
-add_test(NAME batch_20261013_61_topk_sort_descending COMMAND batch_20261013_61_topk_sort_descending)
 
 add_executable(batch_20261013_62_topk_zero_limit tests/batch_20261013_62_topk_zero_limit.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_62_topk_zero_limit PRIVATE include)
-add_test(NAME batch_20261013_62_topk_zero_limit COMMAND batch_20261013_62_topk_zero_limit)
 
 add_executable(batch_20261013_63_topk_limit_above_size tests/batch_20261013_63_topk_limit_above_size.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_63_topk_limit_above_size PRIVATE include)
-add_test(NAME batch_20261013_63_topk_limit_above_size COMMAND batch_20261013_63_topk_limit_above_size)
 
 add_executable(batch_20261013_64_topk_tie_document_id tests/batch_20261013_64_topk_tie_document_id.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_64_topk_tie_document_id PRIVATE include)
-add_test(NAME batch_20261013_64_topk_tie_document_id COMMAND batch_20261013_64_topk_tie_document_id)
 
 add_executable(batch_20261013_65_topk_exact_limit tests/batch_20261013_65_topk_exact_limit.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_65_topk_exact_limit PRIVATE include)
-add_test(NAME batch_20261013_65_topk_exact_limit COMMAND batch_20261013_65_topk_exact_limit)
 
 add_executable(batch_20261013_66_topk_negative_scores tests/batch_20261013_66_topk_negative_scores.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_66_topk_negative_scores PRIVATE include)
-add_test(NAME batch_20261013_66_topk_negative_scores COMMAND batch_20261013_66_topk_negative_scores)
 
 add_executable(batch_20261013_67_topk_zero_scores tests/batch_20261013_67_topk_zero_scores.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_67_topk_zero_scores PRIVATE include)
-add_test(NAME batch_20261013_67_topk_zero_scores COMMAND batch_20261013_67_topk_zero_scores)
 
 add_executable(batch_20261013_68_topk_input_by_value tests/batch_20261013_68_topk_input_by_value.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_68_topk_input_by_value PRIVATE include)
-add_test(NAME batch_20261013_68_topk_input_by_value COMMAND batch_20261013_68_topk_input_by_value)
 
 add_executable(batch_20261013_69_topk_empty_results tests/batch_20261013_69_topk_empty_results.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_69_topk_empty_results PRIVATE include)
-add_test(NAME batch_20261013_69_topk_empty_results COMMAND batch_20261013_69_topk_empty_results)
 
 add_executable(batch_20261013_70_topk_limit_one tests/batch_20261013_70_topk_limit_one.cpp src/TopK.cpp)
-target_include_directories(batch_20261013_70_topk_limit_one PRIVATE include)
-add_test(NAME batch_20261013_70_topk_limit_one COMMAND batch_20261013_70_topk_limit_one)
 
 add_executable(batch_20261013_71_tokenizer_empty_input tests/batch_20261013_71_tokenizer_empty_input.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_71_tokenizer_empty_input PRIVATE include)
-add_test(NAME batch_20261013_71_tokenizer_empty_input COMMAND batch_20261013_71_tokenizer_empty_input)
 
 add_executable(batch_20261013_72_tokenizer_lowercase tests/batch_20261013_72_tokenizer_lowercase.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_72_tokenizer_lowercase PRIVATE include)
-add_test(NAME batch_20261013_72_tokenizer_lowercase COMMAND batch_20261013_72_tokenizer_lowercase)
 
 add_executable(batch_20261013_73_tokenizer_punctuation_split tests/batch_20261013_73_tokenizer_punctuation_split.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_73_tokenizer_punctuation_split PRIVATE include)
-add_test(NAME batch_20261013_73_tokenizer_punctuation_split COMMAND batch_20261013_73_tokenizer_punctuation_split)
 
 add_executable(batch_20261013_74_tokenizer_numbers tests/batch_20261013_74_tokenizer_numbers.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_74_tokenizer_numbers PRIVATE include)
-add_test(NAME batch_20261013_74_tokenizer_numbers COMMAND batch_20261013_74_tokenizer_numbers)
 
 add_executable(batch_20261013_75_tokenizer_repeated_separators tests/batch_20261013_75_tokenizer_repeated_separators.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_75_tokenizer_repeated_separators PRIVATE include)
-add_test(NAME batch_20261013_75_tokenizer_repeated_separators COMMAND batch_20261013_75_tokenizer_repeated_separators)
 
 add_executable(batch_20261013_76_tokenizer_leading_trailing_spaces tests/batch_20261013_76_tokenizer_leading_trailing_spaces.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_76_tokenizer_leading_trailing_spaces PRIVATE include)
-add_test(NAME batch_20261013_76_tokenizer_leading_trailing_spaces COMMAND batch_20261013_76_tokenizer_leading_trailing_spaces)
 
 add_executable(batch_20261013_77_tokenizer_single_character tests/batch_20261013_77_tokenizer_single_character.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_77_tokenizer_single_character PRIVATE include)
-add_test(NAME batch_20261013_77_tokenizer_single_character COMMAND batch_20261013_77_tokenizer_single_character)
 
 add_executable(batch_20261013_78_tokenizer_mixed_case_words tests/batch_20261013_78_tokenizer_mixed_case_words.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_78_tokenizer_mixed_case_words PRIVATE include)
-add_test(NAME batch_20261013_78_tokenizer_mixed_case_words COMMAND batch_20261013_78_tokenizer_mixed_case_words)
 
 add_executable(batch_20261013_79_query_tokenizer_empty_input tests/batch_20261013_79_query_tokenizer_empty_input.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_79_query_tokenizer_empty_input PRIVATE include)
-add_test(NAME batch_20261013_79_query_tokenizer_empty_input COMMAND batch_20261013_79_query_tokenizer_empty_input)
 
 add_executable(batch_20261013_80_query_tokenizer_whitespace_only tests/batch_20261013_80_query_tokenizer_whitespace_only.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_80_query_tokenizer_whitespace_only PRIVATE include)
-add_test(NAME batch_20261013_80_query_tokenizer_whitespace_only COMMAND batch_20261013_80_query_tokenizer_whitespace_only)
 
 add_executable(batch_20261013_81_query_tokenizer_lowercase tests/batch_20261013_81_query_tokenizer_lowercase.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_81_query_tokenizer_lowercase PRIVATE include)
-add_test(NAME batch_20261013_81_query_tokenizer_lowercase COMMAND batch_20261013_81_query_tokenizer_lowercase)
 
 add_executable(batch_20261013_82_query_tokenizer_punctuation_removal tests/batch_20261013_82_query_tokenizer_punctuation_removal.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_82_query_tokenizer_punctuation_removal PRIVATE include)
-add_test(NAME batch_20261013_82_query_tokenizer_punctuation_removal COMMAND batch_20261013_82_query_tokenizer_punctuation_removal)
 
 add_executable(batch_20261013_83_query_tokenizer_symbol_only tests/batch_20261013_83_query_tokenizer_symbol_only.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_83_query_tokenizer_symbol_only PRIVATE include)
-add_test(NAME batch_20261013_83_query_tokenizer_symbol_only COMMAND batch_20261013_83_query_tokenizer_symbol_only)
 
 add_executable(batch_20261013_84_query_tokenizer_duplicate_terms tests/batch_20261013_84_query_tokenizer_duplicate_terms.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_84_query_tokenizer_duplicate_terms PRIVATE include)
-add_test(NAME batch_20261013_84_query_tokenizer_duplicate_terms COMMAND batch_20261013_84_query_tokenizer_duplicate_terms)
 
 add_executable(batch_20261013_85_query_tokenizer_tabs_and_newlines tests/batch_20261013_85_query_tokenizer_tabs_and_newlines.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_85_query_tokenizer_tabs_and_newlines PRIVATE include)
-add_test(NAME batch_20261013_85_query_tokenizer_tabs_and_newlines COMMAND batch_20261013_85_query_tokenizer_tabs_and_newlines)
 
 add_executable(batch_20261013_86_query_tokenizer_alphanumeric tests/batch_20261013_86_query_tokenizer_alphanumeric.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(batch_20261013_86_query_tokenizer_alphanumeric PRIVATE include)
-add_test(NAME batch_20261013_86_query_tokenizer_alphanumeric COMMAND batch_20261013_86_query_tokenizer_alphanumeric)
 
 add_executable(batch_20261013_87_index_empty_document_count tests/batch_20261013_87_index_empty_document_count.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_20261013_87_index_empty_document_count PRIVATE include)
-add_test(NAME batch_20261013_87_index_empty_document_count COMMAND batch_20261013_87_index_empty_document_count)
 
 add_executable(batch_20261013_88_index_empty_tokens_ignored tests/batch_20261013_88_index_empty_tokens_ignored.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_20261013_88_index_empty_tokens_ignored PRIVATE include)
-add_test(NAME batch_20261013_88_index_empty_tokens_ignored COMMAND batch_20261013_88_index_empty_tokens_ignored)
 
 add_executable(batch_20261013_89_index_sorted_postings tests/batch_20261013_89_index_sorted_postings.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_20261013_89_index_sorted_postings PRIVATE include)
-add_test(NAME batch_20261013_89_index_sorted_postings COMMAND batch_20261013_89_index_sorted_postings)
 
 add_executable(batch_20261013_90_index_frequency tests/batch_20261013_90_index_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_20261013_90_index_frequency PRIVATE include)
-add_test(NAME batch_20261013_90_index_frequency COMMAND batch_20261013_90_index_frequency)
 
 add_executable(batch_20261013_91_index_missing_term tests/batch_20261013_91_index_missing_term.cpp src/InvertedIndex.cpp)
-target_include_directories(batch_20261013_91_index_missing_term PRIVATE include)
-add_test(NAME batch_20261013_91_index_missing_term COMMAND batch_20261013_91_index_missing_term)
 
 add_executable(batch_20261013_92_document_id tests/batch_20261013_92_document_id.cpp src/Document.cpp)
-target_include_directories(batch_20261013_92_document_id PRIVATE include)
-add_test(NAME batch_20261013_92_document_id COMMAND batch_20261013_92_document_id)
 
 add_executable(batch_20261013_93_document_path tests/batch_20261013_93_document_path.cpp src/Document.cpp)
-target_include_directories(batch_20261013_93_document_path PRIVATE include)
-add_test(NAME batch_20261013_93_document_path COMMAND batch_20261013_93_document_path)
 
 add_executable(batch_20261013_94_document_content tests/batch_20261013_94_document_content.cpp src/Document.cpp)
-target_include_directories(batch_20261013_94_document_content PRIVATE include)
-add_test(NAME batch_20261013_94_document_content COMMAND batch_20261013_94_document_content)
 
 add_executable(batch_20261013_95_document_empty_fields tests/batch_20261013_95_document_empty_fields.cpp src/Document.cpp)
-target_include_directories(batch_20261013_95_document_empty_fields PRIVATE include)
-add_test(NAME batch_20261013_95_document_empty_fields COMMAND batch_20261013_95_document_empty_fields)
 
 add_executable(batch_20261013_96_stopwords_article tests/batch_20261013_96_stopwords_article.cpp src/StopWords.cpp)
-target_include_directories(batch_20261013_96_stopwords_article PRIVATE include)
-add_test(NAME batch_20261013_96_stopwords_article COMMAND batch_20261013_96_stopwords_article)
 
 add_executable(batch_20261013_97_stopwords_conjunction tests/batch_20261013_97_stopwords_conjunction.cpp src/StopWords.cpp)
-target_include_directories(batch_20261013_97_stopwords_conjunction PRIVATE include)
-add_test(NAME batch_20261013_97_stopwords_conjunction COMMAND batch_20261013_97_stopwords_conjunction)
 
 add_executable(batch_20261013_98_stopwords_unknown_word tests/batch_20261013_98_stopwords_unknown_word.cpp src/StopWords.cpp)
-target_include_directories(batch_20261013_98_stopwords_unknown_word PRIVATE include)
-add_test(NAME batch_20261013_98_stopwords_unknown_word COMMAND batch_20261013_98_stopwords_unknown_word)
 
 add_executable(batch_20261013_99_stopwords_case_contract tests/batch_20261013_99_stopwords_case_contract.cpp src/StopWords.cpp)
-target_include_directories(batch_20261013_99_stopwords_case_contract PRIVATE include)
-add_test(NAME batch_20261013_99_stopwords_case_contract COMMAND batch_20261013_99_stopwords_case_contract)
-
 
 # Query, ranking, index-statistics, and index regression tests added 2026-10-14.
 
-add_executable(regression_20261014_01_query_empty tests/regression_20261014_01_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_01_query_empty PRIVATE include)
-add_test(NAME regression_20261014_01_query_empty COMMAND regression_20261014_01_query_empty)
+add_executable(regression_20261014_01_query_empty tests/regression_20261014_01_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_02_query_whitespace tests/regression_20261014_02_query_whitespace.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_02_query_whitespace PRIVATE include)
-add_test(NAME regression_20261014_02_query_whitespace COMMAND regression_20261014_02_query_whitespace)
+add_executable(regression_20261014_02_query_whitespace tests/regression_20261014_02_query_whitespace.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_03_query_single_term tests/regression_20261014_03_query_single_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_03_query_single_term PRIVATE include)
-add_test(NAME regression_20261014_03_query_single_term COMMAND regression_20261014_03_query_single_term)
+add_executable(regression_20261014_03_query_single_term tests/regression_20261014_03_query_single_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_04_query_case_normalization tests/regression_20261014_04_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_04_query_case_normalization PRIVATE include)
-add_test(NAME regression_20261014_04_query_case_normalization COMMAND regression_20261014_04_query_case_normalization)
+add_executable(regression_20261014_04_query_case_normalization tests/regression_20261014_04_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_05_query_punctuation tests/regression_20261014_05_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_05_query_punctuation PRIVATE include)
-add_test(NAME regression_20261014_05_query_punctuation COMMAND regression_20261014_05_query_punctuation)
+add_executable(regression_20261014_05_query_punctuation tests/regression_20261014_05_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_06_query_duplicate_terms tests/regression_20261014_06_query_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_06_query_duplicate_terms PRIVATE include)
-add_test(NAME regression_20261014_06_query_duplicate_terms COMMAND regression_20261014_06_query_duplicate_terms)
+add_executable(regression_20261014_06_query_duplicate_terms tests/regression_20261014_06_query_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_07_query_and_intersection tests/regression_20261014_07_query_and_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_07_query_and_intersection PRIVATE include)
-add_test(NAME regression_20261014_07_query_and_intersection COMMAND regression_20261014_07_query_and_intersection)
+add_executable(regression_20261014_07_query_and_intersection tests/regression_20261014_07_query_and_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_08_query_no_intersection tests/regression_20261014_08_query_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_08_query_no_intersection PRIVATE include)
-add_test(NAME regression_20261014_08_query_no_intersection COMMAND regression_20261014_08_query_no_intersection)
+add_executable(regression_20261014_08_query_no_intersection tests/regression_20261014_08_query_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_09_query_unknown_term tests/regression_20261014_09_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_09_query_unknown_term PRIVATE include)
-add_test(NAME regression_20261014_09_query_unknown_term COMMAND regression_20261014_09_query_unknown_term)
+add_executable(regression_20261014_09_query_unknown_term tests/regression_20261014_09_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_10_query_unknown_with_known tests/regression_20261014_10_query_unknown_with_known.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_10_query_unknown_with_known PRIVATE include)
-add_test(NAME regression_20261014_10_query_unknown_with_known COMMAND regression_20261014_10_query_unknown_with_known)
+add_executable(regression_20261014_10_query_unknown_with_known tests/regression_20261014_10_query_unknown_with_known.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_11_query_result_order tests/regression_20261014_11_query_result_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_11_query_result_order PRIVATE include)
-add_test(NAME regression_20261014_11_query_result_order COMMAND regression_20261014_11_query_result_order)
+add_executable(regression_20261014_11_query_result_order tests/regression_20261014_11_query_result_order.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_12_query_three_term_intersection tests/regression_20261014_12_query_three_term_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_12_query_three_term_intersection PRIVATE include)
-add_test(NAME regression_20261014_12_query_three_term_intersection COMMAND regression_20261014_12_query_three_term_intersection)
+add_executable(regression_20261014_12_query_three_term_intersection tests/regression_20261014_12_query_three_term_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_13_query_symbols_only tests/regression_20261014_13_query_symbols_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_13_query_symbols_only PRIVATE include)
-add_test(NAME regression_20261014_13_query_symbols_only COMMAND regression_20261014_13_query_symbols_only)
+add_executable(regression_20261014_13_query_symbols_only tests/regression_20261014_13_query_symbols_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_14_query_reordered_terms tests/regression_20261014_14_query_reordered_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_14_query_reordered_terms PRIVATE include)
-add_test(NAME regression_20261014_14_query_reordered_terms COMMAND regression_20261014_14_query_reordered_terms)
+add_executable(regression_20261014_14_query_reordered_terms tests/regression_20261014_14_query_reordered_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_15_query_mixed_case_and_punctuation tests/regression_20261014_15_query_mixed_case_and_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_15_query_mixed_case_and_punctuation PRIVATE include)
-add_test(NAME regression_20261014_15_query_mixed_case_and_punctuation COMMAND regression_20261014_15_query_mixed_case_and_punctuation)
+add_executable(regression_20261014_15_query_mixed_case_and_punctuation tests/regression_20261014_15_query_mixed_case_and_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 add_executable(regression_20261014_16_ranker_empty_index tests/regression_20261014_16_ranker_empty_index.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_16_ranker_empty_index PRIVATE include)
-add_test(NAME regression_20261014_16_ranker_empty_index COMMAND regression_20261014_16_ranker_empty_index)
 
 add_executable(regression_20261014_17_ranker_empty_terms tests/regression_20261014_17_ranker_empty_terms.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_17_ranker_empty_terms PRIVATE include)
-add_test(NAME regression_20261014_17_ranker_empty_terms COMMAND regression_20261014_17_ranker_empty_terms)
 
 add_executable(regression_20261014_18_ranker_unknown_term tests/regression_20261014_18_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_18_ranker_unknown_term PRIVATE include)
-add_test(NAME regression_20261014_18_ranker_unknown_term COMMAND regression_20261014_18_ranker_unknown_term)
 
 add_executable(regression_20261014_19_ranker_positive_score tests/regression_20261014_19_ranker_positive_score.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_19_ranker_positive_score PRIVATE include)
-add_test(NAME regression_20261014_19_ranker_positive_score COMMAND regression_20261014_19_ranker_positive_score)
 
 add_executable(regression_20261014_20_ranker_frequency_boost tests/regression_20261014_20_ranker_frequency_boost.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_20_ranker_frequency_boost PRIVATE include)
-add_test(NAME regression_20261014_20_ranker_frequency_boost COMMAND regression_20261014_20_ranker_frequency_boost)
 
 add_executable(regression_20261014_21_ranker_repeated_query_term tests/regression_20261014_21_ranker_repeated_query_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_21_ranker_repeated_query_term PRIVATE include)
-add_test(NAME regression_20261014_21_ranker_repeated_query_term COMMAND regression_20261014_21_ranker_repeated_query_term)
 
 add_executable(regression_20261014_22_ranker_tie_break_document_id tests/regression_20261014_22_ranker_tie_break_document_id.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_22_ranker_tie_break_document_id PRIVATE include)
-add_test(NAME regression_20261014_22_ranker_tie_break_document_id COMMAND regression_20261014_22_ranker_tie_break_document_id)
 
 add_executable(regression_20261014_23_ranker_multiple_terms tests/regression_20261014_23_ranker_multiple_terms.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_23_ranker_multiple_terms PRIVATE include)
-add_test(NAME regression_20261014_23_ranker_multiple_terms COMMAND regression_20261014_23_ranker_multiple_terms)
 
 add_executable(regression_20261014_24_ranker_missing_term_ignored tests/regression_20261014_24_ranker_missing_term_ignored.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_24_ranker_missing_term_ignored PRIVATE include)
-add_test(NAME regression_20261014_24_ranker_missing_term_ignored COMMAND regression_20261014_24_ranker_missing_term_ignored)
 
 add_executable(regression_20261014_25_ranker_rare_term_contributes tests/regression_20261014_25_ranker_rare_term_contributes.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_25_ranker_rare_term_contributes PRIVATE include)
-add_test(NAME regression_20261014_25_ranker_rare_term_contributes COMMAND regression_20261014_25_ranker_rare_term_contributes)
 
 add_executable(regression_20261014_26_stats_empty_index tests/regression_20261014_26_stats_empty_index.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_26_stats_empty_index PRIVATE include)
-add_test(NAME regression_20261014_26_stats_empty_index COMMAND regression_20261014_26_stats_empty_index)
 
 add_executable(regression_20261014_27_stats_empty_document tests/regression_20261014_27_stats_empty_document.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_27_stats_empty_document PRIVATE include)
-add_test(NAME regression_20261014_27_stats_empty_document COMMAND regression_20261014_27_stats_empty_document)
 
 add_executable(regression_20261014_28_stats_unique_terms tests/regression_20261014_28_stats_unique_terms.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_28_stats_unique_terms PRIVATE include)
-add_test(NAME regression_20261014_28_stats_unique_terms COMMAND regression_20261014_28_stats_unique_terms)
 
 add_executable(regression_20261014_29_stats_multiple_documents tests/regression_20261014_29_stats_multiple_documents.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_29_stats_multiple_documents PRIVATE include)
-add_test(NAME regression_20261014_29_stats_multiple_documents COMMAND regression_20261014_29_stats_multiple_documents)
 
 add_executable(regression_20261014_30_stats_repeated_document_id tests/regression_20261014_30_stats_repeated_document_id.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_30_stats_repeated_document_id PRIVATE include)
-add_test(NAME regression_20261014_30_stats_repeated_document_id COMMAND regression_20261014_30_stats_repeated_document_id)
 
 add_executable(regression_20261014_31_index_document_frequency tests/regression_20261014_31_index_document_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_31_index_document_frequency PRIVATE include)
-add_test(NAME regression_20261014_31_index_document_frequency COMMAND regression_20261014_31_index_document_frequency)
 
 add_executable(regression_20261014_32_index_missing_term_frequency tests/regression_20261014_32_index_missing_term_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_32_index_missing_term_frequency PRIVATE include)
-add_test(NAME regression_20261014_32_index_missing_term_frequency COMMAND regression_20261014_32_index_missing_term_frequency)
 
 add_executable(regression_20261014_33_index_missing_document_frequency tests/regression_20261014_33_index_missing_document_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_33_index_missing_document_frequency PRIVATE include)
-add_test(NAME regression_20261014_33_index_missing_document_frequency COMMAND regression_20261014_33_index_missing_document_frequency)
 
 add_executable(regression_20261014_34_index_repeated_tokens_single_posting tests/regression_20261014_34_index_repeated_tokens_single_posting.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_34_index_repeated_tokens_single_posting PRIVATE include)
-add_test(NAME regression_20261014_34_index_repeated_tokens_single_posting COMMAND regression_20261014_34_index_repeated_tokens_single_posting)
 
 add_executable(regression_20261014_35_index_duplicate_add_accumulates tests/regression_20261014_35_index_duplicate_add_accumulates.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_35_index_duplicate_add_accumulates PRIVATE include)
-add_test(NAME regression_20261014_35_index_duplicate_add_accumulates COMMAND regression_20261014_35_index_duplicate_add_accumulates)
 
 add_executable(regression_20261014_36_index_only_empty_tokens tests/regression_20261014_36_index_only_empty_tokens.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_36_index_only_empty_tokens PRIVATE include)
-add_test(NAME regression_20261014_36_index_only_empty_tokens COMMAND regression_20261014_36_index_only_empty_tokens)
 
 add_executable(regression_20261014_37_index_negative_document_id tests/regression_20261014_37_index_negative_document_id.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_37_index_negative_document_id PRIVATE include)
-add_test(NAME regression_20261014_37_index_negative_document_id COMMAND regression_20261014_37_index_negative_document_id)
 
 add_executable(regression_20261014_38_index_zero_document_id tests/regression_20261014_38_index_zero_document_id.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_38_index_zero_document_id PRIVATE include)
-add_test(NAME regression_20261014_38_index_zero_document_id COMMAND regression_20261014_38_index_zero_document_id)
 
 add_executable(regression_20261014_39_index_case_sensitive_terms tests/regression_20261014_39_index_case_sensitive_terms.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_39_index_case_sensitive_terms PRIVATE include)
-add_test(NAME regression_20261014_39_index_case_sensitive_terms COMMAND regression_20261014_39_index_case_sensitive_terms)
-
 
 # Regression coverage added on 2026-10-15.
 
 add_executable(regression_20261015_01_document_loader_empty_file tests/regression_20261015_01_document_loader_empty_file.cpp src/DocumentLoader.cpp src/Document.cpp)
-target_include_directories(regression_20261015_01_document_loader_empty_file PRIVATE include)
-add_test(NAME regression_20261015_01_document_loader_empty_file COMMAND regression_20261015_01_document_loader_empty_file)
 
 add_executable(regression_20261015_02_document_loader_content tests/regression_20261015_02_document_loader_content.cpp src/DocumentLoader.cpp src/Document.cpp)
-target_include_directories(regression_20261015_02_document_loader_content PRIVATE include)
-add_test(NAME regression_20261015_02_document_loader_content COMMAND regression_20261015_02_document_loader_content)
 
 add_executable(regression_20261015_03_document_loader_newlines tests/regression_20261015_03_document_loader_newlines.cpp src/DocumentLoader.cpp src/Document.cpp)
-target_include_directories(regression_20261015_03_document_loader_newlines PRIVATE include)
-add_test(NAME regression_20261015_03_document_loader_newlines COMMAND regression_20261015_03_document_loader_newlines)
 
 add_executable(regression_20261015_04_document_loader_missing_throws tests/regression_20261015_04_document_loader_missing_throws.cpp src/DocumentLoader.cpp src/Document.cpp)
-target_include_directories(regression_20261015_04_document_loader_missing_throws PRIVATE include)
-add_test(NAME regression_20261015_04_document_loader_missing_throws COMMAND regression_20261015_04_document_loader_missing_throws)
 
 add_executable(regression_20261015_05_document_loader_preserves_path tests/regression_20261015_05_document_loader_preserves_path.cpp src/DocumentLoader.cpp src/Document.cpp)
-target_include_directories(regression_20261015_05_document_loader_preserves_path PRIVATE include)
-add_test(NAME regression_20261015_05_document_loader_preserves_path COMMAND regression_20261015_05_document_loader_preserves_path)
 
 add_executable(regression_20261015_06_topk_empty tests/regression_20261015_06_topk_empty.cpp src/TopK.cpp)
-target_include_directories(regression_20261015_06_topk_empty PRIVATE include)
-add_test(NAME regression_20261015_06_topk_empty COMMAND regression_20261015_06_topk_empty)
 
 add_executable(regression_20261015_07_topk_equal_score_order tests/regression_20261015_07_topk_equal_score_order.cpp src/TopK.cpp)
-target_include_directories(regression_20261015_07_topk_equal_score_order PRIVATE include)
-add_test(NAME regression_20261015_07_topk_equal_score_order COMMAND regression_20261015_07_topk_equal_score_order)
 
 add_executable(regression_20261015_08_topk_limit_zero tests/regression_20261015_08_topk_limit_zero.cpp src/TopK.cpp)
-target_include_directories(regression_20261015_08_topk_limit_zero PRIVATE include)
-add_test(NAME regression_20261015_08_topk_limit_zero COMMAND regression_20261015_08_topk_limit_zero)
 
 add_executable(regression_20261015_09_topk_preserves_negative tests/regression_20261015_09_topk_preserves_negative.cpp src/TopK.cpp)
-target_include_directories(regression_20261015_09_topk_preserves_negative PRIVATE include)
-add_test(NAME regression_20261015_09_topk_preserves_negative COMMAND regression_20261015_09_topk_preserves_negative)
 
 add_executable(regression_20261015_10_topk_truncates tests/regression_20261015_10_topk_truncates.cpp src/TopK.cpp)
-target_include_directories(regression_20261015_10_topk_truncates PRIVATE include)
-add_test(NAME regression_20261015_10_topk_truncates COMMAND regression_20261015_10_topk_truncates)
 
 add_executable(regression_20261015_11_phrase_empty_tokens tests/regression_20261015_11_phrase_empty_tokens.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261015_11_phrase_empty_tokens PRIVATE include)
-add_test(NAME regression_20261015_11_phrase_empty_tokens COMMAND regression_20261015_11_phrase_empty_tokens)
 
 add_executable(regression_20261015_12_phrase_empty_phrase tests/regression_20261015_12_phrase_empty_phrase.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261015_12_phrase_empty_phrase PRIVATE include)
-add_test(NAME regression_20261015_12_phrase_empty_phrase COMMAND regression_20261015_12_phrase_empty_phrase)
 
 add_executable(regression_20261015_13_phrase_not_contiguous tests/regression_20261015_13_phrase_not_contiguous.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261015_13_phrase_not_contiguous PRIVATE include)
-add_test(NAME regression_20261015_13_phrase_not_contiguous COMMAND regression_20261015_13_phrase_not_contiguous)
 
 add_executable(regression_20261015_14_phrase_middle_match tests/regression_20261015_14_phrase_middle_match.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261015_14_phrase_middle_match PRIVATE include)
-add_test(NAME regression_20261015_14_phrase_middle_match COMMAND regression_20261015_14_phrase_middle_match)
 
 add_executable(regression_20261015_15_phrase_case_sensitive tests/regression_20261015_15_phrase_case_sensitive.cpp src/PhraseMatcher.cpp)
-target_include_directories(regression_20261015_15_phrase_case_sensitive PRIVATE include)
-add_test(NAME regression_20261015_15_phrase_case_sensitive COMMAND regression_20261015_15_phrase_case_sensitive)
 
 add_executable(regression_20261015_16_tokenizer_empty tests/regression_20261015_16_tokenizer_empty.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261015_16_tokenizer_empty PRIVATE include)
-add_test(NAME regression_20261015_16_tokenizer_empty COMMAND regression_20261015_16_tokenizer_empty)
 
 add_executable(regression_20261015_17_tokenizer_lowercase tests/regression_20261015_17_tokenizer_lowercase.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261015_17_tokenizer_lowercase PRIVATE include)
-add_test(NAME regression_20261015_17_tokenizer_lowercase COMMAND regression_20261015_17_tokenizer_lowercase)
 
 add_executable(regression_20261015_18_tokenizer_symbols tests/regression_20261015_18_tokenizer_symbols.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261015_18_tokenizer_symbols PRIVATE include)
-add_test(NAME regression_20261015_18_tokenizer_symbols COMMAND regression_20261015_18_tokenizer_symbols)
 
 add_executable(regression_20261015_19_tokenizer_repeated_punctuation tests/regression_20261015_19_tokenizer_repeated_punctuation.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261015_19_tokenizer_repeated_punctuation PRIVATE include)
-add_test(NAME regression_20261015_19_tokenizer_repeated_punctuation COMMAND regression_20261015_19_tokenizer_repeated_punctuation)
 
 add_executable(regression_20261015_20_tokenizer_numeric tests/regression_20261015_20_tokenizer_numeric.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261015_20_tokenizer_numeric PRIVATE include)
-add_test(NAME regression_20261015_20_tokenizer_numeric COMMAND regression_20261015_20_tokenizer_numeric)
 
-add_executable(regression_20261015_21_query_and_match tests/regression_20261015_21_query_and_match.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_21_query_and_match PRIVATE include)
-add_test(NAME regression_20261015_21_query_and_match COMMAND regression_20261015_21_query_and_match)
+add_executable(regression_20261015_21_query_and_match tests/regression_20261015_21_query_and_match.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261015_22_query_empty tests/regression_20261015_22_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_22_query_empty PRIVATE include)
-add_test(NAME regression_20261015_22_query_empty COMMAND regression_20261015_22_query_empty)
+add_executable(regression_20261015_22_query_empty tests/regression_20261015_22_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261015_23_query_case_insensitive tests/regression_20261015_23_query_case_insensitive.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_23_query_case_insensitive PRIVATE include)
-add_test(NAME regression_20261015_23_query_case_insensitive COMMAND regression_20261015_23_query_case_insensitive)
+add_executable(regression_20261015_23_query_case_insensitive tests/regression_20261015_23_query_case_insensitive.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261015_24_query_punctuation tests/regression_20261015_24_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_24_query_punctuation PRIVATE include)
-add_test(NAME regression_20261015_24_query_punctuation COMMAND regression_20261015_24_query_punctuation)
+add_executable(regression_20261015_24_query_punctuation tests/regression_20261015_24_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261015_25_query_unknown_term tests/regression_20261015_25_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_25_query_unknown_term PRIVATE include)
-add_test(NAME regression_20261015_25_query_unknown_term COMMAND regression_20261015_25_query_unknown_term)
+add_executable(regression_20261015_25_query_unknown_term tests/regression_20261015_25_query_unknown_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261015_26_query_ordered_ids tests/regression_20261015_26_query_ordered_ids.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_26_query_ordered_ids PRIVATE include)
-add_test(NAME regression_20261015_26_query_ordered_ids COMMAND regression_20261015_26_query_ordered_ids)
+add_executable(regression_20261015_26_query_ordered_ids tests/regression_20261015_26_query_ordered_ids.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 add_executable(regression_20261015_27_ranker_empty_terms tests/regression_20261015_27_ranker_empty_terms.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_27_ranker_empty_terms PRIVATE include)
-add_test(NAME regression_20261015_27_ranker_empty_terms COMMAND regression_20261015_27_ranker_empty_terms)
 
 add_executable(regression_20261015_28_ranker_unknown_term tests/regression_20261015_28_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_28_ranker_unknown_term PRIVATE include)
-add_test(NAME regression_20261015_28_ranker_unknown_term COMMAND regression_20261015_28_ranker_unknown_term)
 
 add_executable(regression_20261015_29_ranker_score_order tests/regression_20261015_29_ranker_score_order.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_29_ranker_score_order PRIVATE include)
-add_test(NAME regression_20261015_29_ranker_score_order COMMAND regression_20261015_29_ranker_score_order)
 
 add_executable(regression_20261015_30_ranker_tie_order tests/regression_20261015_30_ranker_tie_order.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_30_ranker_tie_order PRIVATE include)
-add_test(NAME regression_20261015_30_ranker_tie_order COMMAND regression_20261015_30_ranker_tie_order)
 
 add_executable(regression_20261015_31_stats_empty tests/regression_20261015_31_stats_empty.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_31_stats_empty PRIVATE include)
-add_test(NAME regression_20261015_31_stats_empty COMMAND regression_20261015_31_stats_empty)
 
 add_executable(regression_20261015_32_stats_unique_terms tests/regression_20261015_32_stats_unique_terms.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_32_stats_unique_terms PRIVATE include)
-add_test(NAME regression_20261015_32_stats_unique_terms COMMAND regression_20261015_32_stats_unique_terms)
 
 add_executable(regression_20261015_33_stats_documents tests/regression_20261015_33_stats_documents.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_33_stats_documents PRIVATE include)
-add_test(NAME regression_20261015_33_stats_documents COMMAND regression_20261015_33_stats_documents)
 
 add_executable(regression_20261015_34_index_frequency tests/regression_20261015_34_index_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_34_index_frequency PRIVATE include)
-add_test(NAME regression_20261015_34_index_frequency COMMAND regression_20261015_34_index_frequency)
 
 add_executable(regression_20261015_35_index_sorted_postings tests/regression_20261015_35_index_sorted_postings.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_35_index_sorted_postings PRIVATE include)
-add_test(NAME regression_20261015_35_index_sorted_postings COMMAND regression_20261015_35_index_sorted_postings)
 
 add_executable(regression_20261015_36_index_missing_frequency tests/regression_20261015_36_index_missing_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261015_36_index_missing_frequency PRIVATE include)
-add_test(NAME regression_20261015_36_index_missing_frequency COMMAND regression_20261015_36_index_missing_frequency)
 
 add_executable(regression_20261015_37_stopwords_article tests/regression_20261015_37_stopwords_article.cpp src/StopWords.cpp)
-target_include_directories(regression_20261015_37_stopwords_article PRIVATE include)
-add_test(NAME regression_20261015_37_stopwords_article COMMAND regression_20261015_37_stopwords_article)
 
 add_executable(regression_20261015_38_stopwords_unknown tests/regression_20261015_38_stopwords_unknown.cpp src/StopWords.cpp)
-target_include_directories(regression_20261015_38_stopwords_unknown PRIVATE include)
-add_test(NAME regression_20261015_38_stopwords_unknown COMMAND regression_20261015_38_stopwords_unknown)
 
 add_executable(regression_20261015_39_document_fields tests/regression_20261015_39_document_fields.cpp src/Document.cpp)
-target_include_directories(regression_20261015_39_document_fields PRIVATE include)
-add_test(NAME regression_20261015_39_document_fields COMMAND regression_20261015_39_document_fields)
 
 add_executable(regression_20261015_40_querytokenizer_punctuation tests/regression_20261015_40_querytokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261015_40_querytokenizer_punctuation PRIVATE include)
-add_test(NAME regression_20261015_40_querytokenizer_punctuation COMMAND regression_20261015_40_querytokenizer_punctuation)
-
 
 # Additional regression coverage for 2026-10-14.
 
 add_executable(regression_20261014_more_01_tokenizer_tabs tests/regression_20261014_more_01_tokenizer_tabs.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_01_tokenizer_tabs PRIVATE include)
-add_test(NAME regression_20261014_more_01_tokenizer_tabs COMMAND regression_20261014_more_01_tokenizer_tabs)
 
 add_executable(regression_20261014_more_02_tokenizer_newlines tests/regression_20261014_more_02_tokenizer_newlines.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_02_tokenizer_newlines PRIVATE include)
-add_test(NAME regression_20261014_more_02_tokenizer_newlines COMMAND regression_20261014_more_02_tokenizer_newlines)
 
 add_executable(regression_20261014_more_03_tokenizer_leading_delimiters tests/regression_20261014_more_03_tokenizer_leading_delimiters.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_03_tokenizer_leading_delimiters PRIVATE include)
-add_test(NAME regression_20261014_more_03_tokenizer_leading_delimiters COMMAND regression_20261014_more_03_tokenizer_leading_delimiters)
 
 add_executable(regression_20261014_more_04_tokenizer_trailing_delimiters tests/regression_20261014_more_04_tokenizer_trailing_delimiters.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_04_tokenizer_trailing_delimiters PRIVATE include)
-add_test(NAME regression_20261014_more_04_tokenizer_trailing_delimiters COMMAND regression_20261014_more_04_tokenizer_trailing_delimiters)
 
 add_executable(regression_20261014_more_05_tokenizer_mixed_digits tests/regression_20261014_more_05_tokenizer_mixed_digits.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_05_tokenizer_mixed_digits PRIVATE include)
-add_test(NAME regression_20261014_more_05_tokenizer_mixed_digits COMMAND regression_20261014_more_05_tokenizer_mixed_digits)
 
 add_executable(regression_20261014_more_06_tokenizer_long_text tests/regression_20261014_more_06_tokenizer_long_text.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_06_tokenizer_long_text PRIVATE include)
-add_test(NAME regression_20261014_more_06_tokenizer_long_text COMMAND regression_20261014_more_06_tokenizer_long_text)
 
 add_executable(regression_20261014_more_07_tokenizer_repeated_spaces tests/regression_20261014_more_07_tokenizer_repeated_spaces.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_07_tokenizer_repeated_spaces PRIVATE include)
-add_test(NAME regression_20261014_more_07_tokenizer_repeated_spaces COMMAND regression_20261014_more_07_tokenizer_repeated_spaces)
 
 add_executable(regression_20261014_more_08_tokenizer_apostrophe_split tests/regression_20261014_more_08_tokenizer_apostrophe_split.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_08_tokenizer_apostrophe_split PRIVATE include)
-add_test(NAME regression_20261014_more_08_tokenizer_apostrophe_split COMMAND regression_20261014_more_08_tokenizer_apostrophe_split)
 
 add_executable(regression_20261014_more_09_tokenizer_unicode_bytes_safe tests/regression_20261014_more_09_tokenizer_unicode_bytes_safe.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_09_tokenizer_unicode_bytes_safe PRIVATE include)
-add_test(NAME regression_20261014_more_09_tokenizer_unicode_bytes_safe COMMAND regression_20261014_more_09_tokenizer_unicode_bytes_safe)
 
 add_executable(regression_20261014_more_10_tokenizer_single_digit tests/regression_20261014_more_10_tokenizer_single_digit.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_10_tokenizer_single_digit PRIVATE include)
-add_test(NAME regression_20261014_more_10_tokenizer_single_digit COMMAND regression_20261014_more_10_tokenizer_single_digit)
 
 add_executable(regression_20261014_more_11_index_contains_after_add tests/regression_20261014_more_11_index_contains_after_add.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_11_index_contains_after_add PRIVATE include)
-add_test(NAME regression_20261014_more_11_index_contains_after_add COMMAND regression_20261014_more_11_index_contains_after_add)
 
 add_executable(regression_20261014_more_12_index_contains_missing tests/regression_20261014_more_12_index_contains_missing.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_12_index_contains_missing PRIVATE include)
-add_test(NAME regression_20261014_more_12_index_contains_missing COMMAND regression_20261014_more_12_index_contains_missing)
 
 add_executable(regression_20261014_more_13_index_term_count_growth tests/regression_20261014_more_13_index_term_count_growth.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_13_index_term_count_growth PRIVATE include)
-add_test(NAME regression_20261014_more_13_index_term_count_growth COMMAND regression_20261014_more_13_index_term_count_growth)
 
 add_executable(regression_20261014_more_14_index_empty_term_ignored tests/regression_20261014_more_14_index_empty_term_ignored.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_14_index_empty_term_ignored PRIVATE include)
-add_test(NAME regression_20261014_more_14_index_empty_term_ignored COMMAND regression_20261014_more_14_index_empty_term_ignored)
 
 add_executable(regression_20261014_more_15_index_search_empty tests/regression_20261014_more_15_index_search_empty.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_15_index_search_empty PRIVATE include)
-add_test(NAME regression_20261014_more_15_index_search_empty COMMAND regression_20261014_more_15_index_search_empty)
 
 add_executable(regression_20261014_more_16_index_frequency_distinct_docs tests/regression_20261014_more_16_index_frequency_distinct_docs.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_16_index_frequency_distinct_docs PRIVATE include)
-add_test(NAME regression_20261014_more_16_index_frequency_distinct_docs COMMAND regression_20261014_more_16_index_frequency_distinct_docs)
 
 add_executable(regression_20261014_more_17_index_same_doc_posting_once tests/regression_20261014_more_17_index_same_doc_posting_once.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_17_index_same_doc_posting_once PRIVATE include)
-add_test(NAME regression_20261014_more_17_index_same_doc_posting_once COMMAND regression_20261014_more_17_index_same_doc_posting_once)
 
 add_executable(regression_20261014_more_18_index_document_count_empty_doc tests/regression_20261014_more_18_index_document_count_empty_doc.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_18_index_document_count_empty_doc PRIVATE include)
-add_test(NAME regression_20261014_more_18_index_document_count_empty_doc COMMAND regression_20261014_more_18_index_document_count_empty_doc)
 
 add_executable(regression_20261014_more_19_index_document_count_duplicate tests/regression_20261014_more_19_index_document_count_duplicate.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_19_index_document_count_duplicate PRIVATE include)
-add_test(NAME regression_20261014_more_19_index_document_count_duplicate COMMAND regression_20261014_more_19_index_document_count_duplicate)
 
 add_executable(regression_20261014_more_20_index_postings_ascending tests/regression_20261014_more_20_index_postings_ascending.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_20_index_postings_ascending PRIVATE include)
-add_test(NAME regression_20261014_more_20_index_postings_ascending COMMAND regression_20261014_more_20_index_postings_ascending)
 
-add_executable(regression_20261014_more_21_query_intersection tests/regression_20261014_more_21_query_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_21_query_intersection PRIVATE include)
-add_test(NAME regression_20261014_more_21_query_intersection COMMAND regression_20261014_more_21_query_intersection)
+add_executable(regression_20261014_more_21_query_intersection tests/regression_20261014_more_21_query_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_22_query_no_intersection tests/regression_20261014_more_22_query_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_22_query_no_intersection PRIVATE include)
-add_test(NAME regression_20261014_more_22_query_no_intersection COMMAND regression_20261014_more_22_query_no_intersection)
+add_executable(regression_20261014_more_22_query_no_intersection tests/regression_20261014_more_22_query_no_intersection.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_23_query_duplicate_term tests/regression_20261014_more_23_query_duplicate_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_23_query_duplicate_term PRIVATE include)
-add_test(NAME regression_20261014_more_23_query_duplicate_term COMMAND regression_20261014_more_23_query_duplicate_term)
+add_executable(regression_20261014_more_23_query_duplicate_term tests/regression_20261014_more_23_query_duplicate_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_24_query_whitespace_only tests/regression_20261014_more_24_query_whitespace_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_24_query_whitespace_only PRIVATE include)
-add_test(NAME regression_20261014_more_24_query_whitespace_only COMMAND regression_20261014_more_24_query_whitespace_only)
+add_executable(regression_20261014_more_24_query_whitespace_only tests/regression_20261014_more_24_query_whitespace_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_25_query_punctuation_only tests/regression_20261014_more_25_query_punctuation_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_25_query_punctuation_only PRIVATE include)
-add_test(NAME regression_20261014_more_25_query_punctuation_only COMMAND regression_20261014_more_25_query_punctuation_only)
+add_executable(regression_20261014_more_25_query_punctuation_only tests/regression_20261014_more_25_query_punctuation_only.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_26_query_result_sorted tests/regression_20261014_more_26_query_result_sorted.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_26_query_result_sorted PRIVATE include)
-add_test(NAME regression_20261014_more_26_query_result_sorted COMMAND regression_20261014_more_26_query_result_sorted)
+add_executable(regression_20261014_more_26_query_result_sorted tests/regression_20261014_more_26_query_result_sorted.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_27_query_unknown_and_known tests/regression_20261014_more_27_query_unknown_and_known.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_27_query_unknown_and_known PRIVATE include)
-add_test(NAME regression_20261014_more_27_query_unknown_and_known COMMAND regression_20261014_more_27_query_unknown_and_known)
+add_executable(regression_20261014_more_27_query_unknown_and_known tests/regression_20261014_more_27_query_unknown_and_known.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_28_query_normalizes_case tests/regression_20261014_more_28_query_normalizes_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_28_query_normalizes_case PRIVATE include)
-add_test(NAME regression_20261014_more_28_query_normalizes_case COMMAND regression_20261014_more_28_query_normalizes_case)
+add_executable(regression_20261014_more_28_query_normalizes_case tests/regression_20261014_more_28_query_normalizes_case.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_29_query_embedded_punctuation tests/regression_20261014_more_29_query_embedded_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_29_query_embedded_punctuation PRIVATE include)
-add_test(NAME regression_20261014_more_29_query_embedded_punctuation COMMAND regression_20261014_more_29_query_embedded_punctuation)
+add_executable(regression_20261014_more_29_query_embedded_punctuation tests/regression_20261014_more_29_query_embedded_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
-add_executable(regression_20261014_more_30_query_numeric_term tests/regression_20261014_more_30_query_numeric_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(regression_20261014_more_30_query_numeric_term PRIVATE include)
-add_test(NAME regression_20261014_more_30_query_numeric_term COMMAND regression_20261014_more_30_query_numeric_term)
+add_executable(regression_20261014_more_30_query_numeric_term tests/regression_20261014_more_30_query_numeric_term.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
 
 add_executable(regression_20261014_more_31_document_empty_values tests/regression_20261014_more_31_document_empty_values.cpp src/Document.cpp)
-target_include_directories(regression_20261014_more_31_document_empty_values PRIVATE include)
-add_test(NAME regression_20261014_more_31_document_empty_values COMMAND regression_20261014_more_31_document_empty_values)
 
 add_executable(regression_20261014_more_32_document_multiline_content tests/regression_20261014_more_32_document_multiline_content.cpp src/Document.cpp)
-target_include_directories(regression_20261014_more_32_document_multiline_content PRIVATE include)
-add_test(NAME regression_20261014_more_32_document_multiline_content COMMAND regression_20261014_more_32_document_multiline_content)
 
 add_executable(regression_20261014_more_33_document_path_spaces tests/regression_20261014_more_33_document_path_spaces.cpp src/Document.cpp)
-target_include_directories(regression_20261014_more_33_document_path_spaces PRIVATE include)
-add_test(NAME regression_20261014_more_33_document_path_spaces COMMAND regression_20261014_more_33_document_path_spaces)
 
 add_executable(regression_20261014_more_34_stopwords_the tests/regression_20261014_more_34_stopwords_the.cpp src/StopWords.cpp)
-target_include_directories(regression_20261014_more_34_stopwords_the PRIVATE include)
-add_test(NAME regression_20261014_more_34_stopwords_the COMMAND regression_20261014_more_34_stopwords_the)
 
 add_executable(regression_20261014_more_35_stopwords_and tests/regression_20261014_more_35_stopwords_and.cpp src/StopWords.cpp)
-target_include_directories(regression_20261014_more_35_stopwords_and PRIVATE include)
-add_test(NAME regression_20261014_more_35_stopwords_and COMMAND regression_20261014_more_35_stopwords_and)
 
 add_executable(regression_20261014_more_36_stopwords_nonstop tests/regression_20261014_more_36_stopwords_nonstop.cpp src/StopWords.cpp)
-target_include_directories(regression_20261014_more_36_stopwords_nonstop PRIVATE include)
-add_test(NAME regression_20261014_more_36_stopwords_nonstop COMMAND regression_20261014_more_36_stopwords_nonstop)
 
 add_executable(regression_20261014_more_37_querytokenizer_empty tests/regression_20261014_more_37_querytokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_37_querytokenizer_empty PRIVATE include)
-add_test(NAME regression_20261014_more_37_querytokenizer_empty COMMAND regression_20261014_more_37_querytokenizer_empty)
 
 add_executable(regression_20261014_more_38_querytokenizer_whitespace tests/regression_20261014_more_38_querytokenizer_whitespace.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_38_querytokenizer_whitespace PRIVATE include)
-add_test(NAME regression_20261014_more_38_querytokenizer_whitespace COMMAND regression_20261014_more_38_querytokenizer_whitespace)
 
 add_executable(regression_20261014_more_39_querytokenizer_preserves_repetition tests/regression_20261014_more_39_querytokenizer_preserves_repetition.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_39_querytokenizer_preserves_repetition PRIVATE include)
-add_test(NAME regression_20261014_more_39_querytokenizer_preserves_repetition COMMAND regression_20261014_more_39_querytokenizer_preserves_repetition)
 
 add_executable(regression_20261014_more_40_querytokenizer_normalizes_case tests/regression_20261014_more_40_querytokenizer_normalizes_case.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(regression_20261014_more_40_querytokenizer_normalizes_case PRIVATE include)
-add_test(NAME regression_20261014_more_40_querytokenizer_normalizes_case COMMAND regression_20261014_more_40_querytokenizer_normalizes_case)
-
 
 # Autocomplete and bounded search-cache regression tests.
 
 add_executable(autocomplete_empty_index tests/autocomplete_empty_index.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_empty_index PRIVATE include)
-add_test(NAME autocomplete_empty_index COMMAND autocomplete_empty_index)
 
 add_executable(autocomplete_insert_single tests/autocomplete_insert_single.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_insert_single PRIVATE include)
-add_test(NAME autocomplete_insert_single COMMAND autocomplete_insert_single)
 
 add_executable(autocomplete_duplicate_insert tests/autocomplete_duplicate_insert.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_duplicate_insert PRIVATE include)
-add_test(NAME autocomplete_duplicate_insert COMMAND autocomplete_duplicate_insert)
 
 add_executable(autocomplete_empty_word tests/autocomplete_empty_word.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_empty_word PRIVATE include)
-add_test(NAME autocomplete_empty_word COMMAND autocomplete_empty_word)
 
 add_executable(autocomplete_missing_prefix tests/autocomplete_missing_prefix.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_missing_prefix PRIVATE include)
-add_test(NAME autocomplete_missing_prefix COMMAND autocomplete_missing_prefix)
 
 add_executable(autocomplete_prefix_exact_word tests/autocomplete_prefix_exact_word.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_prefix_exact_word PRIVATE include)
-add_test(NAME autocomplete_prefix_exact_word COMMAND autocomplete_prefix_exact_word)
 
 add_executable(autocomplete_limit_zero tests/autocomplete_limit_zero.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_limit_zero PRIVATE include)
-add_test(NAME autocomplete_limit_zero COMMAND autocomplete_limit_zero)
 
 add_executable(autocomplete_limit_truncates tests/autocomplete_limit_truncates.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_limit_truncates PRIVATE include)
-add_test(NAME autocomplete_limit_truncates COMMAND autocomplete_limit_truncates)
 
 add_executable(autocomplete_lexicographic_order tests/autocomplete_lexicographic_order.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_lexicographic_order PRIVATE include)
-add_test(NAME autocomplete_lexicographic_order COMMAND autocomplete_lexicographic_order)
 
 add_executable(autocomplete_unrelated_prefix tests/autocomplete_unrelated_prefix.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_unrelated_prefix PRIVATE include)
-add_test(NAME autocomplete_unrelated_prefix COMMAND autocomplete_unrelated_prefix)
 
 add_executable(autocomplete_empty_prefix tests/autocomplete_empty_prefix.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_empty_prefix PRIVATE include)
-add_test(NAME autocomplete_empty_prefix COMMAND autocomplete_empty_prefix)
 
 add_executable(autocomplete_shared_prefix tests/autocomplete_shared_prefix.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_shared_prefix PRIVATE include)
-add_test(NAME autocomplete_shared_prefix COMMAND autocomplete_shared_prefix)
 
 add_executable(autocomplete_case_sensitive tests/autocomplete_case_sensitive.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_case_sensitive PRIVATE include)
-add_test(NAME autocomplete_case_sensitive COMMAND autocomplete_case_sensitive)
 
 add_executable(autocomplete_size_after_many tests/autocomplete_size_after_many.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_size_after_many PRIVATE include)
-add_test(NAME autocomplete_size_after_many COMMAND autocomplete_size_after_many)
 
 add_executable(autocomplete_limit_larger_than_results tests/autocomplete_limit_larger_than_results.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_limit_larger_than_results PRIVATE include)
-add_test(NAME autocomplete_limit_larger_than_results COMMAND autocomplete_limit_larger_than_results)
 
 add_executable(autocomplete_long_word tests/autocomplete_long_word.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_long_word PRIVATE include)
-add_test(NAME autocomplete_long_word COMMAND autocomplete_long_word)
 
 add_executable(autocomplete_no_prefix_match tests/autocomplete_no_prefix_match.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_no_prefix_match PRIVATE include)
-add_test(NAME autocomplete_no_prefix_match COMMAND autocomplete_no_prefix_match)
 
 add_executable(autocomplete_insert_order_independent tests/autocomplete_insert_order_independent.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_insert_order_independent PRIVATE include)
-add_test(NAME autocomplete_insert_order_independent COMMAND autocomplete_insert_order_independent)
 
 add_executable(search_cache_empty tests/search_cache_empty.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_empty PRIVATE include)
-add_test(NAME search_cache_empty COMMAND search_cache_empty)
 
 add_executable(search_cache_round_trip tests/search_cache_round_trip.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_round_trip PRIVATE include)
-add_test(NAME search_cache_round_trip COMMAND search_cache_round_trip)
 
 add_executable(search_cache_miss_preserves_output tests/search_cache_miss_preserves_output.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_miss_preserves_output PRIVATE include)
-add_test(NAME search_cache_miss_preserves_output COMMAND search_cache_miss_preserves_output)
 
 add_executable(search_cache_capacity_zero tests/search_cache_capacity_zero.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_capacity_zero PRIVATE include)
-add_test(NAME search_cache_capacity_zero COMMAND search_cache_capacity_zero)
 
 add_executable(search_cache_evicts_lru tests/search_cache_evicts_lru.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_evicts_lru PRIVATE include)
-add_test(NAME search_cache_evicts_lru COMMAND search_cache_evicts_lru)
 
 add_executable(search_cache_update_existing tests/search_cache_update_existing.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_update_existing PRIVATE include)
-add_test(NAME search_cache_update_existing COMMAND search_cache_update_existing)
 
 add_executable(search_cache_empty_results tests/search_cache_empty_results.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_empty_results PRIVATE include)
-add_test(NAME search_cache_empty_results COMMAND search_cache_empty_results)
 
 add_executable(search_cache_clear tests/search_cache_clear.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_clear PRIVATE include)
-add_test(NAME search_cache_clear COMMAND search_cache_clear)
 
 add_executable(search_cache_capacity tests/search_cache_capacity.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_capacity PRIVATE include)
-add_test(NAME search_cache_capacity COMMAND search_cache_capacity)
 
 add_executable(search_cache_distinct_queries tests/search_cache_distinct_queries.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_distinct_queries PRIVATE include)
-add_test(NAME search_cache_distinct_queries COMMAND search_cache_distinct_queries)
 
 add_executable(search_cache_lru_refresh tests/search_cache_lru_refresh.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_lru_refresh PRIVATE include)
-add_test(NAME search_cache_lru_refresh COMMAND search_cache_lru_refresh)
 
 add_executable(search_cache_capacity_bound tests/search_cache_capacity_bound.cpp src/SearchCache.cpp)
-target_include_directories(search_cache_capacity_bound PRIVATE include)
-add_test(NAME search_cache_capacity_bound COMMAND search_cache_capacity_bound)
-
 
 # BM25 ranking, index-length statistics, and snippet regression tests.
 
 add_executable(bm25_empty_index tests/bm25_empty_index.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_empty_index PRIVATE include)
-add_test(NAME bm25_empty_index COMMAND bm25_empty_index)
 
 add_executable(bm25_empty_query tests/bm25_empty_query.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_empty_query PRIVATE include)
-add_test(NAME bm25_empty_query COMMAND bm25_empty_query)
 
 add_executable(bm25_unknown_term tests/bm25_unknown_term.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_unknown_term PRIVATE include)
-add_test(NAME bm25_unknown_term COMMAND bm25_unknown_term)
 
 add_executable(bm25_known_term_returns_document tests/bm25_known_term_returns_document.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_known_term_returns_document PRIVATE include)
-add_test(NAME bm25_known_term_returns_document COMMAND bm25_known_term_returns_document)
 
 add_executable(bm25_scores_positive tests/bm25_scores_positive.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_scores_positive PRIVATE include)
-add_test(NAME bm25_scores_positive COMMAND bm25_scores_positive)
 
 add_executable(bm25_repeated_query_term_stable tests/bm25_repeated_query_term_stable.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_repeated_query_term_stable PRIVATE include)
-add_test(NAME bm25_repeated_query_term_stable COMMAND bm25_repeated_query_term_stable)
 
 add_executable(bm25_rare_term_idf tests/bm25_rare_term_idf.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_rare_term_idf PRIVATE include)
-add_test(NAME bm25_rare_term_idf COMMAND bm25_rare_term_idf)
 
 add_executable(bm25_frequency_influences_score tests/bm25_frequency_influences_score.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_frequency_influences_score PRIVATE include)
-add_test(NAME bm25_frequency_influences_score COMMAND bm25_frequency_influences_score)
 
 add_executable(bm25_invalid_negative_k1 tests/bm25_invalid_negative_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_invalid_negative_k1 PRIVATE include)
-add_test(NAME bm25_invalid_negative_k1 COMMAND bm25_invalid_negative_k1)
 
 add_executable(bm25_invalid_negative_b tests/bm25_invalid_negative_b.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_invalid_negative_b PRIVATE include)
-add_test(NAME bm25_invalid_negative_b COMMAND bm25_invalid_negative_b)
 
 add_executable(bm25_invalid_b_above_one tests/bm25_invalid_b_above_one.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_invalid_b_above_one PRIVATE include)
-add_test(NAME bm25_invalid_b_above_one COMMAND bm25_invalid_b_above_one)
 
 add_executable(bm25_zero_k1 tests/bm25_zero_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_zero_k1 PRIVATE include)
-add_test(NAME bm25_zero_k1 COMMAND bm25_zero_k1)
 
 add_executable(bm25_zero_b tests/bm25_zero_b.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_zero_b PRIVATE include)
-add_test(NAME bm25_zero_b COMMAND bm25_zero_b)
 
 add_executable(bm25_all_terms_unknown tests/bm25_all_terms_unknown.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_all_terms_unknown PRIVATE include)
-add_test(NAME bm25_all_terms_unknown COMMAND bm25_all_terms_unknown)
 
 add_executable(bm25_union_of_matching_terms tests/bm25_union_of_matching_terms.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_union_of_matching_terms PRIVATE include)
-add_test(NAME bm25_union_of_matching_terms COMMAND bm25_union_of_matching_terms)
 
 add_executable(bm25_no_duplicate_results tests/bm25_no_duplicate_results.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_no_duplicate_results PRIVATE include)
-add_test(NAME bm25_no_duplicate_results COMMAND bm25_no_duplicate_results)
 
 add_executable(bm25_tie_break_by_document_id tests/bm25_tie_break_by_document_id.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_tie_break_by_document_id PRIVATE include)
-add_test(NAME bm25_tie_break_by_document_id COMMAND bm25_tie_break_by_document_id)
 
 add_executable(bm25_duplicate_query_terms_do_not_double_score tests/bm25_duplicate_query_terms_do_not_double_score.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_duplicate_query_terms_do_not_double_score PRIVATE include)
-add_test(NAME bm25_duplicate_query_terms_do_not_double_score COMMAND bm25_duplicate_query_terms_do_not_double_score)
 
 add_executable(bm25_empty_document_not_returned tests/bm25_empty_document_not_returned.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_empty_document_not_returned PRIVATE include)
-add_test(NAME bm25_empty_document_not_returned COMMAND bm25_empty_document_not_returned)
 
 add_executable(bm25_handles_zero_average_length tests/bm25_handles_zero_average_length.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_handles_zero_average_length PRIVATE include)
-add_test(NAME bm25_handles_zero_average_length COMMAND bm25_handles_zero_average_length)
 
 add_executable(bm25_length_normalization tests/bm25_length_normalization.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_length_normalization PRIVATE include)
-add_test(NAME bm25_length_normalization COMMAND bm25_length_normalization)
 
 add_executable(bm25_matches_multiple_query_terms tests/bm25_matches_multiple_query_terms.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_matches_multiple_query_terms PRIVATE include)
-add_test(NAME bm25_matches_multiple_query_terms COMMAND bm25_matches_multiple_query_terms)
 
 add_executable(bm25_default_parameters tests/bm25_default_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_default_parameters PRIVATE include)
-add_test(NAME bm25_default_parameters COMMAND bm25_default_parameters)
 
 add_executable(bm25_deterministic_order tests/bm25_deterministic_order.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_deterministic_order PRIVATE include)
-add_test(NAME bm25_deterministic_order COMMAND bm25_deterministic_order)
 
 add_executable(index_length_empty_index tests/index_length_empty_index.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_empty_index PRIVATE include)
-add_test(NAME index_length_empty_index COMMAND index_length_empty_index)
 
 add_executable(index_length_one_document tests/index_length_one_document.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_one_document PRIVATE include)
-add_test(NAME index_length_one_document COMMAND index_length_one_document)
 
 add_executable(index_length_unknown_document tests/index_length_unknown_document.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_unknown_document PRIVATE include)
-add_test(NAME index_length_unknown_document COMMAND index_length_unknown_document)
 
 add_executable(index_length_ignores_empty_tokens tests/index_length_ignores_empty_tokens.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_ignores_empty_tokens PRIVATE include)
-add_test(NAME index_length_ignores_empty_tokens COMMAND index_length_ignores_empty_tokens)
 
 add_executable(index_length_multiple_documents tests/index_length_multiple_documents.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_multiple_documents PRIVATE include)
-add_test(NAME index_length_multiple_documents COMMAND index_length_multiple_documents)
 
 add_executable(index_length_empty_document tests/index_length_empty_document.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_empty_document PRIVATE include)
-add_test(NAME index_length_empty_document COMMAND index_length_empty_document)
 
 add_executable(index_length_duplicate_terms_counted tests/index_length_duplicate_terms_counted.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_duplicate_terms_counted PRIVATE include)
-add_test(NAME index_length_duplicate_terms_counted COMMAND index_length_duplicate_terms_counted)
 
 add_executable(index_length_repeated_add_accumulates tests/index_length_repeated_add_accumulates.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_repeated_add_accumulates PRIVATE include)
-add_test(NAME index_length_repeated_add_accumulates COMMAND index_length_repeated_add_accumulates)
 
 add_executable(index_length_total_after_repeated_add tests/index_length_total_after_repeated_add.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_total_after_repeated_add PRIVATE include)
-add_test(NAME index_length_total_after_repeated_add COMMAND index_length_total_after_repeated_add)
 
 add_executable(index_length_distinct_document_average tests/index_length_distinct_document_average.cpp src/InvertedIndex.cpp)
-target_include_directories(index_length_distinct_document_average PRIVATE include)
-add_test(NAME index_length_distinct_document_average COMMAND index_length_distinct_document_average)
 
 add_executable(snippet_empty_content tests/snippet_empty_content.cpp src/SnippetBuilder.cpp)
-target_include_directories(snippet_empty_content PRIVATE include)
-add_test(NAME snippet_empty_content COMMAND snippet_empty_content)
 
 add_executable(snippet_zero_limit tests/snippet_zero_limit.cpp src/SnippetBuilder.cpp)
-target_include_directories(snippet_zero_limit PRIVATE include)
-add_test(NAME snippet_zero_limit COMMAND snippet_zero_limit)
 
 add_executable(snippet_short_content_unchanged tests/snippet_short_content_unchanged.cpp src/SnippetBuilder.cpp)
-target_include_directories(snippet_short_content_unchanged PRIVATE include)
-add_test(NAME snippet_short_content_unchanged COMMAND snippet_short_content_unchanged)
 
 add_executable(snippet_respects_max_length tests/snippet_respects_max_length.cpp src/SnippetBuilder.cpp)
-target_include_directories(snippet_respects_max_length PRIVATE include)
-add_test(NAME snippet_respects_max_length COMMAND snippet_respects_max_length)
 
 add_executable(snippet_no_terms_returns_prefix tests/snippet_no_terms_returns_prefix.cpp src/SnippetBuilder.cpp)
-target_include_directories(snippet_no_terms_returns_prefix PRIVATE include)
-add_test(NAME snippet_no_terms_returns_prefix COMMAND snippet_no_terms_returns_prefix)
 
 add_executable(snippet_ignores_empty_terms tests/snippet_ignores_empty_terms.cpp src/SnippetBuilder.cpp)
-target_include_directories(snippet_ignores_empty_terms PRIVATE include)
-add_test(NAME snippet_ignores_empty_terms COMMAND snippet_ignores_empty_terms)
 
 add_executable(snippet_adds_ellipsis_for_middle tests/snippet_adds_ellipsis_for_middle.cpp src/SnippetBuilder.cpp)
-target_include_directories(snippet_adds_ellipsis_for_middle PRIVATE include)
-add_test(NAME snippet_adds_ellipsis_for_middle COMMAND snippet_adds_ellipsis_for_middle)
 
 add_executable(snippet_small_limits tests/snippet_small_limits.cpp src/SnippetBuilder.cpp)
-target_include_directories(snippet_small_limits PRIVATE include)
-add_test(NAME snippet_small_limits COMMAND snippet_small_limits)
-
 
 add_executable(daily_20261022_bm25_empty_index tests/daily_20261022_bm25_empty_index.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_bm25_empty_index PRIVATE include)
-add_test(NAME daily_20261022_bm25_empty_index COMMAND daily_20261022_bm25_empty_index)
 
 add_executable(daily_20261022_bm25_empty_query tests/daily_20261022_bm25_empty_query.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_bm25_empty_query PRIVATE include)
-add_test(NAME daily_20261022_bm25_empty_query COMMAND daily_20261022_bm25_empty_query)
 
 add_executable(daily_20261022_bm25_unknown_term tests/daily_20261022_bm25_unknown_term.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_bm25_unknown_term PRIVATE include)
-add_test(NAME daily_20261022_bm25_unknown_term COMMAND daily_20261022_bm25_unknown_term)
 
 add_executable(daily_20261022_bm25_invalid_parameters tests/daily_20261022_bm25_invalid_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_bm25_invalid_parameters PRIVATE include)
-add_test(NAME daily_20261022_bm25_invalid_parameters COMMAND daily_20261022_bm25_invalid_parameters)
 
 add_executable(daily_20261022_bm25_zero_k1 tests/daily_20261022_bm25_zero_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_bm25_zero_k1 PRIVATE include)
-add_test(NAME daily_20261022_bm25_zero_k1 COMMAND daily_20261022_bm25_zero_k1)
 
 add_executable(daily_20261022_bm25_deterministic_ties tests/daily_20261022_bm25_deterministic_ties.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_bm25_deterministic_ties PRIVATE include)
-add_test(NAME daily_20261022_bm25_deterministic_ties COMMAND daily_20261022_bm25_deterministic_ties)
 
 add_executable(daily_20261022_bm25_duplicate_query_terms tests/daily_20261022_bm25_duplicate_query_terms.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_bm25_duplicate_query_terms PRIVATE include)
-add_test(NAME daily_20261022_bm25_duplicate_query_terms COMMAND daily_20261022_bm25_duplicate_query_terms)
 
 add_executable(daily_20261022_bm25_length_accounting tests/daily_20261022_bm25_length_accounting.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_bm25_length_accounting PRIVATE include)
-add_test(NAME daily_20261022_bm25_length_accounting COMMAND daily_20261022_bm25_length_accounting)
 
 add_executable(daily_20261022_snippet_empty_input tests/daily_20261022_snippet_empty_input.cpp src/SnippetBuilder.cpp)
-target_include_directories(daily_20261022_snippet_empty_input PRIVATE include)
-add_test(NAME daily_20261022_snippet_empty_input COMMAND daily_20261022_snippet_empty_input)
 
 add_executable(daily_20261022_snippet_zero_limit tests/daily_20261022_snippet_zero_limit.cpp src/SnippetBuilder.cpp)
-target_include_directories(daily_20261022_snippet_zero_limit PRIVATE include)
-add_test(NAME daily_20261022_snippet_zero_limit COMMAND daily_20261022_snippet_zero_limit)
 
 add_executable(daily_20261022_snippet_short_content tests/daily_20261022_snippet_short_content.cpp src/SnippetBuilder.cpp)
-target_include_directories(daily_20261022_snippet_short_content PRIVATE include)
-add_test(NAME daily_20261022_snippet_short_content COMMAND daily_20261022_snippet_short_content)
 
 add_executable(daily_20261022_snippet_limit_respected tests/daily_20261022_snippet_limit_respected.cpp src/SnippetBuilder.cpp)
-target_include_directories(daily_20261022_snippet_limit_respected PRIVATE include)
-add_test(NAME daily_20261022_snippet_limit_respected COMMAND daily_20261022_snippet_limit_respected)
 
 add_executable(daily_20261022_snippet_case_insensitive tests/daily_20261022_snippet_case_insensitive.cpp src/SnippetBuilder.cpp)
-target_include_directories(daily_20261022_snippet_case_insensitive PRIVATE include)
-add_test(NAME daily_20261022_snippet_case_insensitive COMMAND daily_20261022_snippet_case_insensitive)
 
 add_executable(daily_20261022_snippet_no_matching_term tests/daily_20261022_snippet_no_matching_term.cpp src/SnippetBuilder.cpp)
-target_include_directories(daily_20261022_snippet_no_matching_term PRIVATE include)
-add_test(NAME daily_20261022_snippet_no_matching_term COMMAND daily_20261022_snippet_no_matching_term)
 
 add_executable(daily_20261022_snippet_tiny_limits tests/daily_20261022_snippet_tiny_limits.cpp src/SnippetBuilder.cpp)
-target_include_directories(daily_20261022_snippet_tiny_limits PRIVATE include)
-add_test(NAME daily_20261022_snippet_tiny_limits COMMAND daily_20261022_snippet_tiny_limits)
 
 add_executable(daily_20261022_autocomplete_empty_word tests/daily_20261022_autocomplete_empty_word.cpp src/AutocompleteIndex.cpp)
-target_include_directories(daily_20261022_autocomplete_empty_word PRIVATE include)
-add_test(NAME daily_20261022_autocomplete_empty_word COMMAND daily_20261022_autocomplete_empty_word)
 
 add_executable(daily_20261022_autocomplete_duplicate_word tests/daily_20261022_autocomplete_duplicate_word.cpp src/AutocompleteIndex.cpp)
-target_include_directories(daily_20261022_autocomplete_duplicate_word PRIVATE include)
-add_test(NAME daily_20261022_autocomplete_duplicate_word COMMAND daily_20261022_autocomplete_duplicate_word)
 
 add_executable(daily_20261022_autocomplete_zero_limit tests/daily_20261022_autocomplete_zero_limit.cpp src/AutocompleteIndex.cpp)
-target_include_directories(daily_20261022_autocomplete_zero_limit PRIVATE include)
-add_test(NAME daily_20261022_autocomplete_zero_limit COMMAND daily_20261022_autocomplete_zero_limit)
 
 add_executable(daily_20261022_autocomplete_unknown_prefix tests/daily_20261022_autocomplete_unknown_prefix.cpp src/AutocompleteIndex.cpp)
-target_include_directories(daily_20261022_autocomplete_unknown_prefix PRIVATE include)
-add_test(NAME daily_20261022_autocomplete_unknown_prefix COMMAND daily_20261022_autocomplete_unknown_prefix)
 
 add_executable(daily_20261022_autocomplete_sorted_order tests/daily_20261022_autocomplete_sorted_order.cpp src/AutocompleteIndex.cpp)
-target_include_directories(daily_20261022_autocomplete_sorted_order PRIVATE include)
-add_test(NAME daily_20261022_autocomplete_sorted_order COMMAND daily_20261022_autocomplete_sorted_order)
 
 add_executable(daily_20261022_autocomplete_prefix_word tests/daily_20261022_autocomplete_prefix_word.cpp src/AutocompleteIndex.cpp)
-target_include_directories(daily_20261022_autocomplete_prefix_word PRIVATE include)
-add_test(NAME daily_20261022_autocomplete_prefix_word COMMAND daily_20261022_autocomplete_prefix_word)
 
 add_executable(daily_20261022_autocomplete_case_sensitive tests/daily_20261022_autocomplete_case_sensitive.cpp src/AutocompleteIndex.cpp)
-target_include_directories(daily_20261022_autocomplete_case_sensitive PRIVATE include)
-add_test(NAME daily_20261022_autocomplete_case_sensitive COMMAND daily_20261022_autocomplete_case_sensitive)
 
 add_executable(daily_20261022_autocomplete_limit tests/daily_20261022_autocomplete_limit.cpp src/AutocompleteIndex.cpp)
-target_include_directories(daily_20261022_autocomplete_limit PRIVATE include)
-add_test(NAME daily_20261022_autocomplete_limit COMMAND daily_20261022_autocomplete_limit)
 
 add_executable(daily_20261022_cache_zero_capacity tests/daily_20261022_cache_zero_capacity.cpp src/SearchCache.cpp)
-target_include_directories(daily_20261022_cache_zero_capacity PRIVATE include)
-add_test(NAME daily_20261022_cache_zero_capacity COMMAND daily_20261022_cache_zero_capacity)
 
 add_executable(daily_20261022_cache_miss tests/daily_20261022_cache_miss.cpp src/SearchCache.cpp)
-target_include_directories(daily_20261022_cache_miss PRIVATE include)
-add_test(NAME daily_20261022_cache_miss COMMAND daily_20261022_cache_miss)
 
 add_executable(daily_20261022_cache_hit tests/daily_20261022_cache_hit.cpp src/SearchCache.cpp)
-target_include_directories(daily_20261022_cache_hit PRIVATE include)
-add_test(NAME daily_20261022_cache_hit COMMAND daily_20261022_cache_hit)
 
 add_executable(daily_20261022_cache_update_existing tests/daily_20261022_cache_update_existing.cpp src/SearchCache.cpp)
-target_include_directories(daily_20261022_cache_update_existing PRIVATE include)
-add_test(NAME daily_20261022_cache_update_existing COMMAND daily_20261022_cache_update_existing)
 
 add_executable(daily_20261022_cache_lru_eviction tests/daily_20261022_cache_lru_eviction.cpp src/SearchCache.cpp)
-target_include_directories(daily_20261022_cache_lru_eviction PRIVATE include)
-add_test(NAME daily_20261022_cache_lru_eviction COMMAND daily_20261022_cache_lru_eviction)
 
 add_executable(daily_20261022_cache_clear tests/daily_20261022_cache_clear.cpp src/SearchCache.cpp)
-target_include_directories(daily_20261022_cache_clear PRIVATE include)
-add_test(NAME daily_20261022_cache_clear COMMAND daily_20261022_cache_clear)
 
 add_executable(daily_20261022_cache_empty_results tests/daily_20261022_cache_empty_results.cpp src/SearchCache.cpp)
-target_include_directories(daily_20261022_cache_empty_results PRIVATE include)
-add_test(NAME daily_20261022_cache_empty_results COMMAND daily_20261022_cache_empty_results)
 
 add_executable(daily_20261022_cache_capacity tests/daily_20261022_cache_capacity.cpp src/SearchCache.cpp)
-target_include_directories(daily_20261022_cache_capacity PRIVATE include)
-add_test(NAME daily_20261022_cache_capacity COMMAND daily_20261022_cache_capacity)
 
 add_executable(daily_20261022_index_document_lengths tests/daily_20261022_index_document_lengths.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_index_document_lengths PRIVATE include)
-add_test(NAME daily_20261022_index_document_lengths COMMAND daily_20261022_index_document_lengths)
 
 add_executable(daily_20261022_index_total_tokens tests/daily_20261022_index_total_tokens.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_index_total_tokens PRIVATE include)
-add_test(NAME daily_20261022_index_total_tokens COMMAND daily_20261022_index_total_tokens)
 
 add_executable(daily_20261022_index_average_length tests/daily_20261022_index_average_length.cpp src/InvertedIndex.cpp)
-target_include_directories(daily_20261022_index_average_length PRIVATE include)
-add_test(NAME daily_20261022_index_average_length COMMAND daily_20261022_index_average_length)
 
 add_executable(daily_20261022_search_engine_bm25 tests/daily_20261022_search_engine_bm25.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
-target_include_directories(daily_20261022_search_engine_bm25 PRIVATE include)
-add_test(NAME daily_20261022_search_engine_bm25 COMMAND daily_20261022_search_engine_bm25)
-
 
 # Final regression suite for query normalization, ranking, and top-k selection.
 add_executable(final_query_tokenizer_punctuation tests/final_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
 add_executable(final_query_tokenizer_case tests/final_query_tokenizer_case.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_case PRIVATE include)
-add_test(NAME final_query_tokenizer_case COMMAND final_query_tokenizer_case)
 
 add_executable(final_query_tokenizer_whitespace tests/final_query_tokenizer_whitespace.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_whitespace PRIVATE include)
-add_test(NAME final_query_tokenizer_whitespace COMMAND final_query_tokenizer_whitespace)
 
 add_executable(final_query_tokenizer_empty tests/final_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
 add_executable(final_query_tokenizer_symbols tests/final_query_tokenizer_symbols.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_symbols PRIVATE include)
-add_test(NAME final_query_tokenizer_symbols COMMAND final_query_tokenizer_symbols)
 
 add_executable(final_query_tokenizer_digits tests/final_query_tokenizer_digits.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_digits PRIVATE include)
-add_test(NAME final_query_tokenizer_digits COMMAND final_query_tokenizer_digits)
 
 add_executable(final_query_tokenizer_repeated tests/final_query_tokenizer_repeated.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_repeated PRIVATE include)
-add_test(NAME final_query_tokenizer_repeated COMMAND final_query_tokenizer_repeated)
 
 add_executable(final_query_tokenizer_apostrophe tests/final_query_tokenizer_apostrophe.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_apostrophe PRIVATE include)
-add_test(NAME final_query_tokenizer_apostrophe COMMAND final_query_tokenizer_apostrophe)
 
 add_executable(final_query_tokenizer_slashes tests/final_query_tokenizer_slashes.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_slashes PRIVATE include)
-add_test(NAME final_query_tokenizer_slashes COMMAND final_query_tokenizer_slashes)
 
 add_executable(final_query_tokenizer_utf8_safe tests/final_query_tokenizer_utf8_safe.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_utf8_safe PRIVATE include)
-add_test(NAME final_query_tokenizer_utf8_safe COMMAND final_query_tokenizer_utf8_safe)
 
 add_executable(final_search_engine_punctuation_equivalence tests/final_search_engine_punctuation_equivalence.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_punctuation_equivalence PRIVATE include)
-add_test(NAME final_search_engine_punctuation_equivalence COMMAND final_search_engine_punctuation_equivalence)
 
 add_executable(final_search_engine_case_insensitive tests/final_search_engine_case_insensitive.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_case_insensitive PRIVATE include)
-add_test(NAME final_search_engine_case_insensitive COMMAND final_search_engine_case_insensitive)
 
 add_executable(final_search_engine_empty_query tests/final_search_engine_empty_query.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_empty_query PRIVATE include)
-add_test(NAME final_search_engine_empty_query COMMAND final_search_engine_empty_query)
 
 add_executable(final_search_engine_unknown_query tests/final_search_engine_unknown_query.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_unknown_query PRIVATE include)
-add_test(NAME final_search_engine_unknown_query COMMAND final_search_engine_unknown_query)
 
 add_executable(final_search_engine_multi_term tests/final_search_engine_multi_term.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_multi_term PRIVATE include)
-add_test(NAME final_search_engine_multi_term COMMAND final_search_engine_multi_term)
 
 add_executable(final_search_engine_repeated_query_term tests/final_search_engine_repeated_query_term.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_repeated_query_term PRIVATE include)
-add_test(NAME final_search_engine_repeated_query_term COMMAND final_search_engine_repeated_query_term)
 
 add_executable(final_search_engine_numeric_query tests/final_search_engine_numeric_query.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_numeric_query PRIVATE include)
-add_test(NAME final_search_engine_numeric_query COMMAND final_search_engine_numeric_query)
 
 add_executable(final_search_engine_symbol_only_query tests/final_search_engine_symbol_only_query.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_symbol_only_query PRIVATE include)
-add_test(NAME final_search_engine_symbol_only_query COMMAND final_search_engine_symbol_only_query)
 
 add_executable(final_search_engine_bm25_punctuation tests/final_search_engine_bm25_punctuation.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_bm25_punctuation PRIVATE include)
-add_test(NAME final_search_engine_bm25_punctuation COMMAND final_search_engine_bm25_punctuation)
 
 add_executable(final_search_engine_deterministic_repeat tests/final_search_engine_deterministic_repeat.cpp src/SearchEngine.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp src/Ranker.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_search_engine_deterministic_repeat PRIVATE include)
-add_test(NAME final_search_engine_deterministic_repeat COMMAND final_search_engine_deterministic_repeat)
 
 add_executable(final_topk_zero_limit tests/final_topk_zero_limit.cpp src/TopK.cpp)
-target_include_directories(final_topk_zero_limit PRIVATE include)
-add_test(NAME final_topk_zero_limit COMMAND final_topk_zero_limit)
 
 add_executable(final_topk_empty_input tests/final_topk_empty_input.cpp src/TopK.cpp)
-target_include_directories(final_topk_empty_input PRIVATE include)
-add_test(NAME final_topk_empty_input COMMAND final_topk_empty_input)
 
 add_executable(final_topk_limit_exceeds_size tests/final_topk_limit_exceeds_size.cpp src/TopK.cpp)
-target_include_directories(final_topk_limit_exceeds_size PRIVATE include)
-add_test(NAME final_topk_limit_exceeds_size COMMAND final_topk_limit_exceeds_size)
 
 add_executable(final_topk_exact_limit tests/final_topk_exact_limit.cpp src/TopK.cpp)
-target_include_directories(final_topk_exact_limit PRIVATE include)
-add_test(NAME final_topk_exact_limit COMMAND final_topk_exact_limit)
 
 add_executable(final_topk_orders_descending_score tests/final_topk_orders_descending_score.cpp src/TopK.cpp)
-target_include_directories(final_topk_orders_descending_score PRIVATE include)
-add_test(NAME final_topk_orders_descending_score COMMAND final_topk_orders_descending_score)
 
 add_executable(final_topk_tie_breaks_by_document_id tests/final_topk_tie_breaks_by_document_id.cpp src/TopK.cpp)
-target_include_directories(final_topk_tie_breaks_by_document_id PRIVATE include)
-add_test(NAME final_topk_tie_breaks_by_document_id COMMAND final_topk_tie_breaks_by_document_id)
 
 add_executable(final_topk_keeps_best_subset tests/final_topk_keeps_best_subset.cpp src/TopK.cpp)
-target_include_directories(final_topk_keeps_best_subset PRIVATE include)
-add_test(NAME final_topk_keeps_best_subset COMMAND final_topk_keeps_best_subset)
 
 add_executable(final_topk_negative_scores tests/final_topk_negative_scores.cpp src/TopK.cpp)
-target_include_directories(final_topk_negative_scores PRIVATE include)
-add_test(NAME final_topk_negative_scores COMMAND final_topk_negative_scores)
 
 add_executable(final_topk_single_result tests/final_topk_single_result.cpp src/TopK.cpp)
-target_include_directories(final_topk_single_result PRIVATE include)
-add_test(NAME final_topk_single_result COMMAND final_topk_single_result)
 
 add_executable(final_topk_does_not_mutate_caller_copy tests/final_topk_does_not_mutate_caller_copy.cpp src/TopK.cpp)
-target_include_directories(final_topk_does_not_mutate_caller_copy PRIVATE include)
-add_test(NAME final_topk_does_not_mutate_caller_copy COMMAND final_topk_does_not_mutate_caller_copy)
 
 add_executable(final_ranker_empty_query tests/final_ranker_empty_query.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_empty_query PRIVATE include)
-add_test(NAME final_ranker_empty_query COMMAND final_ranker_empty_query)
 
 add_executable(final_ranker_empty_index tests/final_ranker_empty_index.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_empty_index PRIVATE include)
-add_test(NAME final_ranker_empty_index COMMAND final_ranker_empty_index)
 
 add_executable(final_ranker_unknown_term tests/final_ranker_unknown_term.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_unknown_term PRIVATE include)
-add_test(NAME final_ranker_unknown_term COMMAND final_ranker_unknown_term)
 
 add_executable(final_ranker_duplicate_terms_do_not_inflate tests/final_ranker_duplicate_terms_do_not_inflate.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_duplicate_terms_do_not_inflate PRIVATE include)
-add_test(NAME final_ranker_duplicate_terms_do_not_inflate COMMAND final_ranker_duplicate_terms_do_not_inflate)
 
 add_executable(final_ranker_tie_order_is_stable tests/final_ranker_tie_order_is_stable.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_tie_order_is_stable PRIVATE include)
-add_test(NAME final_ranker_tie_order_is_stable COMMAND final_ranker_tie_order_is_stable)
 
 add_executable(final_ranker_repeated_terms_keep_tf tests/final_ranker_repeated_terms_keep_tf.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_repeated_terms_keep_tf PRIVATE include)
-add_test(NAME final_ranker_repeated_terms_keep_tf COMMAND final_ranker_repeated_terms_keep_tf)
 
 add_executable(final_ranker_ignores_unknown_alongside_known tests/final_ranker_ignores_unknown_alongside_known.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_ignores_unknown_alongside_known PRIVATE include)
-add_test(NAME final_ranker_ignores_unknown_alongside_known COMMAND final_ranker_ignores_unknown_alongside_known)
 
 add_executable(final_ranker_query_order_does_not_change_score tests/final_ranker_query_order_does_not_change_score.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_query_order_does_not_change_score PRIVATE include)
-add_test(NAME final_ranker_query_order_does_not_change_score COMMAND final_ranker_query_order_does_not_change_score)
 
 add_executable(final_ranker_results_are_unique_per_document tests/final_ranker_results_are_unique_per_document.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_results_are_unique_per_document PRIVATE include)
-add_test(NAME final_ranker_results_are_unique_per_document COMMAND final_ranker_results_are_unique_per_document)
 
 add_executable(final_ranker_prefers_higher_term_frequency tests/final_ranker_prefers_higher_term_frequency.cpp src/Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final_ranker_prefers_higher_term_frequency PRIVATE include)
-add_test(NAME final_ranker_prefers_higher_term_frequency COMMAND final_ranker_prefers_higher_term_frequency)
-
 
 # Final code-quality regression tests.
 add_executable(final2_index_empty_initial_state tests/final2_index_empty_initial_state.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_empty_initial_state PRIVATE include)
-add_test(NAME final2_index_empty_initial_state COMMAND final2_index_empty_initial_state)
 
 add_executable(final2_index_empty_document_counted tests/final2_index_empty_document_counted.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_empty_document_counted PRIVATE include)
-add_test(NAME final2_index_empty_document_counted COMMAND final2_index_empty_document_counted)
 
 add_executable(final2_index_empty_tokens_ignored tests/final2_index_empty_tokens_ignored.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_empty_tokens_ignored PRIVATE include)
-add_test(NAME final2_index_empty_tokens_ignored COMMAND final2_index_empty_tokens_ignored)
 
 add_executable(final2_index_duplicate_terms_frequency tests/final2_index_duplicate_terms_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_duplicate_terms_frequency PRIVATE include)
-add_test(NAME final2_index_duplicate_terms_frequency COMMAND final2_index_duplicate_terms_frequency)
 
 add_executable(final2_index_missing_term_frequency_zero tests/final2_index_missing_term_frequency_zero.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_missing_term_frequency_zero PRIVATE include)
-add_test(NAME final2_index_missing_term_frequency_zero COMMAND final2_index_missing_term_frequency_zero)
 
 add_executable(final2_index_missing_document_frequency_zero tests/final2_index_missing_document_frequency_zero.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_missing_document_frequency_zero PRIVATE include)
-add_test(NAME final2_index_missing_document_frequency_zero COMMAND final2_index_missing_document_frequency_zero)
 
 add_executable(final2_index_postings_sorted tests/final2_index_postings_sorted.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_postings_sorted PRIVATE include)
-add_test(NAME final2_index_postings_sorted COMMAND final2_index_postings_sorted)
 
 add_executable(final2_index_postings_unique_after_readd tests/final2_index_postings_unique_after_readd.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_postings_unique_after_readd PRIVATE include)
-add_test(NAME final2_index_postings_unique_after_readd COMMAND final2_index_postings_unique_after_readd)
 
 add_executable(final2_index_document_frequency tests/final2_index_document_frequency.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_document_frequency PRIVATE include)
-add_test(NAME final2_index_document_frequency COMMAND final2_index_document_frequency)
 
 add_executable(final2_index_unknown_document_length tests/final2_index_unknown_document_length.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_unknown_document_length PRIVATE include)
-add_test(NAME final2_index_unknown_document_length COMMAND final2_index_unknown_document_length)
 
 add_executable(final2_index_contains_known_term tests/final2_index_contains_known_term.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_contains_known_term PRIVATE include)
-add_test(NAME final2_index_contains_known_term COMMAND final2_index_contains_known_term)
 
 add_executable(final2_index_total_tokens_across_documents tests/final2_index_total_tokens_across_documents.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_total_tokens_across_documents PRIVATE include)
-add_test(NAME final2_index_total_tokens_across_documents COMMAND final2_index_total_tokens_across_documents)
 
 add_executable(final2_index_average_document_length tests/final2_index_average_document_length.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_average_document_length PRIVATE include)
-add_test(NAME final2_index_average_document_length COMMAND final2_index_average_document_length)
 
 add_executable(final2_index_average_includes_empty_document tests/final2_index_average_includes_empty_document.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_average_includes_empty_document PRIVATE include)
-add_test(NAME final2_index_average_includes_empty_document COMMAND final2_index_average_includes_empty_document)
 
 add_executable(final2_index_term_count_distinct tests/final2_index_term_count_distinct.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_term_count_distinct PRIVATE include)
-add_test(NAME final2_index_term_count_distinct COMMAND final2_index_term_count_distinct)
 
 add_executable(final2_index_missing_search_returns_empty tests/final2_index_missing_search_returns_empty.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_missing_search_returns_empty PRIVATE include)
-add_test(NAME final2_index_missing_search_returns_empty COMMAND final2_index_missing_search_returns_empty)
 
 add_executable(final2_index_negative_document_id tests/final2_index_negative_document_id.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_negative_document_id PRIVATE include)
-add_test(NAME final2_index_negative_document_id COMMAND final2_index_negative_document_id)
 
 add_executable(final2_index_stats_match_index tests/final2_index_stats_match_index.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_index_stats_match_index PRIVATE include)
-add_test(NAME final2_index_stats_match_index COMMAND final2_index_stats_match_index)
 
 add_executable(final2_bm25_empty_query tests/final2_bm25_empty_query.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_empty_query PRIVATE include)
-add_test(NAME final2_bm25_empty_query COMMAND final2_bm25_empty_query)
 
 add_executable(final2_bm25_empty_index tests/final2_bm25_empty_index.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_empty_index PRIVATE include)
-add_test(NAME final2_bm25_empty_index COMMAND final2_bm25_empty_index)
 
 add_executable(final2_bm25_unknown_query_term tests/final2_bm25_unknown_query_term.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_unknown_query_term PRIVATE include)
-add_test(NAME final2_bm25_unknown_query_term COMMAND final2_bm25_unknown_query_term)
 
 add_executable(final2_bm25_duplicate_terms_same_score tests/final2_bm25_duplicate_terms_same_score.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_duplicate_terms_same_score PRIVATE include)
-add_test(NAME final2_bm25_duplicate_terms_same_score COMMAND final2_bm25_duplicate_terms_same_score)
 
 add_executable(final2_bm25_rejects_nan_k1 tests/final2_bm25_rejects_nan_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_rejects_nan_k1 PRIVATE include)
-add_test(NAME final2_bm25_rejects_nan_k1 COMMAND final2_bm25_rejects_nan_k1)
 
 add_executable(final2_bm25_rejects_infinite_b tests/final2_bm25_rejects_infinite_b.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_rejects_infinite_b PRIVATE include)
-add_test(NAME final2_bm25_rejects_infinite_b COMMAND final2_bm25_rejects_infinite_b)
 
 add_executable(final2_bm25_rejects_negative_k1 tests/final2_bm25_rejects_negative_k1.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_rejects_negative_k1 PRIVATE include)
-add_test(NAME final2_bm25_rejects_negative_k1 COMMAND final2_bm25_rejects_negative_k1)
 
 add_executable(final2_bm25_rejects_b_above_one tests/final2_bm25_rejects_b_above_one.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_rejects_b_above_one PRIVATE include)
-add_test(NAME final2_bm25_rejects_b_above_one COMMAND final2_bm25_rejects_b_above_one)
 
 add_executable(final2_bm25_scores_are_positive tests/final2_bm25_scores_are_positive.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_scores_are_positive PRIVATE include)
-add_test(NAME final2_bm25_scores_are_positive COMMAND final2_bm25_scores_are_positive)
 
 add_executable(final2_bm25_ties_break_by_id tests/final2_bm25_ties_break_by_id.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(final2_bm25_ties_break_by_id PRIVATE include)
-add_test(NAME final2_bm25_ties_break_by_id COMMAND final2_bm25_ties_break_by_id)
 
 add_executable(final2_phrase_empty_phrase_false tests/final2_phrase_empty_phrase_false.cpp src/PhraseMatcher.cpp)
-target_include_directories(final2_phrase_empty_phrase_false PRIVATE include)
-add_test(NAME final2_phrase_empty_phrase_false COMMAND final2_phrase_empty_phrase_false)
 
 add_executable(final2_phrase_longer_than_tokens_false tests/final2_phrase_longer_than_tokens_false.cpp src/PhraseMatcher.cpp)
-target_include_directories(final2_phrase_longer_than_tokens_false PRIVATE include)
-add_test(NAME final2_phrase_longer_than_tokens_false COMMAND final2_phrase_longer_than_tokens_false)
 
 add_executable(final2_phrase_exact_sequence_true tests/final2_phrase_exact_sequence_true.cpp src/PhraseMatcher.cpp)
-target_include_directories(final2_phrase_exact_sequence_true PRIVATE include)
-add_test(NAME final2_phrase_exact_sequence_true COMMAND final2_phrase_exact_sequence_true)
 
 add_executable(final2_phrase_noncontiguous_false tests/final2_phrase_noncontiguous_false.cpp src/PhraseMatcher.cpp)
-target_include_directories(final2_phrase_noncontiguous_false PRIVATE include)
-add_test(NAME final2_phrase_noncontiguous_false COMMAND final2_phrase_noncontiguous_false)
 
 add_executable(final2_phrase_middle_sequence_true tests/final2_phrase_middle_sequence_true.cpp src/PhraseMatcher.cpp)
-target_include_directories(final2_phrase_middle_sequence_true PRIVATE include)
-add_test(NAME final2_phrase_middle_sequence_true COMMAND final2_phrase_middle_sequence_true)
 
 add_executable(final2_cache_stores_empty_result tests/final2_cache_stores_empty_result.cpp src/SearchCache.cpp)
-target_include_directories(final2_cache_stores_empty_result PRIVATE include)
-add_test(NAME final2_cache_stores_empty_result COMMAND final2_cache_stores_empty_result)
 
 add_executable(final2_cache_preserves_query_key_case tests/final2_cache_preserves_query_key_case.cpp src/SearchCache.cpp)
-target_include_directories(final2_cache_preserves_query_key_case PRIVATE include)
-add_test(NAME final2_cache_preserves_query_key_case COMMAND final2_cache_preserves_query_key_case)
 
 add_executable(final2_cache_update_does_not_grow tests/final2_cache_update_does_not_grow.cpp src/SearchCache.cpp)
-target_include_directories(final2_cache_update_does_not_grow PRIVATE include)
-add_test(NAME final2_cache_update_does_not_grow COMMAND final2_cache_update_does_not_grow)
 
 add_executable(final2_cache_clear_resets_size tests/final2_cache_clear_resets_size.cpp src/SearchCache.cpp)
-target_include_directories(final2_cache_clear_resets_size PRIVATE include)
-add_test(NAME final2_cache_clear_resets_size COMMAND final2_cache_clear_resets_size)
 
 add_executable(final2_cache_capacity_stays_fixed tests/final2_cache_capacity_stays_fixed.cpp src/SearchCache.cpp)
-target_include_directories(final2_cache_capacity_stays_fixed PRIVATE include)
-add_test(NAME final2_cache_capacity_stays_fixed COMMAND final2_cache_capacity_stays_fixed)
 
 # Regression coverage added during the 2026-10-26 status pass.
 add_executable(status_autocomplete_empty tests/status_autocomplete_empty.cpp src/AutocompleteIndex.cpp)
-target_include_directories(status_autocomplete_empty PRIVATE include)
-add_test(NAME status_autocomplete_empty COMMAND status_autocomplete_empty)
+
 add_executable(status_autocomplete_insert_size tests/status_autocomplete_insert_size.cpp src/AutocompleteIndex.cpp)
-target_include_directories(status_autocomplete_insert_size PRIVATE include)
-add_test(NAME status_autocomplete_insert_size COMMAND status_autocomplete_insert_size)
+
 add_executable(status_autocomplete_duplicate_insert tests/status_autocomplete_duplicate_insert.cpp src/AutocompleteIndex.cpp)
-target_include_directories(status_autocomplete_duplicate_insert PRIVATE include)
-add_test(NAME status_autocomplete_duplicate_insert COMMAND status_autocomplete_duplicate_insert)
+
 add_executable(status_autocomplete_empty_insert tests/status_autocomplete_empty_insert.cpp src/AutocompleteIndex.cpp)
-target_include_directories(status_autocomplete_empty_insert PRIVATE include)
-add_test(NAME status_autocomplete_empty_insert COMMAND status_autocomplete_empty_insert)
+
 add_executable(status_autocomplete_prefix_filter tests/status_autocomplete_prefix_filter.cpp src/AutocompleteIndex.cpp)
-target_include_directories(status_autocomplete_prefix_filter PRIVATE include)
-add_test(NAME status_autocomplete_prefix_filter COMMAND status_autocomplete_prefix_filter)
+
 add_executable(status_autocomplete_unknown_prefix tests/status_autocomplete_unknown_prefix.cpp src/AutocompleteIndex.cpp)
-target_include_directories(status_autocomplete_unknown_prefix PRIVATE include)
-add_test(NAME status_autocomplete_unknown_prefix COMMAND status_autocomplete_unknown_prefix)
+
 add_executable(status_autocomplete_zero_limit tests/status_autocomplete_zero_limit.cpp src/AutocompleteIndex.cpp)
-target_include_directories(status_autocomplete_zero_limit PRIVATE include)
-add_test(NAME status_autocomplete_zero_limit COMMAND status_autocomplete_zero_limit)
+
 add_executable(status_autocomplete_limit tests/status_autocomplete_limit.cpp src/AutocompleteIndex.cpp)
-target_include_directories(status_autocomplete_limit PRIVATE include)
-add_test(NAME status_autocomplete_limit COMMAND status_autocomplete_limit)
+
 add_executable(status_cache_miss tests/status_cache_miss.cpp src/SearchCache.cpp)
-target_include_directories(status_cache_miss PRIVATE include)
-add_test(NAME status_cache_miss COMMAND status_cache_miss)
+
 add_executable(status_cache_put_get tests/status_cache_put_get.cpp src/SearchCache.cpp)
-target_include_directories(status_cache_put_get PRIVATE include)
-add_test(NAME status_cache_put_get COMMAND status_cache_put_get)
+
 add_executable(status_cache_update tests/status_cache_update.cpp src/SearchCache.cpp)
-target_include_directories(status_cache_update PRIVATE include)
-add_test(NAME status_cache_update COMMAND status_cache_update)
+
 add_executable(status_cache_capacity_zero tests/status_cache_capacity_zero.cpp src/SearchCache.cpp)
-target_include_directories(status_cache_capacity_zero PRIVATE include)
-add_test(NAME status_cache_capacity_zero COMMAND status_cache_capacity_zero)
+
 add_executable(status_cache_eviction tests/status_cache_eviction.cpp src/SearchCache.cpp)
-target_include_directories(status_cache_eviction PRIVATE include)
-add_test(NAME status_cache_eviction COMMAND status_cache_eviction)
+
 add_executable(status_cache_lru_promotion tests/status_cache_lru_promotion.cpp src/SearchCache.cpp)
-target_include_directories(status_cache_lru_promotion PRIVATE include)
-add_test(NAME status_cache_lru_promotion COMMAND status_cache_lru_promotion)
+
 add_executable(status_cache_clear tests/status_cache_clear.cpp src/SearchCache.cpp)
-target_include_directories(status_cache_clear PRIVATE include)
-add_test(NAME status_cache_clear COMMAND status_cache_clear)
+
 add_executable(status_cache_case_sensitive tests/status_cache_case_sensitive.cpp src/SearchCache.cpp)
-target_include_directories(status_cache_case_sensitive PRIVATE include)
-add_test(NAME status_cache_case_sensitive COMMAND status_cache_case_sensitive)
+
 add_executable(status_phrase_empty_phrase tests/status_phrase_empty_phrase.cpp src/PhraseMatcher.cpp)
-target_include_directories(status_phrase_empty_phrase PRIVATE include)
-add_test(NAME status_phrase_empty_phrase COMMAND status_phrase_empty_phrase)
+
 add_executable(status_phrase_longer_than_text tests/status_phrase_longer_than_text.cpp src/PhraseMatcher.cpp)
-target_include_directories(status_phrase_longer_than_text PRIVATE include)
-add_test(NAME status_phrase_longer_than_text COMMAND status_phrase_longer_than_text)
+
 add_executable(status_phrase_exact_match tests/status_phrase_exact_match.cpp src/PhraseMatcher.cpp)
-target_include_directories(status_phrase_exact_match PRIVATE include)
-add_test(NAME status_phrase_exact_match COMMAND status_phrase_exact_match)
+
 add_executable(status_phrase_not_contiguous tests/status_phrase_not_contiguous.cpp src/PhraseMatcher.cpp)
-target_include_directories(status_phrase_not_contiguous PRIVATE include)
-add_test(NAME status_phrase_not_contiguous COMMAND status_phrase_not_contiguous)
+
 add_executable(status_phrase_middle_match tests/status_phrase_middle_match.cpp src/PhraseMatcher.cpp)
-target_include_directories(status_phrase_middle_match PRIVATE include)
-add_test(NAME status_phrase_middle_match COMMAND status_phrase_middle_match)
+
 add_executable(status_tokenizer_empty tests/status_tokenizer_empty.cpp src/Tokenizer.cpp)
-target_include_directories(status_tokenizer_empty PRIVATE include)
-add_test(NAME status_tokenizer_empty COMMAND status_tokenizer_empty)
+
 add_executable(status_tokenizer_lowercase tests/status_tokenizer_lowercase.cpp src/Tokenizer.cpp)
-target_include_directories(status_tokenizer_lowercase PRIVATE include)
-add_test(NAME status_tokenizer_lowercase COMMAND status_tokenizer_lowercase)
+
 add_executable(status_tokenizer_punctuation tests/status_tokenizer_punctuation.cpp src/Tokenizer.cpp)
-target_include_directories(status_tokenizer_punctuation PRIVATE include)
-add_test(NAME status_tokenizer_punctuation COMMAND status_tokenizer_punctuation)
+
 add_executable(status_tokenizer_whitespace tests/status_tokenizer_whitespace.cpp src/Tokenizer.cpp)
-target_include_directories(status_tokenizer_whitespace PRIVATE include)
-add_test(NAME status_tokenizer_whitespace COMMAND status_tokenizer_whitespace)
+
 add_executable(status_tokenizer_numbers tests/status_tokenizer_numbers.cpp src/Tokenizer.cpp)
-target_include_directories(status_tokenizer_numbers PRIVATE include)
-add_test(NAME status_tokenizer_numbers COMMAND status_tokenizer_numbers)
+
 add_executable(status_tokenizer_repeated_delimiters tests/status_tokenizer_repeated_delimiters.cpp src/Tokenizer.cpp)
-target_include_directories(status_tokenizer_repeated_delimiters PRIVATE include)
-add_test(NAME status_tokenizer_repeated_delimiters COMMAND status_tokenizer_repeated_delimiters)
+
 add_executable(status_tokenizer_single_token tests/status_tokenizer_single_token.cpp src/Tokenizer.cpp)
-target_include_directories(status_tokenizer_single_token PRIVATE include)
-add_test(NAME status_tokenizer_single_token COMMAND status_tokenizer_single_token)
+
 add_executable(status_tokenizer_only_punctuation tests/status_tokenizer_only_punctuation.cpp src/Tokenizer.cpp)
-target_include_directories(status_tokenizer_only_punctuation PRIVATE include)
-add_test(NAME status_tokenizer_only_punctuation COMMAND status_tokenizer_only_punctuation)
-add_executable(status_query_empty tests/status_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(status_query_empty PRIVATE include)
-add_test(NAME status_query_empty COMMAND status_query_empty)
-add_executable(status_query_case_normalization tests/status_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(status_query_case_normalization PRIVATE include)
-add_test(NAME status_query_case_normalization COMMAND status_query_case_normalization)
-add_executable(status_query_and_semantics tests/status_query_and_semantics.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(status_query_and_semantics PRIVATE include)
-add_test(NAME status_query_and_semantics COMMAND status_query_and_semantics)
-add_executable(status_query_punctuation tests/status_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(status_query_punctuation PRIVATE include)
-add_test(NAME status_query_punctuation COMMAND status_query_punctuation)
-add_executable(status_query_duplicate_terms tests/status_query_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp)
-target_include_directories(status_query_duplicate_terms PRIVATE include)
-add_test(NAME status_query_duplicate_terms COMMAND status_query_duplicate_terms)
+
+add_executable(status_query_empty tests/status_query_empty.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(status_query_case_normalization tests/status_query_case_normalization.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(status_query_and_semantics tests/status_query_and_semantics.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(status_query_punctuation tests/status_query_punctuation.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
+add_executable(status_query_duplicate_terms tests/status_query_duplicate_terms.cpp src/QueryProcessor.cpp src/InvertedIndex.cpp src/Tokenizer.cpp)
+
 add_executable(status_topk_zero_limit tests/status_topk_zero_limit.cpp src/TopK.cpp)
-target_include_directories(status_topk_zero_limit PRIVATE include)
-add_test(NAME status_topk_zero_limit COMMAND status_topk_zero_limit)
+
 add_executable(status_topk_empty_input tests/status_topk_empty_input.cpp src/TopK.cpp)
-target_include_directories(status_topk_empty_input PRIVATE include)
-add_test(NAME status_topk_empty_input COMMAND status_topk_empty_input)
+
 add_executable(status_topk_score_order tests/status_topk_score_order.cpp src/TopK.cpp)
-target_include_directories(status_topk_score_order PRIVATE include)
-add_test(NAME status_topk_score_order COMMAND status_topk_score_order)
+
 add_executable(status_topk_tie_break tests/status_topk_tie_break.cpp src/TopK.cpp)
-target_include_directories(status_topk_tie_break PRIVATE include)
-add_test(NAME status_topk_tie_break COMMAND status_topk_tie_break)
+
 add_executable(status_topk_truncates tests/status_topk_truncates.cpp src/TopK.cpp)
-target_include_directories(status_topk_truncates PRIVATE include)
-add_test(NAME status_topk_truncates COMMAND status_topk_truncates)
+
 add_executable(final_bm25_empty_terms tests/final_20261027_bm25_empty_terms.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_empty_terms PRIVATE include)
-add_test(NAME final_bm25_empty_terms COMMAND final_bm25_empty_terms)
 
 add_executable(final_bm25_empty_index tests/final_20261027_bm25_empty_index.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_empty_index PRIVATE include)
-add_test(NAME final_bm25_empty_index COMMAND final_bm25_empty_index)
 
 add_executable(final_bm25_unknown_term tests/final_20261027_bm25_unknown_term.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_unknown_term PRIVATE include)
-add_test(NAME final_bm25_unknown_term COMMAND final_bm25_unknown_term)
 
 add_executable(final_bm25_positive_score tests/final_20261027_bm25_positive_score.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_positive_score PRIVATE include)
-add_test(NAME final_bm25_positive_score COMMAND final_bm25_positive_score)
 
 add_executable(final_bm25_duplicate_query_terms tests/final_20261027_bm25_duplicate_query_terms.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_duplicate_query_terms PRIVATE include)
-add_test(NAME final_bm25_duplicate_query_terms COMMAND final_bm25_duplicate_query_terms)
 
 add_executable(final_bm25_nan_k1 tests/final_20261027_bm25_nan_k1.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_nan_k1 PRIVATE include)
-add_test(NAME final_bm25_nan_k1 COMMAND final_bm25_nan_k1)
 
 add_executable(final_bm25_infinite_b tests/final_20261027_bm25_infinite_b.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_infinite_b PRIVATE include)
-add_test(NAME final_bm25_infinite_b COMMAND final_bm25_infinite_b)
 
 add_executable(final_bm25_negative_k1 tests/final_20261027_bm25_negative_k1.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_negative_k1 PRIVATE include)
-add_test(NAME final_bm25_negative_k1 COMMAND final_bm25_negative_k1)
 
 add_executable(final_bm25_b_below_zero tests/final_20261027_bm25_b_below_zero.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_b_below_zero PRIVATE include)
-add_test(NAME final_bm25_b_below_zero COMMAND final_bm25_b_below_zero)
 
 add_executable(final_bm25_b_above_one tests/final_20261027_bm25_b_above_one.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_b_above_one PRIVATE include)
-add_test(NAME final_bm25_b_above_one COMMAND final_bm25_b_above_one)
 
 add_executable(final_bm25_tie_break_document_id tests/final_20261027_bm25_tie_break_document_id.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_tie_break_document_id PRIVATE include)
-add_test(NAME final_bm25_tie_break_document_id COMMAND final_bm25_tie_break_document_id)
 
 add_executable(final_bm25_unknown_and_known_terms tests/final_20261027_bm25_unknown_and_known_terms.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_unknown_and_known_terms PRIVATE include)
-add_test(NAME final_bm25_unknown_and_known_terms COMMAND final_bm25_unknown_and_known_terms)
 
 add_executable(final_bm25_k1_zero tests/final_20261027_bm25_k1_zero.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_k1_zero PRIVATE include)
-add_test(NAME final_bm25_k1_zero COMMAND final_bm25_k1_zero)
 
 add_executable(final_bm25_b_zero tests/final_20261027_bm25_b_zero.cpp src/InvertedIndex.cpp src/BM25Ranker.cpp)
-target_include_directories(final_bm25_b_zero PRIVATE include)
-add_test(NAME final_bm25_b_zero COMMAND final_bm25_b_zero)
 
 add_executable(final_tfidf_empty_index tests/final_20261027_tfidf_empty_index.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_empty_index PRIVATE include)
-add_test(NAME final_tfidf_empty_index COMMAND final_tfidf_empty_index)
 
 add_executable(final_tfidf_empty_terms tests/final_20261027_tfidf_empty_terms.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_empty_terms PRIVATE include)
-add_test(NAME final_tfidf_empty_terms COMMAND final_tfidf_empty_terms)
 
 add_executable(final_tfidf_unknown_term tests/final_20261027_tfidf_unknown_term.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_unknown_term PRIVATE include)
-add_test(NAME final_tfidf_unknown_term COMMAND final_tfidf_unknown_term)
 
 add_executable(final_tfidf_positive_score tests/final_20261027_tfidf_positive_score.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_positive_score PRIVATE include)
-add_test(NAME final_tfidf_positive_score COMMAND final_tfidf_positive_score)
 
 add_executable(final_tfidf_duplicate_query_terms tests/final_20261027_tfidf_duplicate_query_terms.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_duplicate_query_terms PRIVATE include)
-add_test(NAME final_tfidf_duplicate_query_terms COMMAND final_tfidf_duplicate_query_terms)
 
 add_executable(final_tfidf_frequency_increases_score tests/final_20261027_tfidf_frequency_increases_score.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_frequency_increases_score PRIVATE include)
-add_test(NAME final_tfidf_frequency_increases_score COMMAND final_tfidf_frequency_increases_score)
 
 add_executable(final_tfidf_tie_break_document_id tests/final_20261027_tfidf_tie_break_document_id.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_tie_break_document_id PRIVATE include)
-add_test(NAME final_tfidf_tie_break_document_id COMMAND final_tfidf_tie_break_document_id)
 
 add_executable(final_tfidf_unknown_plus_known tests/final_20261027_tfidf_unknown_plus_known.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_unknown_plus_known PRIVATE include)
-add_test(NAME final_tfidf_unknown_plus_known COMMAND final_tfidf_unknown_plus_known)
 
 add_executable(final_tfidf_union_of_terms tests/final_20261027_tfidf_union_of_terms.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_union_of_terms PRIVATE include)
-add_test(NAME final_tfidf_union_of_terms COMMAND final_tfidf_union_of_terms)
 
 add_executable(final_tfidf_no_match_document_excluded tests/final_20261027_tfidf_no_match_document_excluded.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_no_match_document_excluded PRIVATE include)
-add_test(NAME final_tfidf_no_match_document_excluded COMMAND final_tfidf_no_match_document_excluded)
 
 add_executable(final_tfidf_empty_document_safe tests/final_20261027_tfidf_empty_document_safe.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_empty_document_safe PRIVATE include)
-add_test(NAME final_tfidf_empty_document_safe COMMAND final_tfidf_empty_document_safe)
 
 add_executable(final_tfidf_many_query_terms tests/final_20261027_tfidf_many_query_terms.cpp src/InvertedIndex.cpp src/Ranker.cpp)
-target_include_directories(final_tfidf_many_query_terms PRIVATE include)
-add_test(NAME final_tfidf_many_query_terms COMMAND final_tfidf_many_query_terms)
 
 add_executable(final_snippet_empty_content tests/final_20261027_snippet_empty_content.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_empty_content PRIVATE include)
-add_test(NAME final_snippet_empty_content COMMAND final_snippet_empty_content)
 
 add_executable(final_snippet_zero_limit tests/final_20261027_snippet_zero_limit.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_zero_limit PRIVATE include)
-add_test(NAME final_snippet_zero_limit COMMAND final_snippet_zero_limit)
 
 add_executable(final_snippet_short_content_unchanged tests/final_20261027_snippet_short_content_unchanged.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_short_content_unchanged PRIVATE include)
-add_test(NAME final_snippet_short_content_unchanged COMMAND final_snippet_short_content_unchanged)
 
 add_executable(final_snippet_exact_limit_unchanged tests/final_20261027_snippet_exact_limit_unchanged.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_exact_limit_unchanged PRIVATE include)
-add_test(NAME final_snippet_exact_limit_unchanged COMMAND final_snippet_exact_limit_unchanged)
 
 add_executable(final_snippet_max_three tests/final_20261027_snippet_max_three.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_max_three PRIVATE include)
-add_test(NAME final_snippet_max_three COMMAND final_snippet_max_three)
 
 add_executable(final_snippet_max_five_length tests/final_20261027_snippet_max_five_length.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_max_five_length PRIVATE include)
-add_test(NAME final_snippet_max_five_length COMMAND final_snippet_max_five_length)
 
 add_executable(final_snippet_case_insensitive_match tests/final_20261027_snippet_case_insensitive_match.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_case_insensitive_match PRIVATE include)
-add_test(NAME final_snippet_case_insensitive_match COMMAND final_snippet_case_insensitive_match)
 
 add_executable(final_snippet_empty_terms tests/final_20261027_snippet_empty_terms.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_empty_terms PRIVATE include)
-add_test(NAME final_snippet_empty_terms COMMAND final_snippet_empty_terms)
 
 add_executable(final_snippet_ignores_empty_term tests/final_20261027_snippet_ignores_empty_term.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_ignores_empty_term PRIVATE include)
-add_test(NAME final_snippet_ignores_empty_term COMMAND final_snippet_ignores_empty_term)
 
 add_executable(final_snippet_match_near_end tests/final_20261027_snippet_match_near_end.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_match_near_end PRIVATE include)
-add_test(NAME final_snippet_match_near_end COMMAND final_snippet_match_near_end)
 
 add_executable(final_snippet_long_content_bounded tests/final_20261027_snippet_long_content_bounded.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_long_content_bounded PRIVATE include)
-add_test(NAME final_snippet_long_content_bounded COMMAND final_snippet_long_content_bounded)
 
 add_executable(final_snippet_max_seven tests/final_20261027_snippet_max_seven.cpp src/SnippetBuilder.cpp)
-target_include_directories(final_snippet_max_seven PRIVATE include)
-add_test(NAME final_snippet_max_seven COMMAND final_snippet_max_seven)
 
 add_executable(final_20261027_query_tokenizer_empty tests/final_20261027_query_tokenizer_empty.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_20261027_query_tokenizer_empty PRIVATE include)
-add_test(NAME final_20261027_query_tokenizer_empty COMMAND final_20261027_query_tokenizer_empty)
-target_include_directories(final_20261027_query_tokenizer_empty PRIVATE include)
-add_test(NAME final_query_tokenizer_empty COMMAND final_query_tokenizer_empty)
+
 
 add_executable(final_query_tokenizer_lowercase tests/final_20261027_query_tokenizer_lowercase.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_lowercase PRIVATE include)
-add_test(NAME final_query_tokenizer_lowercase COMMAND final_query_tokenizer_lowercase)
 
 add_executable(final_20261027_query_tokenizer_punctuation tests/final_20261027_query_tokenizer_punctuation.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_20261027_query_tokenizer_punctuation PRIVATE include)
-add_test(NAME final_20261027_query_tokenizer_punctuation COMMAND final_20261027_query_tokenizer_punctuation)
-target_include_directories(final_20261027_query_tokenizer_punctuation PRIVATE include)
-add_test(NAME final_query_tokenizer_punctuation COMMAND final_query_tokenizer_punctuation)
+
 
 add_executable(final_query_tokenizer_numbers tests/final_20261027_query_tokenizer_numbers.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_numbers PRIVATE include)
-add_test(NAME final_query_tokenizer_numbers COMMAND final_query_tokenizer_numbers)
 
 add_executable(final_query_tokenizer_order tests/final_20261027_query_tokenizer_order.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_order PRIVATE include)
-add_test(NAME final_query_tokenizer_order COMMAND final_query_tokenizer_order)
 
 add_executable(final_query_tokenizer_repeated_delimiters tests/final_20261027_query_tokenizer_repeated_delimiters.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_repeated_delimiters PRIVATE include)
-add_test(NAME final_query_tokenizer_repeated_delimiters COMMAND final_query_tokenizer_repeated_delimiters)
 
 add_executable(final_query_tokenizer_mixed_case tests/final_20261027_query_tokenizer_mixed_case.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_mixed_case PRIVATE include)
-add_test(NAME final_query_tokenizer_mixed_case COMMAND final_query_tokenizer_mixed_case)
 
 add_executable(final_query_tokenizer_only_symbols tests/final_20261027_query_tokenizer_only_symbols.cpp src/QueryTokenizer.cpp src/Tokenizer.cpp)
-target_include_directories(final_query_tokenizer_only_symbols PRIVATE include)
-add_test(NAME final_query_tokenizer_only_symbols COMMAND final_query_tokenizer_only_symbols)
 
 add_executable(final_autocomplete_lexicographic_order tests/final_20261027_autocomplete_lexicographic_order.cpp src/AutocompleteIndex.cpp)
-target_include_directories(final_autocomplete_lexicographic_order PRIVATE include)
-add_test(NAME final_autocomplete_lexicographic_order COMMAND final_autocomplete_lexicographic_order)
 
 add_executable(final_autocomplete_exact_prefix_first tests/final_20261027_autocomplete_exact_prefix_first.cpp src/AutocompleteIndex.cpp)
-target_include_directories(final_autocomplete_exact_prefix_first PRIVATE include)
-add_test(NAME final_autocomplete_exact_prefix_first COMMAND final_autocomplete_exact_prefix_first)
-
 
 add_executable(indexing_search_regression
     tests/indexing_search_regression.cpp
@@ -3127,12 +1717,8 @@ add_executable(indexing_search_regression
     src/SearchEngine.cpp
     src/AutocompleteIndex.cpp
 )
-target_include_directories(indexing_search_regression PRIVATE include)
-add_test(NAME indexing_search_regression COMMAND indexing_search_regression)
 
 add_executable(autocomplete_regression tests/autocomplete_regression.cpp src/AutocompleteIndex.cpp)
-target_include_directories(autocomplete_regression PRIVATE include)
-add_test(NAME autocomplete_regression COMMAND autocomplete_regression)
 
 add_executable(search_engine_bm25_regression
     tests/search_engine_bm25_regression.cpp
@@ -3143,29 +1729,846 @@ add_executable(search_engine_bm25_regression
     src/Tokenizer.cpp
     src/InvertedIndex.cpp
 )
-target_include_directories(search_engine_bm25_regression PRIVATE include)
-add_test(NAME search_engine_bm25_regression COMMAND search_engine_bm25_regression)
 
 add_executable(bm25_non_finite_parameters tests/bm25_non_finite_parameters.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_non_finite_parameters PRIVATE include)
-add_test(NAME bm25_non_finite_parameters COMMAND bm25_non_finite_parameters)
-
 
 add_executable(bm25_large_parameter_stability tests/bm25_large_parameter_stability.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_large_parameter_stability PRIVATE include)
-add_test(NAME bm25_large_parameter_stability COMMAND bm25_large_parameter_stability)
-
 
 add_executable(phrase_matcher_regression tests/phrase_matcher_regression.cpp src/PhraseMatcher.cpp)
-target_include_directories(phrase_matcher_regression PRIVATE include)
-add_test(NAME phrase_matcher_regression COMMAND phrase_matcher_regression)
-
 
 add_executable(index_stats_regression tests/index_stats_regression.cpp src/IndexStats.cpp src/InvertedIndex.cpp)
-target_include_directories(index_stats_regression PRIVATE include)
-add_test(NAME index_stats_regression COMMAND index_stats_regression)
-
 
 add_executable(bm25_parameter_boundaries tests/bm25_parameter_boundaries.cpp src/BM25Ranker.cpp src/InvertedIndex.cpp)
-target_include_directories(bm25_parameter_boundaries PRIVATE include)
-add_test(NAME bm25_parameter_boundaries COMMAND bm25_parameter_boundaries)
+
+# Register every regression executable through one shared test helper.
+add_search_test(tokenizer_smoke)
+add_search_test(search_cache_regression)
+add_search_test(top_k_regression)
+add_search_test(bm25_ranker_regression)
+add_search_test(tokenizer_edge_cases)
+add_search_test(tokenizer_numbers)
+add_search_test(tokenizer_mixed_punctuation)
+add_search_test(tokenizer_whitespace)
+add_search_test(tokenizer_single_token)
+add_search_test(tokenizer_empty_input)
+add_search_test(inverted_index_smoke)
+add_search_test(inverted_index_total_token_count)
+add_search_test(inverted_index_duplicate_terms)
+add_search_test(inverted_index_empty_tokens)
+add_search_test(inverted_index_multiple_documents)
+add_search_test(inverted_index_missing_term)
+add_search_test(inverted_index_zero_id)
+add_search_test(inverted_index_empty_document)
+add_search_test(inverted_index_document_count)
+add_search_test(document_smoke)
+add_search_test(document_getters)
+add_search_test(document_loader_failure)
+add_search_test(search_pipeline_smoke)
+add_search_test(query_processor_smoke)
+add_search_test(inverted_index_term_frequency)
+add_search_test(inverted_index_sorted_postings)
+add_search_test(inverted_index_duplicate_document)
+add_search_test(query_processor_duplicate_terms)
+add_search_test(query_processor_deterministic_results)
+add_search_test(inverted_index_unknown_frequency)
+add_search_test(inverted_index_frequency_documents)
+add_search_test(inverted_index_out_of_order_documents)
+add_search_test(inverted_index_repeated_document_add)
+add_search_test(query_processor_case_normalization)
+add_search_test(tokenizer_case_regression)
+add_search_test(tokenizer_punctuation_regression)
+add_search_test(tokenizer_numeric_regression)
+add_search_test(tokenizer_whitespace_regression)
+add_search_test(tokenizer_empty_regression)
+add_search_test(tokenizer_boundary_regression)
+add_search_test(tokenizer_repeated_separator)
+add_search_test(tokenizer_single_character)
+add_search_test(tokenizer_mixed_case)
+add_search_test(tokenizer_long_token)
+add_search_test(index_document_count_regression)
+add_search_test(index_term_count_regression)
+add_search_test(index_duplicate_document_regression)
+add_search_test(index_sorted_postings_regression)
+add_search_test(index_frequency_regression)
+add_search_test(index_missing_term_regression)
+add_search_test(index_empty_tokens_regression)
+add_search_test(index_negative_id_regression)
+add_search_test(index_zero_id_regression)
+add_search_test(index_empty_document_regression)
+add_search_test(index_out_of_order_regression)
+add_search_test(index_isolation_regression)
+add_search_test(index_large_frequency_regression)
+add_search_test(index_repeated_document_add_regression)
+add_search_test(query_and_regression)
+add_search_test(query_case_regression)
+add_search_test(query_punctuation_regression)
+add_search_test(query_duplicate_terms_regression)
+add_search_test(query_empty_regression)
+add_search_test(query_missing_regression)
+add_search_test(query_numeric_regression)
+add_search_test(query_whitespace_regression)
+add_search_test(query_result_order_regression)
+add_search_test(query_three_terms_regression)
+add_search_test(query_no_side_effect_regression)
+add_search_test(document_getters_regression)
+add_search_test(document_loader_regression)
+add_search_test(document_loader_missing_regression)
+add_search_test(query_repeated_spaces_regression)
+add_search_test(query_hyphen_normalization_regression)
+add_search_test(query_punctuation_only_v2)
+add_search_test(query_duplicate_spacing_v2)
+add_search_test(tokenizer_tabs_v2)
+add_search_test(tokenizer_newlines_v2)
+add_search_test(tokenizer_digits_v2)
+add_search_test(tokenizer_apostrophe_v3)
+add_search_test(tokenizer_slash_v3)
+add_search_test(tokenizer_leading_punctuation_v3)
+add_search_test(tokenizer_trailing_punctuation_v3)
+add_search_test(tokenizer_repeated_punctuation_v3)
+add_search_test(tokenizer_uppercase_digits_v3)
+add_search_test(tokenizer_long_token_v3)
+add_search_test(tokenizer_carriage_return_v3)
+add_search_test(tokenizer_numeric_token_v3)
+add_search_test(index_term_count_growth_v3)
+add_search_test(index_document_frequency_v3)
+add_search_test(index_term_frequency_v3)
+add_search_test(index_posting_uniqueness_v3)
+add_search_test(index_posting_order_v3)
+add_search_test(index_empty_term_v3)
+add_search_test(index_negative_document_v3)
+add_search_test(index_large_document_v3)
+add_search_test(index_document_isolation_v3)
+add_search_test(index_unknown_document_frequency_v3)
+add_search_test(index_repeated_document_terms_v3)
+add_search_test(tokenizer_apostrophe_v4)
+add_search_test(tokenizer_slash_v4)
+add_search_test(tokenizer_leading_v4)
+add_search_test(tokenizer_trailing_v4)
+add_search_test(tokenizer_repeatsep_v4)
+add_search_test(tokenizer_alnum_v4)
+add_search_test(tokenizer_long_v4)
+add_search_test(index_count_v4)
+add_search_test(index_frequency_v4)
+add_search_test(index_order_v4)
+add_search_test(index_unique_v4)
+add_search_test(index_missing_v4)
+add_search_test(index_negative_v4)
+add_search_test(index_large_v4)
+add_search_test(index_empty_v4)
+add_search_test(index_isolation_v4)
+add_search_test(query_single_v4)
+add_search_test(query_case_v4)
+add_search_test(query_punct_v4)
+add_search_test(tokenizer_uppercase_word_v5)
+add_search_test(tokenizer_lowercase_word_v5)
+add_search_test(tokenizer_mixed_word_v5)
+add_search_test(tokenizer_alpha_digits_v5)
+add_search_test(tokenizer_digits_v5)
+add_search_test(tokenizer_spaces_v5)
+add_search_test(tokenizer_tabs_v5)
+add_search_test(tokenizer_newlines_v5)
+add_search_test(tokenizer_symbols_v5)
+add_search_test(tokenizer_periods_v5)
+add_search_test(tokenizer_commas_v5)
+add_search_test(tokenizer_colons_v5)
+add_search_test(tokenizer_semicolons_v5)
+add_search_test(tokenizer_parentheses_v5)
+add_search_test(tokenizer_braces_v5)
+add_search_test(tokenizer_quotes_v5)
+add_search_test(tokenizer_ampersand_v5)
+add_search_test(tokenizer_plus_v5)
+add_search_test(tokenizer_equals_v5)
+add_search_test(tokenizer_v5_uppercase)
+add_search_test(tokenizer_v5_mixedcase)
+add_search_test(tokenizer_v5_digits)
+add_search_test(tokenizer_v5_alnum)
+add_search_test(tokenizer_v5_space)
+add_search_test(tokenizer_v5_tab)
+add_search_test(tokenizer_v5_newline)
+add_search_test(tokenizer_v5_symbols)
+add_search_test(tokenizer_v5_period)
+add_search_test(tokenizer_v5_comma)
+add_search_test(tokenizer_v5_colon)
+add_search_test(tokenizer_v5_semicolon)
+add_search_test(tokenizer_v5_parentheses)
+add_search_test(tokenizer_v5_brackets)
+add_search_test(tokenizer_v5_braces)
+add_search_test(tokenizer_v5_quotes)
+add_search_test(tokenizer_v5_slash)
+add_search_test(tokenizer_v5_hyphen)
+add_search_test(tokenizer_v5_underscore)
+add_search_test(tokenizer_v5_repeated)
+add_search_test(index_v5_single)
+add_search_test(index_v5_multi)
+add_search_test(index_v5_sorted)
+add_search_test(index_v5_unique)
+add_search_test(index_v5_frequency)
+add_search_test(index_v5_docfreq)
+add_search_test(index_v5_termcount)
+add_search_test(index_v5_doccount)
+add_search_test(index_v5_missing)
+add_search_test(index_v5_empty)
+add_search_test(index_v5_negative)
+add_search_test(index_v5_zero)
+add_search_test(index_v5_largeid)
+add_search_test(index_v5_outoforder)
+add_search_test(index_v5_isolation)
+add_search_test(index_v5_repeateddoc)
+add_search_test(index_v5_emptytoken)
+add_search_test(index_v5_unknownfreq)
+add_search_test(index_v5_unknowntermfreq)
+add_search_test(index_v5_unknownterm)
+add_search_test(query_v5_single)
+add_search_test(query_v5_case)
+add_search_test(query_v5_spaces)
+add_search_test(query_v5_duplicate)
+add_search_test(query_v5_missing)
+add_search_test(query_v5_empty)
+add_search_test(query_v5_punct)
+add_search_test(query_v5_numeric)
+add_search_test(query_v5_and)
+add_search_test(query_v5_three)
+add_search_test(query_v5_hyphen)
+add_search_test(query_v5_slash)
+add_search_test(query_v5_punctonly)
+add_search_test(query_v5_repeatspaces)
+add_search_test(query_v5_resultorder)
+add_search_test(query_v5_disjoint)
+add_search_test(query_v5_isolation)
+add_search_test(query_v5_numericcase)
+add_search_test(query_v5_mixedpunct)
+add_search_test(query_v5_no_sideeffect)
+add_search_test(query_v5_fourspaces)
+add_search_test(query_v5_casefold)
+add_search_test(query_v5_duplicatecase)
+add_search_test(query_v5_emptytoken)
+add_search_test(query_v5_unknownmixed)
+add_search_test(query_v5_threepartial)
+add_search_test(query_v5_singlepunct)
+add_search_test(query_v5_numericand)
+add_search_test(document_v5_id)
+add_search_test(document_v5_path)
+add_search_test(document_v5_content)
+add_search_test(document_v5_negative)
+add_search_test(document_v5_emptycontent)
+add_search_test(document_v5_empty_path)
+add_search_test(document_v5_spaces_path)
+add_search_test(document_v5_newline)
+add_search_test(document_v5_largeid)
+add_search_test(topk_empty)
+add_search_test(topk_limit)
+add_search_test(topk_zero)
+add_search_test(topk_large)
+add_search_test(topk_tie)
+add_search_test(topk_sorted)
+add_search_test(topk_one)
+add_search_test(phrase_match)
+add_search_test(phrase_mismatch)
+add_search_test(phrase_empty)
+add_search_test(phrase_long)
+add_search_test(phrase_at_start)
+add_search_test(phrase_at_end)
+add_search_test(phrase_single)
+add_search_test(phrase_no_match)
+add_search_test(phrase_repeated_tokens)
+add_search_test(phrase_reversed)
+add_search_test(index_stats)
+add_search_test(index_stats_empty)
+add_search_test(index_stats_documents)
+add_search_test(index_stats_duplicate_terms)
+add_search_test(regression_20261009_01_query_tokenizer_empty)
+add_search_test(regression_20261009_02_query_tokenizer_punctuation)
+add_search_test(regression_20261009_03_query_tokenizer_lowercase)
+add_search_test(regression_20261009_04_query_tokenizer_whitespace)
+add_search_test(regression_20261009_05_stopwords_known)
+add_search_test(regression_20261009_06_stopwords_unknown)
+add_search_test(regression_20261009_07_stopwords_case)
+add_search_test(regression_20261009_08_ranker_empty)
+add_search_test(regression_20261009_09_ranker_unknown_term)
+add_search_test(regression_20261009_10_ranker_frequency_order)
+add_search_test(regression_20261009_11_ranker_tie_order)
+add_search_test(regression_20261009_12_search_engine_empty)
+add_search_test(regression_20261009_13_search_engine_basic)
+add_search_test(regression_20261009_14_search_engine_no_results)
+add_search_test(regression_20261009_15_search_engine_ranked)
+add_search_test(regression_20261009_16_search_engine_index_stats)
+add_search_test(regression_20261009_17_query_processor_empty)
+add_search_test(regression_20261009_18_query_processor_punctuation)
+add_search_test(regression_20261009_19_query_processor_no_intersection)
+add_search_test(regression_20261009_20_query_processor_case)
+add_search_test(regression_20261009_28_ranker_repeated_query_term)
+add_search_test(regression_20261010_index_empty_search)
+add_search_test(regression_20261010_index_postings_sorted)
+add_search_test(regression_20261010_index_frequency_unknown_doc)
+add_search_test(regression_20261010_query_processor_duplicate_terms)
+add_search_test(regression_20261010_query_processor_order)
+add_search_test(regression_20261010_topk_empty_limit)
+add_search_test(regression_20261010_phrase_exact)
+add_search_test(regression_20261010_index_stats_consistency)
+add_search_test(regression_20261010_query_tokenizer_join_punctuation)
+add_search_test(regression_20261010_query_tokenizer_numeric)
+add_search_test(regression_20261010_ranker_unknown_and_known)
+add_search_test(regression_20261010_ranker_multiple_terms)
+add_search_test(regression_20261010_search_engine_query_normalization)
+add_search_test(regression_20261010_search_engine_multiple_terms)
+add_search_test(regression_20261010_search_engine_index_reference)
+add_search_test(regression_20261010_stopwords_empty)
+add_search_test(regression_20261010_phrase_middle)
+add_search_test(regression_20261010_phrase_noncontiguous)
+add_search_test(regression_20261010_phrase_empty_document)
+add_search_test(regression_20261010_topk_preserves_tie_order)
+add_search_test(regression_20261010_topk_all_results)
+add_search_test(regression_20261010_index_duplicate_postings)
+add_search_test(regression_20261010_index_empty_term)
+add_search_test(regression_20261010_index_document_frequency)
+add_search_test(regression_20261010_query_processor_missing_term)
+add_search_test(regression_20261010_query_processor_duplicate_order)
+add_search_test(regression_20261010_index_stats_after_updates)
+add_search_test(regression_20261010_ranker_empty_query)
+add_search_test(daily_01_tokenizer_empty_string)
+add_search_test(daily_02_tokenizer_whitespace_only)
+add_search_test(daily_03_tokenizer_uppercase)
+add_search_test(daily_04_tokenizer_digits)
+add_search_test(daily_05_tokenizer_mixed_case)
+add_search_test(daily_06_tokenizer_repeated_terms)
+add_search_test(daily_07_tokenizer_punctuation_boundaries)
+add_search_test(daily_08_tokenizer_newlines)
+add_search_test(daily_09_tokenizer_tabs)
+add_search_test(daily_10_tokenizer_leading_trailing_punctuation)
+add_search_test(daily_11_tokenizer_single_character)
+add_search_test(daily_12_tokenizer_long_token)
+add_search_test(daily_13_tokenizer_unicode_bytes_are_delimiters)
+add_search_test(daily_14_index_empty_document)
+add_search_test(daily_15_index_empty_token_ignored)
+add_search_test(daily_16_index_frequency_repeats)
+add_search_test(daily_17_index_missing_term_frequency)
+add_search_test(daily_18_index_missing_document_frequency)
+add_search_test(daily_19_index_postings_sorted)
+add_search_test(daily_20_index_duplicate_document_id)
+add_search_test(daily_21_index_document_isolation)
+add_search_test(daily_22_index_many_terms)
+add_search_test(daily_23_index_same_term_many_documents)
+add_search_test(daily_24_index_negative_id_supported)
+add_search_test(daily_25_index_zero_id_supported)
+add_search_test(daily_26_index_unknown_search_empty)
+add_search_test(daily_27_index_term_count_growth)
+add_search_test(daily_28_index_duplicate_tokens_keep_one_posting)
+add_search_test(daily_29_index_document_count_unique_ids)
+add_search_test(daily_30_index_empty_term_query)
+add_search_test(daily_31_query_empty_string)
+add_search_test(daily_32_query_whitespace_only)
+add_search_test(daily_33_query_case_normalization)
+add_search_test(daily_34_query_and_semantics)
+add_search_test(daily_35_query_unknown_term)
+add_search_test(daily_36_query_repeated_term_deduplicated)
+add_search_test(daily_37_query_punctuation_normalization)
+add_search_test(daily_38_query_result_order)
+add_search_test(daily_39_query_multiple_terms_intersection)
+add_search_test(daily_40_query_no_partial_match)
+add_search_test(daily_41_query_tabs_between_terms)
+add_search_test(daily_42_query_newlines_between_terms)
+add_search_test(daily_43_query_sorted_term_order_independent)
+add_search_test(daily_44_query_leading_trailing_spaces)
+add_search_test(daily_45_query_many_documents)
+add_search_test(daily_46_query_empty_normalized_token)
+add_search_test(daily_47_index_frequency_per_document)
+add_search_test(daily_48_index_document_frequency_distinct)
+add_search_test(daily_49_tokenizer_adjacent_delimiters)
+add_search_test(batch_01_phrase_exact_match)
+add_search_test(batch_02_phrase_middle_match)
+add_search_test(batch_03_phrase_missing_token)
+add_search_test(batch_04_phrase_empty_phrase)
+add_search_test(batch_05_phrase_longer_than_tokens)
+add_search_test(batch_06_phrase_single_token)
+add_search_test(batch_07_phrase_duplicate_tokens)
+add_search_test(batch_08_phrase_order_matters)
+add_search_test(batch_09_phrase_repeated_sequence)
+add_search_test(batch_10_phrase_full_document)
+add_search_test(batch_11_query_tokenizer_empty)
+add_search_test(batch_12_query_tokenizer_whitespace)
+add_search_test(batch_13_query_tokenizer_lowercase)
+add_search_test(batch_14_query_tokenizer_punctuation)
+add_search_test(batch_15_query_tokenizer_numbers)
+add_search_test(batch_16_query_tokenizer_duplicate_terms)
+add_search_test(batch_17_query_tokenizer_tabs)
+add_search_test(batch_18_query_tokenizer_newlines)
+add_search_test(batch_19_query_tokenizer_symbol_only)
+add_search_test(batch_20_query_tokenizer_mixed_alphanumeric)
+add_search_test(batch_21_topk_empty_input)
+add_search_test(batch_22_topk_zero_limit)
+add_search_test(batch_23_topk_limit_one)
+add_search_test(batch_24_topk_sorted_scores)
+add_search_test(batch_25_topk_tie_break_document_id)
+add_search_test(batch_26_topk_truncate_results)
+add_search_test(batch_27_topk_limit_above_size)
+add_search_test(batch_28_topk_negative_scores)
+add_search_test(batch_29_topk_preserves_zero_score_tie_order)
+add_search_test(batch_30_topk_duplicate_ids_allowed)
+add_search_test(batch_31_stopwords_common_article)
+add_search_test(batch_32_stopwords_common_preposition)
+add_search_test(batch_33_stopwords_conjunction)
+add_search_test(batch_34_stopwords_unknown_word)
+add_search_test(batch_35_stopwords_case_sensitive_contract)
+add_search_test(batch_36_document_id)
+add_search_test(batch_37_document_path)
+add_search_test(batch_38_document_content)
+add_search_test(batch_39_document_empty_content)
+add_search_test(batch_40_document_empty_path)
+add_search_test(batch_41_index_stats_empty)
+add_search_test(batch_42_index_stats_document_count)
+add_search_test(batch_43_index_stats_term_count)
+add_search_test(batch_44_index_stats_empty_document)
+add_search_test(batch_45_index_stats_after_growth)
+add_search_test(batch_46_ranker_empty_index)
+add_search_test(batch_47_ranker_unknown_term)
+add_search_test(batch_48_ranker_single_match)
+add_search_test(batch_49_ranker_frequency_increases_score)
+add_search_test(batch_50_ranker_deterministic_tie_break)
+add_search_test(batch_20261013_51_phrase_empty_tokens)
+add_search_test(batch_20261013_52_phrase_empty_phrase)
+add_search_test(batch_20261013_53_phrase_phrase_longer_than_tokens)
+add_search_test(batch_20261013_54_phrase_single_token_match)
+add_search_test(batch_20261013_55_phrase_absent_phrase)
+add_search_test(batch_20261013_56_phrase_middle_phrase)
+add_search_test(batch_20261013_57_phrase_end_phrase)
+add_search_test(batch_20261013_58_phrase_case_sensitive)
+add_search_test(batch_20261013_59_phrase_overlapping_tokens)
+add_search_test(batch_20261013_60_phrase_exact_sequence)
+add_search_test(batch_20261013_61_topk_sort_descending)
+add_search_test(batch_20261013_62_topk_zero_limit)
+add_search_test(batch_20261013_63_topk_limit_above_size)
+add_search_test(batch_20261013_64_topk_tie_document_id)
+add_search_test(batch_20261013_65_topk_exact_limit)
+add_search_test(batch_20261013_66_topk_negative_scores)
+add_search_test(batch_20261013_67_topk_zero_scores)
+add_search_test(batch_20261013_68_topk_input_by_value)
+add_search_test(batch_20261013_69_topk_empty_results)
+add_search_test(batch_20261013_70_topk_limit_one)
+add_search_test(batch_20261013_71_tokenizer_empty_input)
+add_search_test(batch_20261013_72_tokenizer_lowercase)
+add_search_test(batch_20261013_73_tokenizer_punctuation_split)
+add_search_test(batch_20261013_74_tokenizer_numbers)
+add_search_test(batch_20261013_75_tokenizer_repeated_separators)
+add_search_test(batch_20261013_76_tokenizer_leading_trailing_spaces)
+add_search_test(batch_20261013_77_tokenizer_single_character)
+add_search_test(batch_20261013_78_tokenizer_mixed_case_words)
+add_search_test(batch_20261013_79_query_tokenizer_empty_input)
+add_search_test(batch_20261013_80_query_tokenizer_whitespace_only)
+add_search_test(batch_20261013_81_query_tokenizer_lowercase)
+add_search_test(batch_20261013_82_query_tokenizer_punctuation_removal)
+add_search_test(batch_20261013_83_query_tokenizer_symbol_only)
+add_search_test(batch_20261013_84_query_tokenizer_duplicate_terms)
+add_search_test(batch_20261013_85_query_tokenizer_tabs_and_newlines)
+add_search_test(batch_20261013_86_query_tokenizer_alphanumeric)
+add_search_test(batch_20261013_87_index_empty_document_count)
+add_search_test(batch_20261013_88_index_empty_tokens_ignored)
+add_search_test(batch_20261013_89_index_sorted_postings)
+add_search_test(batch_20261013_90_index_frequency)
+add_search_test(batch_20261013_91_index_missing_term)
+add_search_test(batch_20261013_92_document_id)
+add_search_test(batch_20261013_93_document_path)
+add_search_test(batch_20261013_94_document_content)
+add_search_test(batch_20261013_95_document_empty_fields)
+add_search_test(batch_20261013_96_stopwords_article)
+add_search_test(batch_20261013_97_stopwords_conjunction)
+add_search_test(batch_20261013_98_stopwords_unknown_word)
+add_search_test(batch_20261013_99_stopwords_case_contract)
+add_search_test(regression_20261014_01_query_empty)
+add_search_test(regression_20261014_02_query_whitespace)
+add_search_test(regression_20261014_03_query_single_term)
+add_search_test(regression_20261014_04_query_case_normalization)
+add_search_test(regression_20261014_05_query_punctuation)
+add_search_test(regression_20261014_06_query_duplicate_terms)
+add_search_test(regression_20261014_07_query_and_intersection)
+add_search_test(regression_20261014_08_query_no_intersection)
+add_search_test(regression_20261014_09_query_unknown_term)
+add_search_test(regression_20261014_10_query_unknown_with_known)
+add_search_test(regression_20261014_11_query_result_order)
+add_search_test(regression_20261014_12_query_three_term_intersection)
+add_search_test(regression_20261014_13_query_symbols_only)
+add_search_test(regression_20261014_14_query_reordered_terms)
+add_search_test(regression_20261014_15_query_mixed_case_and_punctuation)
+add_search_test(regression_20261014_16_ranker_empty_index)
+add_search_test(regression_20261014_17_ranker_empty_terms)
+add_search_test(regression_20261014_18_ranker_unknown_term)
+add_search_test(regression_20261014_19_ranker_positive_score)
+add_search_test(regression_20261014_20_ranker_frequency_boost)
+add_search_test(regression_20261014_21_ranker_repeated_query_term)
+add_search_test(regression_20261014_22_ranker_tie_break_document_id)
+add_search_test(regression_20261014_23_ranker_multiple_terms)
+add_search_test(regression_20261014_24_ranker_missing_term_ignored)
+add_search_test(regression_20261014_25_ranker_rare_term_contributes)
+add_search_test(regression_20261014_26_stats_empty_index)
+add_search_test(regression_20261014_27_stats_empty_document)
+add_search_test(regression_20261014_28_stats_unique_terms)
+add_search_test(regression_20261014_29_stats_multiple_documents)
+add_search_test(regression_20261014_30_stats_repeated_document_id)
+add_search_test(regression_20261014_31_index_document_frequency)
+add_search_test(regression_20261014_32_index_missing_term_frequency)
+add_search_test(regression_20261014_33_index_missing_document_frequency)
+add_search_test(regression_20261014_34_index_repeated_tokens_single_posting)
+add_search_test(regression_20261014_35_index_duplicate_add_accumulates)
+add_search_test(regression_20261014_36_index_only_empty_tokens)
+add_search_test(regression_20261014_37_index_negative_document_id)
+add_search_test(regression_20261014_38_index_zero_document_id)
+add_search_test(regression_20261014_39_index_case_sensitive_terms)
+add_search_test(regression_20261015_01_document_loader_empty_file)
+add_search_test(regression_20261015_02_document_loader_content)
+add_search_test(regression_20261015_03_document_loader_newlines)
+add_search_test(regression_20261015_04_document_loader_missing_throws)
+add_search_test(regression_20261015_05_document_loader_preserves_path)
+add_search_test(regression_20261015_06_topk_empty)
+add_search_test(regression_20261015_07_topk_equal_score_order)
+add_search_test(regression_20261015_08_topk_limit_zero)
+add_search_test(regression_20261015_09_topk_preserves_negative)
+add_search_test(regression_20261015_10_topk_truncates)
+add_search_test(regression_20261015_11_phrase_empty_tokens)
+add_search_test(regression_20261015_12_phrase_empty_phrase)
+add_search_test(regression_20261015_13_phrase_not_contiguous)
+add_search_test(regression_20261015_14_phrase_middle_match)
+add_search_test(regression_20261015_15_phrase_case_sensitive)
+add_search_test(regression_20261015_16_tokenizer_empty)
+add_search_test(regression_20261015_17_tokenizer_lowercase)
+add_search_test(regression_20261015_18_tokenizer_symbols)
+add_search_test(regression_20261015_19_tokenizer_repeated_punctuation)
+add_search_test(regression_20261015_20_tokenizer_numeric)
+add_search_test(regression_20261015_21_query_and_match)
+add_search_test(regression_20261015_22_query_empty)
+add_search_test(regression_20261015_23_query_case_insensitive)
+add_search_test(regression_20261015_24_query_punctuation)
+add_search_test(regression_20261015_25_query_unknown_term)
+add_search_test(regression_20261015_26_query_ordered_ids)
+add_search_test(regression_20261015_27_ranker_empty_terms)
+add_search_test(regression_20261015_28_ranker_unknown_term)
+add_search_test(regression_20261015_29_ranker_score_order)
+add_search_test(regression_20261015_30_ranker_tie_order)
+add_search_test(regression_20261015_31_stats_empty)
+add_search_test(regression_20261015_32_stats_unique_terms)
+add_search_test(regression_20261015_33_stats_documents)
+add_search_test(regression_20261015_34_index_frequency)
+add_search_test(regression_20261015_35_index_sorted_postings)
+add_search_test(regression_20261015_36_index_missing_frequency)
+add_search_test(regression_20261015_37_stopwords_article)
+add_search_test(regression_20261015_38_stopwords_unknown)
+add_search_test(regression_20261015_39_document_fields)
+add_search_test(regression_20261015_40_querytokenizer_punctuation)
+add_search_test(regression_20261014_more_01_tokenizer_tabs)
+add_search_test(regression_20261014_more_02_tokenizer_newlines)
+add_search_test(regression_20261014_more_03_tokenizer_leading_delimiters)
+add_search_test(regression_20261014_more_04_tokenizer_trailing_delimiters)
+add_search_test(regression_20261014_more_05_tokenizer_mixed_digits)
+add_search_test(regression_20261014_more_06_tokenizer_long_text)
+add_search_test(regression_20261014_more_07_tokenizer_repeated_spaces)
+add_search_test(regression_20261014_more_08_tokenizer_apostrophe_split)
+add_search_test(regression_20261014_more_09_tokenizer_unicode_bytes_safe)
+add_search_test(regression_20261014_more_10_tokenizer_single_digit)
+add_search_test(regression_20261014_more_11_index_contains_after_add)
+add_search_test(regression_20261014_more_12_index_contains_missing)
+add_search_test(regression_20261014_more_13_index_term_count_growth)
+add_search_test(regression_20261014_more_14_index_empty_term_ignored)
+add_search_test(regression_20261014_more_15_index_search_empty)
+add_search_test(regression_20261014_more_16_index_frequency_distinct_docs)
+add_search_test(regression_20261014_more_17_index_same_doc_posting_once)
+add_search_test(regression_20261014_more_18_index_document_count_empty_doc)
+add_search_test(regression_20261014_more_19_index_document_count_duplicate)
+add_search_test(regression_20261014_more_20_index_postings_ascending)
+add_search_test(regression_20261014_more_21_query_intersection)
+add_search_test(regression_20261014_more_22_query_no_intersection)
+add_search_test(regression_20261014_more_23_query_duplicate_term)
+add_search_test(regression_20261014_more_24_query_whitespace_only)
+add_search_test(regression_20261014_more_25_query_punctuation_only)
+add_search_test(regression_20261014_more_26_query_result_sorted)
+add_search_test(regression_20261014_more_27_query_unknown_and_known)
+add_search_test(regression_20261014_more_28_query_normalizes_case)
+add_search_test(regression_20261014_more_29_query_embedded_punctuation)
+add_search_test(regression_20261014_more_30_query_numeric_term)
+add_search_test(regression_20261014_more_31_document_empty_values)
+add_search_test(regression_20261014_more_32_document_multiline_content)
+add_search_test(regression_20261014_more_33_document_path_spaces)
+add_search_test(regression_20261014_more_34_stopwords_the)
+add_search_test(regression_20261014_more_35_stopwords_and)
+add_search_test(regression_20261014_more_36_stopwords_nonstop)
+add_search_test(regression_20261014_more_37_querytokenizer_empty)
+add_search_test(regression_20261014_more_38_querytokenizer_whitespace)
+add_search_test(regression_20261014_more_39_querytokenizer_preserves_repetition)
+add_search_test(regression_20261014_more_40_querytokenizer_normalizes_case)
+add_search_test(autocomplete_empty_index)
+add_search_test(autocomplete_insert_single)
+add_search_test(autocomplete_duplicate_insert)
+add_search_test(autocomplete_empty_word)
+add_search_test(autocomplete_missing_prefix)
+add_search_test(autocomplete_prefix_exact_word)
+add_search_test(autocomplete_limit_zero)
+add_search_test(autocomplete_limit_truncates)
+add_search_test(autocomplete_lexicographic_order)
+add_search_test(autocomplete_unrelated_prefix)
+add_search_test(autocomplete_empty_prefix)
+add_search_test(autocomplete_shared_prefix)
+add_search_test(autocomplete_case_sensitive)
+add_search_test(autocomplete_size_after_many)
+add_search_test(autocomplete_limit_larger_than_results)
+add_search_test(autocomplete_long_word)
+add_search_test(autocomplete_no_prefix_match)
+add_search_test(autocomplete_insert_order_independent)
+add_search_test(search_cache_empty)
+add_search_test(search_cache_round_trip)
+add_search_test(search_cache_miss_preserves_output)
+add_search_test(search_cache_capacity_zero)
+add_search_test(search_cache_evicts_lru)
+add_search_test(search_cache_update_existing)
+add_search_test(search_cache_empty_results)
+add_search_test(search_cache_clear)
+add_search_test(search_cache_capacity)
+add_search_test(search_cache_distinct_queries)
+add_search_test(search_cache_lru_refresh)
+add_search_test(search_cache_capacity_bound)
+add_search_test(bm25_empty_index)
+add_search_test(bm25_empty_query)
+add_search_test(bm25_unknown_term)
+add_search_test(bm25_known_term_returns_document)
+add_search_test(bm25_scores_positive)
+add_search_test(bm25_repeated_query_term_stable)
+add_search_test(bm25_rare_term_idf)
+add_search_test(bm25_frequency_influences_score)
+add_search_test(bm25_invalid_negative_k1)
+add_search_test(bm25_invalid_negative_b)
+add_search_test(bm25_invalid_b_above_one)
+add_search_test(bm25_zero_k1)
+add_search_test(bm25_zero_b)
+add_search_test(bm25_all_terms_unknown)
+add_search_test(bm25_union_of_matching_terms)
+add_search_test(bm25_no_duplicate_results)
+add_search_test(bm25_tie_break_by_document_id)
+add_search_test(bm25_duplicate_query_terms_do_not_double_score)
+add_search_test(bm25_empty_document_not_returned)
+add_search_test(bm25_handles_zero_average_length)
+add_search_test(bm25_length_normalization)
+add_search_test(bm25_matches_multiple_query_terms)
+add_search_test(bm25_default_parameters)
+add_search_test(bm25_deterministic_order)
+add_search_test(index_length_empty_index)
+add_search_test(index_length_one_document)
+add_search_test(index_length_unknown_document)
+add_search_test(index_length_ignores_empty_tokens)
+add_search_test(index_length_multiple_documents)
+add_search_test(index_length_empty_document)
+add_search_test(index_length_duplicate_terms_counted)
+add_search_test(index_length_repeated_add_accumulates)
+add_search_test(index_length_total_after_repeated_add)
+add_search_test(index_length_distinct_document_average)
+add_search_test(snippet_empty_content)
+add_search_test(snippet_zero_limit)
+add_search_test(snippet_short_content_unchanged)
+add_search_test(snippet_respects_max_length)
+add_search_test(snippet_no_terms_returns_prefix)
+add_search_test(snippet_ignores_empty_terms)
+add_search_test(snippet_adds_ellipsis_for_middle)
+add_search_test(snippet_small_limits)
+add_search_test(daily_20261022_bm25_empty_index)
+add_search_test(daily_20261022_bm25_empty_query)
+add_search_test(daily_20261022_bm25_unknown_term)
+add_search_test(daily_20261022_bm25_invalid_parameters)
+add_search_test(daily_20261022_bm25_zero_k1)
+add_search_test(daily_20261022_bm25_deterministic_ties)
+add_search_test(daily_20261022_bm25_duplicate_query_terms)
+add_search_test(daily_20261022_bm25_length_accounting)
+add_search_test(daily_20261022_snippet_empty_input)
+add_search_test(daily_20261022_snippet_zero_limit)
+add_search_test(daily_20261022_snippet_short_content)
+add_search_test(daily_20261022_snippet_limit_respected)
+add_search_test(daily_20261022_snippet_case_insensitive)
+add_search_test(daily_20261022_snippet_no_matching_term)
+add_search_test(daily_20261022_snippet_tiny_limits)
+add_search_test(daily_20261022_autocomplete_empty_word)
+add_search_test(daily_20261022_autocomplete_duplicate_word)
+add_search_test(daily_20261022_autocomplete_zero_limit)
+add_search_test(daily_20261022_autocomplete_unknown_prefix)
+add_search_test(daily_20261022_autocomplete_sorted_order)
+add_search_test(daily_20261022_autocomplete_prefix_word)
+add_search_test(daily_20261022_autocomplete_case_sensitive)
+add_search_test(daily_20261022_autocomplete_limit)
+add_search_test(daily_20261022_cache_zero_capacity)
+add_search_test(daily_20261022_cache_miss)
+add_search_test(daily_20261022_cache_hit)
+add_search_test(daily_20261022_cache_update_existing)
+add_search_test(daily_20261022_cache_lru_eviction)
+add_search_test(daily_20261022_cache_clear)
+add_search_test(daily_20261022_cache_empty_results)
+add_search_test(daily_20261022_cache_capacity)
+add_search_test(daily_20261022_index_document_lengths)
+add_search_test(daily_20261022_index_total_tokens)
+add_search_test(daily_20261022_index_average_length)
+add_search_test(daily_20261022_search_engine_bm25)
+add_search_test(final_query_tokenizer_case)
+add_search_test(final_query_tokenizer_whitespace)
+add_search_test(final_query_tokenizer_symbols)
+add_search_test(final_query_tokenizer_digits)
+add_search_test(final_query_tokenizer_repeated)
+add_search_test(final_query_tokenizer_apostrophe)
+add_search_test(final_query_tokenizer_slashes)
+add_search_test(final_query_tokenizer_utf8_safe)
+add_search_test(final_search_engine_punctuation_equivalence)
+add_search_test(final_search_engine_case_insensitive)
+add_search_test(final_search_engine_empty_query)
+add_search_test(final_search_engine_unknown_query)
+add_search_test(final_search_engine_multi_term)
+add_search_test(final_search_engine_repeated_query_term)
+add_search_test(final_search_engine_numeric_query)
+add_search_test(final_search_engine_symbol_only_query)
+add_search_test(final_search_engine_bm25_punctuation)
+add_search_test(final_search_engine_deterministic_repeat)
+add_search_test(final_topk_zero_limit)
+add_search_test(final_topk_empty_input)
+add_search_test(final_topk_limit_exceeds_size)
+add_search_test(final_topk_exact_limit)
+add_search_test(final_topk_orders_descending_score)
+add_search_test(final_topk_tie_breaks_by_document_id)
+add_search_test(final_topk_keeps_best_subset)
+add_search_test(final_topk_negative_scores)
+add_search_test(final_topk_single_result)
+add_search_test(final_topk_does_not_mutate_caller_copy)
+add_search_test(final_ranker_empty_query)
+add_search_test(final_ranker_empty_index)
+add_search_test(final_ranker_unknown_term)
+add_search_test(final_ranker_duplicate_terms_do_not_inflate)
+add_search_test(final_ranker_tie_order_is_stable)
+add_search_test(final_ranker_repeated_terms_keep_tf)
+add_search_test(final_ranker_ignores_unknown_alongside_known)
+add_search_test(final_ranker_query_order_does_not_change_score)
+add_search_test(final_ranker_results_are_unique_per_document)
+add_search_test(final_ranker_prefers_higher_term_frequency)
+add_search_test(final2_index_empty_initial_state)
+add_search_test(final2_index_empty_document_counted)
+add_search_test(final2_index_empty_tokens_ignored)
+add_search_test(final2_index_duplicate_terms_frequency)
+add_search_test(final2_index_missing_term_frequency_zero)
+add_search_test(final2_index_missing_document_frequency_zero)
+add_search_test(final2_index_postings_sorted)
+add_search_test(final2_index_postings_unique_after_readd)
+add_search_test(final2_index_document_frequency)
+add_search_test(final2_index_unknown_document_length)
+add_search_test(final2_index_contains_known_term)
+add_search_test(final2_index_total_tokens_across_documents)
+add_search_test(final2_index_average_document_length)
+add_search_test(final2_index_average_includes_empty_document)
+add_search_test(final2_index_term_count_distinct)
+add_search_test(final2_index_missing_search_returns_empty)
+add_search_test(final2_index_negative_document_id)
+add_search_test(final2_index_stats_match_index)
+add_search_test(final2_bm25_empty_query)
+add_search_test(final2_bm25_empty_index)
+add_search_test(final2_bm25_unknown_query_term)
+add_search_test(final2_bm25_duplicate_terms_same_score)
+add_search_test(final2_bm25_rejects_nan_k1)
+add_search_test(final2_bm25_rejects_infinite_b)
+add_search_test(final2_bm25_rejects_negative_k1)
+add_search_test(final2_bm25_rejects_b_above_one)
+add_search_test(final2_bm25_scores_are_positive)
+add_search_test(final2_bm25_ties_break_by_id)
+add_search_test(final2_phrase_empty_phrase_false)
+add_search_test(final2_phrase_longer_than_tokens_false)
+add_search_test(final2_phrase_exact_sequence_true)
+add_search_test(final2_phrase_noncontiguous_false)
+add_search_test(final2_phrase_middle_sequence_true)
+add_search_test(final2_cache_stores_empty_result)
+add_search_test(final2_cache_preserves_query_key_case)
+add_search_test(final2_cache_update_does_not_grow)
+add_search_test(final2_cache_clear_resets_size)
+add_search_test(final2_cache_capacity_stays_fixed)
+add_search_test(status_autocomplete_empty)
+add_search_test(status_autocomplete_insert_size)
+add_search_test(status_autocomplete_duplicate_insert)
+add_search_test(status_autocomplete_empty_insert)
+add_search_test(status_autocomplete_prefix_filter)
+add_search_test(status_autocomplete_unknown_prefix)
+add_search_test(status_autocomplete_zero_limit)
+add_search_test(status_autocomplete_limit)
+add_search_test(status_cache_miss)
+add_search_test(status_cache_put_get)
+add_search_test(status_cache_update)
+add_search_test(status_cache_capacity_zero)
+add_search_test(status_cache_eviction)
+add_search_test(status_cache_lru_promotion)
+add_search_test(status_cache_clear)
+add_search_test(status_cache_case_sensitive)
+add_search_test(status_phrase_empty_phrase)
+add_search_test(status_phrase_longer_than_text)
+add_search_test(status_phrase_exact_match)
+add_search_test(status_phrase_not_contiguous)
+add_search_test(status_phrase_middle_match)
+add_search_test(status_tokenizer_empty)
+add_search_test(status_tokenizer_lowercase)
+add_search_test(status_tokenizer_punctuation)
+add_search_test(status_tokenizer_whitespace)
+add_search_test(status_tokenizer_numbers)
+add_search_test(status_tokenizer_repeated_delimiters)
+add_search_test(status_tokenizer_single_token)
+add_search_test(status_tokenizer_only_punctuation)
+add_search_test(status_query_empty)
+add_search_test(status_query_case_normalization)
+add_search_test(status_query_and_semantics)
+add_search_test(status_query_punctuation)
+add_search_test(status_query_duplicate_terms)
+add_search_test(status_topk_zero_limit)
+add_search_test(status_topk_empty_input)
+add_search_test(status_topk_score_order)
+add_search_test(status_topk_tie_break)
+add_search_test(status_topk_truncates)
+add_search_test(final_bm25_empty_terms)
+add_search_test(final_bm25_empty_index)
+add_search_test(final_bm25_unknown_term)
+add_search_test(final_bm25_positive_score)
+add_search_test(final_bm25_duplicate_query_terms)
+add_search_test(final_bm25_nan_k1)
+add_search_test(final_bm25_infinite_b)
+add_search_test(final_bm25_negative_k1)
+add_search_test(final_bm25_b_below_zero)
+add_search_test(final_bm25_b_above_one)
+add_search_test(final_bm25_tie_break_document_id)
+add_search_test(final_bm25_unknown_and_known_terms)
+add_search_test(final_bm25_k1_zero)
+add_search_test(final_bm25_b_zero)
+add_search_test(final_tfidf_empty_index)
+add_search_test(final_tfidf_empty_terms)
+add_search_test(final_tfidf_unknown_term)
+add_search_test(final_tfidf_positive_score)
+add_search_test(final_tfidf_duplicate_query_terms)
+add_search_test(final_tfidf_frequency_increases_score)
+add_search_test(final_tfidf_tie_break_document_id)
+add_search_test(final_tfidf_unknown_plus_known)
+add_search_test(final_tfidf_union_of_terms)
+add_search_test(final_tfidf_no_match_document_excluded)
+add_search_test(final_tfidf_empty_document_safe)
+add_search_test(final_tfidf_many_query_terms)
+add_search_test(final_snippet_empty_content)
+add_search_test(final_snippet_zero_limit)
+add_search_test(final_snippet_short_content_unchanged)
+add_search_test(final_snippet_exact_limit_unchanged)
+add_search_test(final_snippet_max_three)
+add_search_test(final_snippet_max_five_length)
+add_search_test(final_snippet_case_insensitive_match)
+add_search_test(final_snippet_empty_terms)
+add_search_test(final_snippet_ignores_empty_term)
+add_search_test(final_snippet_match_near_end)
+add_search_test(final_snippet_long_content_bounded)
+add_search_test(final_snippet_max_seven)
+add_search_test(final_20261027_query_tokenizer_empty)
+add_search_test(final_query_tokenizer_empty)
+add_search_test(final_query_tokenizer_lowercase)
+add_search_test(final_20261027_query_tokenizer_punctuation)
+add_search_test(final_query_tokenizer_punctuation)
+add_search_test(final_query_tokenizer_numbers)
+add_search_test(final_query_tokenizer_order)
+add_search_test(final_query_tokenizer_repeated_delimiters)
+add_search_test(final_query_tokenizer_mixed_case)
+add_search_test(final_query_tokenizer_only_symbols)
+add_search_test(final_autocomplete_lexicographic_order)
+add_search_test(final_autocomplete_exact_prefix_first)
+add_search_test(indexing_search_regression)
+add_search_test(autocomplete_regression)
+add_search_test(search_engine_bm25_regression)
+add_search_test(bm25_non_finite_parameters)
+add_search_test(bm25_large_parameter_stability)
+add_search_test(phrase_matcher_regression)
+add_search_test(index_stats_regression)
+add_search_test(bm25_parameter_boundaries)
