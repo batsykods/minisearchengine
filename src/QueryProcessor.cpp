@@ -2,7 +2,9 @@
 #include "TextNormalization.h"
 
 #include <algorithm>
+#include <iterator>
 #include <sstream>
+#include <utility>
 
 std::string QueryProcessor::normalizeTerm(const std::string& term) {
     std::string normalized;
