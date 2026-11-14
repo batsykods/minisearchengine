@@ -2557,3 +2557,6 @@ add_search_test(bm25_large_parameter_stability)
 add_search_test(phrase_matcher_regression)
 add_search_test(index_stats_regression)
 add_search_test(bm25_parameter_boundaries)
+
+add_executable(text_normalization_regression tests/text_normalization_regression.cpp)
+add_search_test(text_normalization_regression)
