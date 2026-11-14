@@ -14,7 +14,7 @@ std::string SnippetBuilder::build(const std::string& content, const std::vector<
         if (term.empty()) continue;
         std::string loweredTerm = term;
         std::transform(loweredTerm.begin(), loweredTerm.end(), loweredTerm.begin(),
-                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+                       [](unsigned char c) { return text_normalization::toLower(c); });
         const auto found = loweredContent.find(loweredTerm);
         if (found != std::string::npos) match = std::min(match, found);
     }
