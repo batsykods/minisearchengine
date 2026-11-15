@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include "AutocompleteIndex.h"
 #include "BM25Ranker.h"
 #include "Document.h"
 #include "InvertedIndex.h"
@@ -12,6 +13,7 @@
 class SearchEngine {
 private:
     InvertedIndex index;
+    AutocompleteIndex autocompleteIndex;
     QueryTokenizer queryTokenizer;
     Ranker ranker;
     BM25Ranker bm25Ranker;
@@ -25,6 +27,7 @@ public:
     std::vector<SearchResult> bm25Search(const std::string& query, double k1 = 1.2, double b = 0.75) const;
     std::vector<SearchResult> bm25TopKSearch(const std::string& query, std::size_t limit,
                                              double k1 = 1.2, double b = 0.75) const;
+    std::vector<std::string> suggest(const std::string& prefix, std::size_t limit = 10) const;
     const InvertedIndex& getIndex() const;
 };
 #endif
