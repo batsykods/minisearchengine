@@ -27,16 +27,24 @@ std::string SnippetBuilder::build(const std::string& content, const std::vector<
         return content.substr(start, maxLength);
     }
 
-    const std::size_t interior = maxLength - 6;
     std::size_t start = 0;
-    if (match != std::string::npos && match > interior / 2) start = match - interior / 2;
-    if (start + interior > content.size()) start = content.size() - interior;
-    const bool prefix = start > 0;
-    const bool suffix = start + interior < content.size();
+    bool prefix = false;
+    if (match != std::string::npos) {
+        const std::size_t centeredOffset = (maxLength - 6) / 2;
+        start = match > centeredOffset ? match - centeredOffset : 0;
+        prefix = start > 0;
+        if (prefix) {
+            start = std::min(start, content.size() - (maxLength - 3));
+        }
+    }
+
+    std::size_t contentLength = maxLength - (prefix ? 3 : 0);
+    const bool suffix = start + contentLength < content.size();
+    if (suffix) contentLength -= 3;
+
     std::string snippet;
     if (prefix) snippet += "...";
-    snippet += content.substr(start, interior);
+    snippet += content.substr(start, contentLength);
     if (suffix) snippet += "...";
-    if (snippet.size() > maxLength) snippet.resize(maxLength);
     return snippet;
 }
