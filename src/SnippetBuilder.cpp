@@ -6,17 +6,17 @@
 std::string SnippetBuilder::build(const std::string& content, const std::vector<std::string>& terms,
                                   std::size_t maxLength) const {
     if (content.empty() || maxLength == 0) return {};
-    std::string loweredContent = content;
-    std::transform(loweredContent.begin(), loweredContent.end(), loweredContent.begin(),
-                   [](unsigned char c) { return text_normalization::toLower(c); });
     std::size_t match = std::string::npos;
     for (const auto& term : terms) {
         if (term.empty()) continue;
-        std::string loweredTerm = term;
-        std::transform(loweredTerm.begin(), loweredTerm.end(), loweredTerm.begin(),
-                       [](unsigned char c) { return text_normalization::toLower(c); });
-        const auto found = loweredContent.find(loweredTerm);
-        if (found != std::string::npos) match = std::min(match, found);
+        const auto found = std::search(
+            content.begin(), content.end(), term.begin(), term.end(),
+            [](unsigned char left, unsigned char right) {
+                return text_normalization::toLower(left) == text_normalization::toLower(right);
+            });
+        if (found != content.end()) {
+            match = std::min(match, static_cast<std::size_t>(found - content.begin()));
+        }
     }
     if (content.size() <= maxLength) return content;
     if (maxLength <= 3) return content.substr(0, maxLength);
