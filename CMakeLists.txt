@@ -885,3 +885,4 @@ add_search_test(bm25_parameter_boundaries tests/bm25_parameter_boundaries.cpp)
 # Register every regression executable through one shared test helper.
 add_search_test(text_normalization_regression tests/text_normalization_regression.cpp)
 add_search_test(tokenizer_maximum_token_density tests/tokenizer_maximum_token_density.cpp)
+add_search_test(snippet_exact_requested_length tests/snippet_exact_requested_length.cpp)
