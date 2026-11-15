@@ -1,5 +1,4 @@
 #include "SearchEngine.h"
-#include <algorithm>
 void SearchEngine::addDocument(int documentId, const std::vector<std::string>& tokens) {
     index.addDocument(documentId, tokens);
 }
@@ -7,6 +6,7 @@ void SearchEngine::addDocument(int documentId, const std::vector<std::string>& t
 void SearchEngine::addDocument(const Document& document) {
     index.addDocument(document.getId(), queryTokenizer.tokenize(document.getContent()));
 }
+
 std::vector<int> SearchEngine::search(const std::string& query) const {
     const auto ranked = rankedSearch(query);
     std::vector<int> ids;
