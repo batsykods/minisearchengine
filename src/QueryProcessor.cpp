@@ -14,18 +14,24 @@ std::vector<std::string> QueryProcessor::split(const std::string& query) {
 }
 
 std::vector<int> QueryProcessor::search(const InvertedIndex& index, const std::string& query) const {
-    auto terms = split(query);
+    const auto terms = split(query);
     if (terms.empty()) return {};
 
-    std::sort(terms.begin(), terms.end(), [&index](const std::string& left, const std::string& right) {
-        const auto leftFrequency = index.documentFrequency(left);
-        const auto rightFrequency = index.documentFrequency(right);
-        return leftFrequency == rightFrequency ? left < right : leftFrequency < rightFrequency;
-    });
+    std::vector<std::pair<std::size_t, std::string>> orderedTerms;
+    orderedTerms.reserve(terms.size());
+    for (const auto& term : terms) {
+        orderedTerms.emplace_back(index.documentFrequency(term), term);
+    }
 
-    std::vector<int> results = index.search(terms.front());
-    for (std::size_t i = 1; i < terms.size(); ++i) {
-        const auto& postings = index.search(terms[i]);
+    std::sort(orderedTerms.begin(), orderedTerms.end(),
+              [](const auto& left, const auto& right) {
+                  if (left.first != right.first) return left.first < right.first;
+                  return left.second < right.second;
+              });
+
+    std::vector<int> results = index.search(orderedTerms.front().second);
+    for (std::size_t i = 1; i < orderedTerms.size(); ++i) {
+        const auto& postings = index.search(orderedTerms[i].second);
         std::vector<int> intersection;
         intersection.reserve(std::min(results.size(), postings.size()));
         std::set_intersection(results.begin(), results.end(), postings.begin(), postings.end(),
@@ -33,6 +39,7 @@ std::vector<int> QueryProcessor::search(const InvertedIndex& index, const std::s
         results = std::move(intersection);
         if (results.empty()) break;
     }
+
     std::sort(results.begin(), results.end());
     return results;
 }
