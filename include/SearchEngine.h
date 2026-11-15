@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include "BM25Ranker.h"
-#include "DocumentLoader.h"
+#include "Document.h"
 #include "InvertedIndex.h"
 #include "QueryTokenizer.h"
 #include "Ranker.h"
