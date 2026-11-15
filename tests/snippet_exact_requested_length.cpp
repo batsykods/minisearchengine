@@ -17,15 +17,15 @@ int main() {
     assert(earlyMatch.find("012") != std::string::npos);
     assert(earlyMatch.back() == '.');
 
-    const auto middleMatch = builder.build(content, {"5678"}, 16);
+    const auto middleMatch = builder.build(content, {"mnop"}, 16);
     assert(middleMatch.size() == 16);
     assert(middleMatch.find("...") == 0);
-    assert(middleMatch.find("5678") != std::string::npos);
+    assert(middleMatch.find("mnop") != std::string::npos);
     assert(middleMatch.rfind("...") == 13);
 
     const auto lateMatch = builder.build(content, {"xyz"}, 12);
     assert(lateMatch.size() == 12);
     assert(lateMatch.find("xyz") != std::string::npos);
-    assert(lateMatch.rfind("...") == 9);
+    assert(lateMatch.find("...") == 0);
     return 0;
 }
