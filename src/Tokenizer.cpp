@@ -5,7 +5,7 @@
 std::vector<std::string> Tokenizer::tokenize(const std::string& text) const {
     std::vector<std::string> tokens;
     std::string current;
-    tokens.reserve(text.empty() ? 0 : text.size() / 5 + 1);
+    tokens.reserve(text.size() / 2 + text.size() % 2);
 
     for (char character : text) {
         if (text_normalization::isAlphaNumeric(static_cast<unsigned char>(character))) {
