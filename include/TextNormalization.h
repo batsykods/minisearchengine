@@ -1,15 +1,18 @@
 #ifndef TEXT_NORMALIZATION_H
 #define TEXT_NORMALIZATION_H
 
-#include <cctype>
-
 namespace text_normalization {
 inline bool isAlphaNumeric(unsigned char character) noexcept {
-    return std::isalnum(character) != 0;
+    return (character >= '0' && character <= '9') ||
+           (character >= 'A' && character <= 'Z') ||
+           (character >= 'a' && character <= 'z');
 }
 
 inline char toLower(unsigned char character) noexcept {
-    return static_cast<char>(std::tolower(character));
+    if (character >= 'A' && character <= 'Z') {
+        return static_cast<char>(character + ('a' - 'A'));
+    }
+    return static_cast<char>(character);
 }
 }
 
