@@ -39,7 +39,7 @@ The reusable `search_core` library exposes document ingestion, ranked retrieval,
 int main() {
     SearchEngine engine;
     engine.addDocument(Document(1, "first.txt", "C++ search engine"));
-    engine.addDocument(2, "second.txt", "search indexing and ranking");
+    engine.addTextDocument(2, "search indexing and ranking");
 
     const auto ranked = engine.rankedSearch("search");
     const auto topResults = engine.topKSearch("search", 5);
@@ -48,7 +48,7 @@ int main() {
 }
 ```
 
-Use the token-vector overload when the caller already owns normalized tokens. Use the text or `Document` overload when the engine should tokenize content during ingestion.
+Use the token-vector overload when the caller already owns normalized tokens. Use `addTextDocument` or the `Document` overload when the engine should tokenize content during ingestion.
 
 ## Performance Notes
 
