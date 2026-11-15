@@ -78,7 +78,7 @@ Phase 1 — Search Engine Foundation is implemented. Phase 2 — Information Ret
 - Search-result snippet generation
 - Phrase matching utility
 - Index statistics
-- Integrated `SearchEngine` API for keyword, ranked, and BM25 search
+- Integrated `SearchEngine` API for raw-text and document ingestion, TF-IDF/BM25 ranking, top-K retrieval, and trie-based autocomplete
 
 These components are implemented in the repository; this list does not imply that every planned feature is integrated into the command-line application.
 
@@ -321,7 +321,7 @@ Currently under development.
 
 ### Next
 
-- Integrate autocomplete and query suggestions into the application flow
+- Expose autocomplete and top-K retrieval through the CLI
 - Add positional postings for efficient phrase queries
 - Add Boolean query operators
 - Add reproducible corpus benchmarks
