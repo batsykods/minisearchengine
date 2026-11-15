@@ -15,6 +15,7 @@ private:
     BM25Ranker bm25Ranker;
 public:
     void addDocument(int documentId, const std::vector<std::string>& tokens);
+    void addDocument(int documentId, const std::string& content);
     void addDocument(const Document& document);
     std::vector<int> search(const std::string& query) const;
     std::vector<SearchResult> rankedSearch(const std::string& query) const;
