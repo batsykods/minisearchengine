@@ -23,6 +23,8 @@ public:
     std::vector<SearchResult> rankedSearch(const std::string& query) const;
     std::vector<SearchResult> topKSearch(const std::string& query, std::size_t limit) const;
     std::vector<SearchResult> bm25Search(const std::string& query, double k1 = 1.2, double b = 0.75) const;
+    std::vector<SearchResult> bm25TopKSearch(const std::string& query, std::size_t limit,
+                                             double k1 = 1.2, double b = 0.75) const;
     const InvertedIndex& getIndex() const;
 };
 #endif
