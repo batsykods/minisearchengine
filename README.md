@@ -22,11 +22,33 @@ Pass a term to search for it directly:
 ./build/search_engine algorithms
 ```
 
-On Windows with a multi-config generator, run the executable from the generated configuration directory, for example `build/Release/search_engine.exe`.
+On Windows with a multi-config generator, run the executable from the generated configuration directory, for example `build/Debug/search_engine.exe`.
 
 ## Build Architecture
 
 CMake compiles the production components once into the reusable `search_core` static library. The command-line executable and regression test executables link against that library instead of recompiling production sources for every test. The `add_search_test` CMake helper centralizes test linking and CTest registration. Run the suite in Debug mode so C++ `assert` checks remain enabled.
+
+## Library API
+
+The reusable `search_core` library exposes document ingestion, ranked retrieval, top-K selection, BM25 ranking, and autocomplete through `SearchEngine`.
+
+```cpp
+#include "Document.h"
+#include "SearchEngine.h"
+
+int main() {
+    SearchEngine engine;
+    engine.addDocument(Document(1, "first.txt", "C++ search engine"));
+    engine.addDocument(2, "second.txt", "search indexing and ranking");
+
+    const auto ranked = engine.rankedSearch("search");
+    const auto topResults = engine.topKSearch("search", 5);
+    const auto bm25Results = engine.bm25TopKSearch("search", 5);
+    const auto suggestions = engine.suggest("sea", 5);
+}
+```
+
+Use the token-vector overload when the caller already owns normalized tokens. Use the text or `Document` overload when the engine should tokenize content during ingestion.
 
 ## Performance Notes
 
