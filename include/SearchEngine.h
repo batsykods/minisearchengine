@@ -1,5 +1,6 @@
 #ifndef SEARCH_ENGINE_H
 #define SEARCH_ENGINE_H
+#include <cstddef>
 #include <string>
 #include <vector>
 #include "BM25Ranker.h"
