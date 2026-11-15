@@ -20,6 +20,8 @@ int main() {
     assert((textEngine.search("reusable") == std::vector<int>{23}));
     assert((textEngine.search("ingestion") == std::vector<int>{23}));
     assert((textEngine.suggest("ing", 5) == std::vector<std::string>{"ingestion"}));
+    assert(textEngine.suggest("ing", 0).empty());
+    assert((textEngine.suggest("", 2) == std::vector<std::string>{"ingestion", "raw"}));
     assert(textEngine.suggest("unknown", 5).empty());
 
     textEngine.addDocument(24, "!!! ---");
