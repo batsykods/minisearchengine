@@ -9,7 +9,7 @@ std::vector<std::string> Tokenizer::tokenize(const std::string& text) const {
 
     for (char character : text) {
         if (text_normalization::isAlphaNumeric(static_cast<unsigned char>(character))) {
-            current += text_normalization::toLower(static_cast<unsigned char>(character));
+            current.push_back(text_normalization::toLower(static_cast<unsigned char>(character)));
         } else if (!current.empty()) {
             tokens.push_back(current);
             current.clear();
