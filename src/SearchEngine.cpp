@@ -7,12 +7,12 @@ void SearchEngine::addDocument(int documentId, const std::vector<std::string>& t
     }
 }
 
-void SearchEngine::addDocument(int documentId, const std::string& content) {
+void SearchEngine::addTextDocument(int documentId, const std::string& content) {
     addDocument(documentId, queryTokenizer.tokenize(content));
 }
 
 void SearchEngine::addDocument(const Document& document) {
-    addDocument(document.getId(), document.getContent());
+    addTextDocument(document.getId(), document.getContent());
 }
 
 std::vector<int> SearchEngine::search(const std::string& query) const {
