@@ -18,6 +18,8 @@ int main() {
     textEngine.addDocument(23, "Reusable raw text ingestion");
     assert((textEngine.search("reusable") == std::vector<int>{23}));
     assert((textEngine.search("ingestion") == std::vector<int>{23}));
+    assert((textEngine.suggest("ing", 5) == std::vector<std::string>{"ingestion"}));
+    assert(textEngine.suggest("unknown", 5).empty());
 
     textEngine.addDocument(24, "!!! ---");
     assert(textEngine.getIndex().documentCount() == 2);
