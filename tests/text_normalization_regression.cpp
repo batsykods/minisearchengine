@@ -1,6 +1,12 @@
 #include <cassert>
 #include "TextNormalization.h"
 
+static_assert(text_normalization::isAlphaNumeric('A'));
+static_assert(text_normalization::isAlphaNumeric('7'));
+static_assert(!text_normalization::isAlphaNumeric('-'));
+static_assert(text_normalization::toLower('Q') == 'q');
+static_assert(text_normalization::toLower('5') == '5');
+
 int main() {
     assert(text_normalization::isAlphaNumeric(static_cast<unsigned char>('A')));
     assert(text_normalization::isAlphaNumeric(static_cast<unsigned char>('z')));
