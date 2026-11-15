@@ -1,10 +1,11 @@
 #include "SearchEngine.h"
 void SearchEngine::addDocument(int documentId, const std::vector<std::string>& tokens) {
     index.addDocument(documentId, tokens);
+    for (const auto& token : tokens) autocompleteIndex.insert(token);
 }
 
 void SearchEngine::addDocument(int documentId, const std::string& content) {
-    index.addDocument(documentId, queryTokenizer.tokenize(content));
+    addDocument(documentId, queryTokenizer.tokenize(content));
 }
 
 void SearchEngine::addDocument(const Document& document) {
@@ -27,6 +28,10 @@ std::vector<SearchResult> SearchEngine::topKSearch(const std::string& query, std
 }
 const InvertedIndex& SearchEngine::getIndex() const {
     return index;
+}
+
+std::vector<std::string> SearchEngine::suggest(const std::string& prefix, std::size_t limit) const {
+    return autocompleteIndex.suggest(prefix, limit);
 }
 
 std::vector<SearchResult> SearchEngine::bm25Search(const std::string& query, double k1, double b) const {
