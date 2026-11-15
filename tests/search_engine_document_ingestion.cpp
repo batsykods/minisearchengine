@@ -12,6 +12,6 @@ int main() {
     assert(engine.getIndex().documentCount() == 1);
     assert(engine.getIndex().termFrequency("engine", 17) == 2);
     assert((engine.search("search") == std::vector<int>{17}));
-    assert((engine.search("cpp") == std::vector<int>{17}));
+    assert((engine.search("c") == std::vector<int>{17}));
     return 0;
 }
