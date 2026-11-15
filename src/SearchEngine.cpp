@@ -32,3 +32,8 @@ const InvertedIndex& SearchEngine::getIndex() const {
 std::vector<SearchResult> SearchEngine::bm25Search(const std::string& query, double k1, double b) const {
     return bm25Ranker.rank(index, queryTokenizer.tokenize(query), k1, b);
 }
+
+std::vector<SearchResult> SearchEngine::bm25TopKSearch(const std::string& query, std::size_t limit,
+                                                       double k1, double b) const {
+    return TopK{}.select(bm25Search(query, k1, b), limit);
+}
