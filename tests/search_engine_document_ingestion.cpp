@@ -13,6 +13,7 @@ int main() {
     assert(engine.getIndex().termFrequency("engine", 17) == 2);
     assert((engine.search("search") == std::vector<int>{17}));
     assert((engine.search("c") == std::vector<int>{17}));
+    assert((engine.suggest("eng", 5) == std::vector<std::string>{"engine"}));
 
     SearchEngine textEngine;
     textEngine.addDocument(23, "Reusable raw text ingestion");
