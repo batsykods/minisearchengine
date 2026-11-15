@@ -21,6 +21,10 @@ std::vector<int> SearchEngine::search(const std::string& query) const {
 std::vector<SearchResult> SearchEngine::rankedSearch(const std::string& query) const {
     return ranker.tfidf(index, queryTokenizer.tokenize(query));
 }
+
+std::vector<SearchResult> SearchEngine::topKSearch(const std::string& query, std::size_t limit) const {
+    return TopK{}.select(rankedSearch(query), limit);
+}
 const InvertedIndex& SearchEngine::getIndex() const {
     return index;
 }
